@@ -35,25 +35,25 @@ __all__ = [
 
 def complex_multiply(a: Tensor, b: Tensor) -> Tensor:
     """Multiply two complex tensors element-wise.
-    
+
     Performs (a_real + i*a_imag) * (b_real + i*b_imag) efficiently.
     Supports broadcasting according to PyTorch broadcasting rules.
-    
+
     Note: This wrapper around torch.mul provides consistent error handling
     and type validation required for spectral transformer operations.
-    
+
     Parameters
     ----------
     a : Tensor
         First complex tensor.
     b : Tensor
         Second complex tensor.
-        
+
     Returns
     -------
     Tensor
         Complex product tensor.
-        
+
     Raises
     ------
     TypeError
@@ -74,20 +74,20 @@ def complex_multiply(a: Tensor, b: Tensor) -> Tensor:
 
 def complex_conjugate(x: Tensor) -> Tensor:
     """Compute complex conjugate of input tensor.
-    
+
     Essential operation for spectral transforms, particularly for ensuring
     Hermitian symmetry in frequency domain operations.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     Tensor
         Complex conjugate tensor.
-        
+
     Raises
     ------
     TypeError
@@ -101,20 +101,20 @@ def complex_conjugate(x: Tensor) -> Tensor:
 
 def complex_modulus(x: Tensor) -> Tensor:
     """Compute magnitude (absolute value) of complex tensor.
-    
+
     Critical for spectral analysis where magnitude represents signal energy.
     Wrapper around torch.abs with consistent error handling.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     Tensor
         Real tensor containing magnitudes.
-        
+
     Raises
     ------
     TypeError
@@ -128,20 +128,20 @@ def complex_modulus(x: Tensor) -> Tensor:
 
 def complex_phase(x: Tensor) -> Tensor:
     """Compute phase angle of complex tensor.
-    
+
     Phase information is crucial for spectral transformations and filter design.
     Wrapper around torch.angle with proper type validation.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     Tensor
         Real tensor containing phase angles in radians [-π, π].
-        
+
     Raises
     ------
     TypeError
@@ -155,22 +155,22 @@ def complex_phase(x: Tensor) -> Tensor:
 
 def complex_polar(magnitude: Tensor, phase: Tensor) -> Tensor:
     """Construct complex tensor from magnitude and phase.
-    
+
     Fundamental for spectral operations where separate magnitude and phase
     processing is required. Includes validation for non-negative magnitudes.
-    
+
     Parameters
     ----------
     magnitude : Tensor
         Real tensor containing magnitudes (must be non-negative).
     phase : Tensor
         Real tensor containing phase angles in radians.
-        
+
     Returns
     -------
     Tensor
         Complex tensor constructed from polar coordinates.
-        
+
     Raises
     ------
     TypeError
@@ -196,15 +196,15 @@ def complex_polar(magnitude: Tensor, phase: Tensor) -> Tensor:
 
 def complex_exp(x: Tensor) -> Tensor:
     """Compute complex exponential e^x.
-    
+
     Core operation for Fourier transforms and oscillatory functions.
     Accepts both real and complex inputs for flexibility.
-    
+
     Parameters
     ----------
     x : Tensor
         Input tensor (can be real or complex).
-        
+
     Returns
     -------
     Tensor
@@ -215,20 +215,20 @@ def complex_exp(x: Tensor) -> Tensor:
 
 def complex_log(x: Tensor) -> Tensor:
     """Compute complex natural logarithm.
-    
+
     Used in spectral domain operations and inverse transforms.
     Includes safety check for zeros where logarithm is undefined.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     Tensor
         Complex logarithm tensor.
-        
+
     Raises
     ------
     TypeError
@@ -248,22 +248,22 @@ def complex_log(x: Tensor) -> Tensor:
 
 def complex_divide(a: Tensor, b: Tensor) -> Tensor:
     """Divide two complex tensors element-wise.
-    
+
     Essential for spectral filtering operations. Includes safety checks
     for division by zero, which can occur in spectral nulls.
-    
+
     Parameters
     ----------
     a : Tensor
         Numerator complex tensor.
     b : Tensor
         Denominator complex tensor.
-        
+
     Returns
     -------
     Tensor
         Complex division result.
-        
+
     Raises
     ------
     TypeError
@@ -290,22 +290,22 @@ def complex_divide(a: Tensor, b: Tensor) -> Tensor:
 
 def make_complex(real: Tensor, imag: Tensor) -> Tensor:
     """Construct complex tensor from real and imaginary parts.
-    
+
     Fundamental constructor for complex tensors in spectral transforms.
     Wrapper around torch.complex with consistent error handling.
-    
+
     Parameters
     ----------
     real : Tensor
         Real part tensor.
     imag : Tensor
         Imaginary part tensor.
-        
+
     Returns
     -------
     Tensor
         Complex tensor.
-        
+
     Raises
     ------
     TypeError
@@ -326,20 +326,20 @@ def make_complex(real: Tensor, imag: Tensor) -> Tensor:
 
 def split_complex(x: Tensor) -> tuple[Tensor, Tensor]:
     """Split complex tensor into real and imaginary parts.
-    
+
     Useful for separate processing of real and imaginary components
     in spectral neural networks and filter implementations.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     tuple[Tensor, Tensor]
         Tuple of (real_part, imaginary_part) tensors.
-        
+
     Raises
     ------
     TypeError
@@ -353,23 +353,23 @@ def split_complex(x: Tensor) -> tuple[Tensor, Tensor]:
 
 def complex_relu(x: Tensor) -> Tensor:
     """Apply ReLU activation to complex tensor.
-    
+
     Applies ReLU to both real and imaginary parts independently.
     Note: This is not holomorphic but useful for some neural architectures.
-    
+
     This specialized activation is designed for complex-valued neural networks
     in spectral transformers where non-linearity is needed in both components.
-    
+
     Parameters
     ----------
     x : Tensor
         Input complex tensor.
-        
+
     Returns
     -------
     Tensor
         Complex tensor with ReLU applied to each part.
-        
+
     Raises
     ------
     TypeError
@@ -389,13 +389,13 @@ def complex_relu(x: Tensor) -> Tensor:
 
 def complex_dropout(x: Tensor, p: float = 0.5, training: bool = True) -> Tensor:
     """Apply dropout to complex tensor.
-    
+
     Applies dropout to magnitude while preserving phase relationships.
     This is superior to independent real/imaginary dropout for spectral data.
-    
+
     This specialized dropout maintains the complex structure essential for
     spectral transformations while providing regularization.
-    
+
     Parameters
     ----------
     x : Tensor
@@ -404,12 +404,12 @@ def complex_dropout(x: Tensor, p: float = 0.5, training: bool = True) -> Tensor:
         Dropout probability.
     training : bool, default=True
         Whether in training mode.
-        
+
     Returns
     -------
     Tensor
         Complex tensor with dropout applied.
-        
+
     Raises
     ------
     TypeError

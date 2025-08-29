@@ -26,7 +26,7 @@ circular_pad(x, padding, dim)
     Apply circular (periodic) padding for periodic signals.
 reflect_pad(x, padding, dim)
     Apply reflection padding to minimize boundary artifacts.
-symmetric_pad(x, padding, dim) 
+symmetric_pad(x, padding, dim)
     Apply symmetric padding with proper boundary handling.
 pad_sequence(sequences, batch_first, padding_value)
     Pad variable-length sequences to uniform length.
@@ -158,7 +158,7 @@ __all__ = [
 
 def pad_to_length(x: Tensor, target_length: int, dim: int = -1, mode: str = "zero") -> Tensor:
     """Pad tensor to specified length along given dimension.
-    
+
     Parameters
     ----------
     x : Tensor
@@ -169,12 +169,12 @@ def pad_to_length(x: Tensor, target_length: int, dim: int = -1, mode: str = "zer
         Dimension to pad along.
     mode : str, default="zero"
         Padding mode: "zero", "circular", "reflect", "symmetric".
-        
+
     Returns
     -------
     Tensor
         Padded tensor with target length along specified dimension.
-        
+
     Raises
     ------
     ValueError
@@ -212,7 +212,7 @@ def pad_to_length(x: Tensor, target_length: int, dim: int = -1, mode: str = "zer
 
 def unpad_to_length(x: Tensor, target_length: int, dim: int = -1) -> Tensor:
     """Remove padding to restore original length.
-    
+
     Parameters
     ----------
     x : Tensor
@@ -221,12 +221,12 @@ def unpad_to_length(x: Tensor, target_length: int, dim: int = -1) -> Tensor:
         Original length before padding.
     dim : int, default=-1
         Dimension to unpad along.
-        
+
     Returns
     -------
     Tensor
         Tensor with padding removed.
-        
+
     Raises
     ------
     ValueError
@@ -256,7 +256,7 @@ def unpad_to_length(x: Tensor, target_length: int, dim: int = -1) -> Tensor:
 
 def pad_sequence(sequences: list[Tensor], padding_value: float = 0.0, dim: int = -1) -> Tensor:
     """Pad a list of sequences to the same length.
-    
+
     Parameters
     ----------
     sequences : list[Tensor]
@@ -265,12 +265,12 @@ def pad_sequence(sequences: list[Tensor], padding_value: float = 0.0, dim: int =
         Value to use for padding.
     dim : int, default=-1
         Dimension to pad along.
-        
+
     Returns
     -------
     Tensor
         Batched tensor with all sequences padded to same length.
-        
+
     Raises
     ------
     ValueError
@@ -323,7 +323,7 @@ def pad_sequence(sequences: list[Tensor], padding_value: float = 0.0, dim: int =
 
 def unpad_sequence(padded_tensor: Tensor, lengths: list[int], dim: int = -1) -> list[Tensor]:
     """Unpad a batched tensor back to individual sequences.
-    
+
     Parameters
     ----------
     padded_tensor : Tensor
@@ -332,12 +332,12 @@ def unpad_sequence(padded_tensor: Tensor, lengths: list[int], dim: int = -1) -> 
         Original lengths of each sequence.
     dim : int, default=-1
         Dimension that was padded.
-        
+
     Returns
     -------
     list[Tensor]
         List of unpadded sequences.
-        
+
     Raises
     ------
     ValueError
@@ -372,7 +372,7 @@ def unpad_sequence(padded_tensor: Tensor, lengths: list[int], dim: int = -1) -> 
 
 def circular_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
     """Apply circular (periodic) padding.
-    
+
     Parameters
     ----------
     x : Tensor
@@ -381,12 +381,12 @@ def circular_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
         Number of elements to pad.
     dim : int, default=-1
         Dimension to pad along.
-        
+
     Returns
     -------
     Tensor
         Circularly padded tensor.
-        
+
     Raises
     ------
     ValueError
@@ -419,7 +419,7 @@ def circular_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
 
 def reflect_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
     """Apply reflection padding (mirror without repeating edge).
-    
+
     Parameters
     ----------
     x : Tensor
@@ -428,12 +428,12 @@ def reflect_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
         Number of elements to pad.
     dim : int, default=-1
         Dimension to pad along.
-        
+
     Returns
     -------
     Tensor
         Reflection padded tensor.
-        
+
     Raises
     ------
     ValueError
@@ -467,7 +467,7 @@ def reflect_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
 
 def symmetric_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
     """Apply symmetric padding (mirror including edge).
-    
+
     Parameters
     ----------
     x : Tensor
@@ -476,12 +476,12 @@ def symmetric_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
         Number of elements to pad.
     dim : int, default=-1
         Dimension to pad along.
-        
+
     Returns
     -------
     Tensor
         Symmetrically padded tensor.
-        
+
     Raises
     ------
     ValueError
@@ -515,7 +515,7 @@ def symmetric_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
 
 def zero_pad(x: Tensor, pad_amount: int, dim: int = -1, value: float = 0.0) -> Tensor:
     """Apply zero (constant) padding.
-    
+
     Parameters
     ----------
     x : Tensor
@@ -526,12 +526,12 @@ def zero_pad(x: Tensor, pad_amount: int, dim: int = -1, value: float = 0.0) -> T
         Dimension to pad along.
     value : float, default=0.0
         Constant value to pad with.
-        
+
     Returns
     -------
     Tensor
         Zero-padded tensor.
-        
+
     Raises
     ------
     ValueError
@@ -561,21 +561,21 @@ def zero_pad(x: Tensor, pad_amount: int, dim: int = -1, value: float = 0.0) -> T
 
 def pad_for_fft(x: Tensor, dim: int = -1) -> tuple[Tensor, int]:
     """Pad tensor to optimal size for FFT computation.
-    
+
     Pads to next power of 2 for optimal FFT performance.
-    
+
     Parameters
     ----------
     x : Tensor
         Input tensor.
     dim : int, default=-1
         Dimension to pad along.
-        
+
     Returns
     -------
     tuple[Tensor, int]
         Tuple of (padded_tensor, original_length).
-        
+
     Raises
     ------
     IndexError
@@ -604,17 +604,17 @@ def pad_for_fft(x: Tensor, dim: int = -1) -> tuple[Tensor, int]:
 
 def pad_to_power_of_2(length: int) -> int:
     """Find next power of 2 greater than or equal to length.
-    
+
     Parameters
     ----------
     length : int
         Input length.
-        
+
     Returns
     -------
     int
         Next power of 2.
-        
+
     Raises
     ------
     ValueError
@@ -636,10 +636,10 @@ def pad_to_power_of_2(length: int) -> int:
 
 def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = "zero") -> Tensor:
     """Pad tensor for valid convolution without size reduction.
-    
+
     Applies symmetric padding to both sides of the specified dimension to ensure
     that convolution output has the same size as input (same padding).
-    
+
     Parameters
     ----------
     x : Tensor
@@ -650,12 +650,12 @@ def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = 
         Dimension to pad along.
     mode : str, default="zero"
         Padding mode: "zero", "circular", "reflect", "symmetric".
-        
+
     Returns
     -------
     Tensor
         Padded tensor suitable for convolution.
-        
+
     Raises
     ------
     ValueError

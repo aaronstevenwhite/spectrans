@@ -53,7 +53,7 @@ Using Fourier transforms:
 >>> fft = FFT1D()
 >>> complex_output = fft.transform(complex_input)
 >>> reconstructed = fft.inverse_transform(complex_output)
->>> 
+>>>
 >>> # Real-input FFT (more efficient for real signals)
 >>> rfft = RFFT()
 >>> freq_domain = rfft.transform(real_input)
@@ -64,7 +64,7 @@ Using orthogonal transforms:
 >>> # Discrete Cosine Transform
 >>> dct = DCT(norm='ortho')
 >>> dct_coeffs = dct.transform(signal)
->>> 
+>>>
 >>> # Fast Hadamard Transform
 >>> hadamard = HadamardTransform()
 >>> hadamard_coeffs = hadamard.transform(signal, dim=-1)
@@ -107,7 +107,7 @@ Implementation Details:
 
 Performance Characteristics:
 - FFT: O(n log n) time complexity
-- DCT/DST: O(n log n) via FFT-based algorithms  
+- DCT/DST: O(n log n) via FFT-based algorithms
 - Hadamard: O(n log n) fast transform algorithms
 - DWT: O(n) time complexity with compact support wavelets
 

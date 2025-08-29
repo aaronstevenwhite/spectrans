@@ -39,7 +39,8 @@ Implementing a custom spectral component:
 
 Building a transformer block:
 
->>> from spectrans.core.base import TransformerBlock, MixingLayer
+>>> from spectrans.core.base import TransformerBlock
+>>> from spectrans.layers.mixing.base import MixingLayer
 >>> mixing_layer = SomeSpectralMixing(hidden_dim=768)
 >>> ffn = nn.Sequential(nn.Linear(768, 3072), nn.GELU(), nn.Linear(3072, 768))
 >>> block = TransformerBlock(mixing_layer, ffn)
@@ -71,10 +72,13 @@ spectrans.transforms.base : Transform-specific base classes
 """
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 import torch.nn as nn
+
+if TYPE_CHECKING:
+    from ..layers.mixing.base import MixingLayer
 
 
 class SpectralComponent(nn.Module, ABC):
@@ -114,75 +118,6 @@ class SpectralComponent(nn.Module, ABC):
         pass
 
 
-class SpectralTransform(ABC):
-    """Interface for spectral transforms.
-
-    This abstract base class defines the interface for various
-    spectral transforms (FFT, DCT, DWT, etc.) used in the library.
-    """
-
-    @abstractmethod
-    def transform(self, x: torch.Tensor, dim: int = -1) -> torch.Tensor:
-        """Apply forward transform.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Input tensor to transform.
-        dim : int, default=-1
-            Dimension along which to apply the transform.
-
-        Returns
-        -------
-        torch.Tensor
-            Transformed tensor.
-        """
-        pass
-
-    @abstractmethod
-    def inverse_transform(self, x: torch.Tensor, dim: int = -1) -> torch.Tensor:
-        """Apply inverse transform.
-
-        Parameters
-        ----------
-        x : torch.Tensor
-            Transformed tensor to invert.
-        dim : int, default=-1
-            Dimension along which to apply the inverse transform.
-
-        Returns
-        -------
-        torch.Tensor
-            Inverse transformed tensor.
-        """
-        pass
-
-
-class MixingLayer(SpectralComponent):
-    """Base class for mixing layers.
-
-    Mixing layers perform token mixing operations using various
-    spectral transforms instead of traditional attention mechanisms.
-
-    Parameters
-    ----------
-    hidden_dim : int
-        Hidden dimension of the model.
-    dropout : float, default=0.0
-        Dropout probability.
-
-    Attributes
-    ----------
-    hidden_dim : int
-        Hidden dimension of the model.
-    dropout : nn.Module
-        Dropout layer or identity if dropout is 0.
-    """
-
-    def __init__(self, hidden_dim: int, dropout: float = 0.0):
-        super().__init__()
-        self.hidden_dim = hidden_dim
-        self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
 
 
 class AttentionLayer(SpectralComponent):
@@ -257,7 +192,7 @@ class TransformerBlock(SpectralComponent):
 
     def __init__(
         self,
-        mixing_layer: MixingLayer | AttentionLayer,
+        mixing_layer: "MixingLayer | AttentionLayer",
         ffn: nn.Module | None = None,
         norm_layer: type[nn.Module] = nn.LayerNorm,
         dropout: float = 0.0,

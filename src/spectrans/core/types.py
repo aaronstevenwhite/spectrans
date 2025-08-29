@@ -95,10 +95,10 @@ if TYPE_CHECKING:
     from spectrans.core.base import (
         AttentionLayer,
         BaseModel,
-        MixingLayer,
-        SpectralTransform,
         TransformerBlock,
     )
+    from spectrans.layers.mixing.base import MixingLayer
+    from spectrans.transforms.base import SpectralTransform
 
 # Tensor type aliases
 type Tensor = torch.Tensor

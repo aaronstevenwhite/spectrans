@@ -33,8 +33,6 @@ Classes
 -------
 SpectralComponent
     Abstract base class for all spectral components.
-SpectralTransform
-    Interface for spectral transform operations.
 MixingLayer
     Base class for token mixing layers.
 AttentionLayer
@@ -70,7 +68,7 @@ Notes
 The library implements the mathematical formulations from several key papers:
 
 1. **FNet**: Uses 2D Fourier transforms for token mixing with O(n log n) complexity
-2. **GFNet**: Applies learnable complex filters in frequency domain  
+2. **GFNet**: Applies learnable complex filters in frequency domain
 3. **AFNO**: Implements mode-truncated Fourier operators with MLPs
 4. **Spectral Attention**: Uses Random Fourier Features for kernel approximation
 
@@ -91,9 +89,7 @@ __version__ = "0.1.0"
 from .core.base import (
     AttentionLayer,
     BaseModel,
-    MixingLayer,
     SpectralComponent,
-    SpectralTransform,
     TransformerBlock,
 )
 from .core.registry import (
@@ -113,6 +109,7 @@ from .core.types import (
     TransformType,
     WaveletType,
 )
+from .layers.mixing.base import MixingLayer
 
 # Public API
 __all__: list[str] = [
@@ -126,7 +123,6 @@ __all__: list[str] = [
     "NormType",
     # Base classes
     "SpectralComponent",
-    "SpectralTransform",
     # Type exports
     "Tensor",
     "TransformType",

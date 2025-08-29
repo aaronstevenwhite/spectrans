@@ -15,8 +15,6 @@ SpectralComponent
     Abstract base class for all spectral neural network components.
 SpectralTransform
     Interface for spectral transform operations (FFT, DCT, DWT, etc.).
-MixingLayer
-    Base class for token mixing layers that replace attention.
 AttentionLayer
     Base class for spectral attention mechanisms.
 TransformerBlock
@@ -42,6 +40,7 @@ Examples
 Using the component registry system:
 
 >>> from spectrans.core import register_component, create_component
+>>> from spectrans.layers.mixing.base import MixingLayer
 >>> @register_component('mixing', 'custom')
 ... class CustomMixing(MixingLayer):
 ...     def forward(self, x):
@@ -83,9 +82,7 @@ spectrans.core.registry : Component registration system
 from .base import (
     AttentionLayer,
     BaseModel,
-    MixingLayer,
     SpectralComponent,
-    SpectralTransform,
     TransformerBlock,
 )
 from .registry import (
@@ -183,7 +180,6 @@ __all__: list[str] = [
     "Device",
     "HiddenDim",
     "LongTensor",
-    "MixingLayer",
     "ModelType",
     "NormType",
     "NumHeads",

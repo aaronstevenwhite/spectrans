@@ -116,7 +116,7 @@ through the complexity property, enabling informed architectural choices.
 See Also
 --------
 spectrans.transforms.fourier : FFT implementations
-spectrans.transforms.cosine : DCT/DST implementations  
+spectrans.transforms.cosine : DCT/DST implementations
 spectrans.transforms.hadamard : Hadamard transform implementations
 spectrans.transforms.wavelet : Wavelet transform implementations
 spectrans.core.types : Type definitions for transform interfaces

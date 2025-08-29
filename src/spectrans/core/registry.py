@@ -14,7 +14,7 @@ Classes
 ComponentRegistry
     Central registry for storing and retrieving component classes.
 
-Functions  
+Functions
 ---------
 register_component(category, name, metadata=None)
     Decorator to register component classes in the global registry.
@@ -30,7 +30,7 @@ Examples
 Registering a custom component:
 
 >>> from spectrans.core.registry import register_component
->>> from spectrans.core.base import MixingLayer
+>>> from spectrans.layers.mixing.base import MixingLayer
 >>> @register_component('mixing', 'my_custom_mixer')
 ... class CustomMixer(MixingLayer):
 ...     def forward(self, x):
@@ -62,7 +62,7 @@ The registry implements several design patterns:
 4. **Decorator Pattern**: Clean component registration via decorators
 
 Component Categories:
-- 'transform': Spectral transforms (FFT, DCT, DWT, Hadamard)  
+- 'transform': Spectral transforms (FFT, DCT, DWT, Hadamard)
 - 'mixing': Token mixing layers (FourierMixing, GlobalFilter, AFNO)
 - 'attention': Spectral attention mechanisms (SpectralAttention, LST)
 - 'block': Complete transformer blocks combining mixing + FFN

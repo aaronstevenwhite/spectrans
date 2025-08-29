@@ -58,13 +58,13 @@ Notes
 Mathematical Properties:
 
 All Fourier transforms maintain unitarity:
-- Energy conservation: ||F(x)||² = ||x||²  
+- Energy conservation: ||F(x)||² = ||x||²
 - Parseval's theorem: ⟨x, y⟩ = ⟨F(x), F(y)⟩
 - Perfect reconstruction: F⁻¹(F(x)) = x
 
 Normalization Modes:
 - 'forward': No scaling on forward transform, 1/n scaling on inverse
-- 'backward': 1/n scaling on forward transform, no scaling on inverse  
+- 'backward': 1/n scaling on forward transform, no scaling on inverse
 - 'ortho': 1/√n scaling on both directions (unitary)
 
 The 'ortho' mode is recommended for neural networks as it preserves numerical
@@ -95,9 +95,6 @@ import torch
 from ..core.registry import register_component
 from ..core.types import ComplexTensor, FFTNorm, Tensor
 from .base import SpectralTransform2D, UnitaryTransform
-
-# PyTorch FFT functions have Any return types in current mypy stubs
-# These are known to return tensors, so we suppress the warnings
 
 
 @register_component("transform", "fft1d")

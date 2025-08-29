@@ -55,12 +55,12 @@ Notes
 Mathematical Formulations:
 
 **DCT Type-II** (most common):
-DCT[k] = α_k * Σ(n=0 to N-1) x[n] * cos(π(2n+1)k / 2N)
+DCT[k] = alpha_k * sum(n=0 to N-1) x[n] * cos(pi(2n+1)k / 2N)
 
-Where α_k = √(1/N) if k=0, √(2/N) if k>0 (for orthonormal normalization)
+Where alpha_k = sqrt(1/N) if k=0, sqrt(2/N) if k>0 (for orthonormal normalization)
 
 **DST Type-I**:
-DST[k] = Σ(n=1 to N-1) x[n] * sin(πnk / N)
+DST[k] = sum(n=1 to N-1) x[n] * sin(pi*n*k / N)
 
 **Orthogonality Properties**:
 - DCT and DST matrices are orthogonal: T^T * T = I

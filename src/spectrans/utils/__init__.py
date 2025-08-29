@@ -14,7 +14,7 @@ complex_conjugate(x)
     Compute complex conjugate with proper error handling.
 complex_multiply(a, b)
     Element-wise complex multiplication with broadcasting.
-complex_divide(a, b) 
+complex_divide(a, b)
     Complex division with zero-division safety checks.
 complex_modulus(x)
     Compute magnitude of complex tensors.
@@ -42,7 +42,7 @@ orthogonal_spectral_init(tensor)
     Initialize with orthogonality constraints.
 complex_xavier_init(tensor)
     Xavier initialization for complex-valued parameters.
-complex_kaiming_init(tensor)  
+complex_kaiming_init(tensor)
     Kaiming initialization for complex parameters.
 pad_to_power_of_2(x, dim)
     Pad tensor to next power of 2 for efficient FFT.
@@ -63,7 +63,7 @@ Complex number operations:
 >>> z1 = torch.complex(torch.randn(10), torch.randn(10))
 >>> z2 = torch.complex(torch.randn(10), torch.randn(10))
 >>> product = complex_multiply(z1, z2)
->>> 
+>>>
 >>> # Convert to polar form
 >>> magnitude = torch.abs(z1)
 >>> phase = torch.angle(z1)
@@ -76,7 +76,7 @@ Spectral parameter initialization:
 >>> # Initialize a linear layer for spectral transforms
 >>> linear = nn.Linear(512, 512)
 >>> spectral_init(linear.weight, method='frequency')
->>> 
+>>>
 >>> # Initialize complex-valued parameters
 >>> complex_params = torch.empty(256, 256, dtype=torch.complex64)
 >>> complex_xavier_init(complex_params)
@@ -86,7 +86,7 @@ Padding for spectral operations:
 >>> from spectrans.utils import pad_to_power_of_2, pad_for_fft
 >>> signal = torch.randn(32, 500)  # 500 is not power of 2
 >>> padded = pad_to_power_of_2(signal, dim=-1)  # Pads to 512
->>> 
+>>>
 >>> # Pad to specific FFT length
 >>> fft_ready = pad_for_fft(signal, target_length=1024, dim=-1)
 
@@ -127,7 +127,7 @@ Spectral neural networks often require specialized parameter initialization due 
 Padding Utilities:
 Signal processing operations often require specific padding strategies:
 - Power-of-2 lengths for efficient FFT computation
-- Circular padding for periodic signal assumptions  
+- Circular padding for periodic signal assumptions
 - Reflection padding for boundary effect minimization
 - Zero padding with proper unpadding for shape restoration
 
@@ -189,6 +189,8 @@ from .padding import (
 )
 
 __all__ = [
+    # Padding and general utilities
+    "circular_pad",
     # Complex operations
     "complex_conjugate",
     "complex_divide",
@@ -203,8 +205,6 @@ __all__ = [
     "complex_polar",
     "complex_relu",
     "complex_xavier_init",
-    # Padding and general utilities
-    "circular_pad",
     "dct_init",
     "frequency_init",
     "hadamard_init",

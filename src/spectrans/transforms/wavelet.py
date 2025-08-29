@@ -84,13 +84,13 @@ horizontal, vertical, and diagonal details respectively.
 
 Wavelet Families:
 
-**Daubechies (dbN)**: 
+**Daubechies (dbN)**:
 - Compact support, orthogonal
 - Good for general signal processing
 - db1 = Haar wavelet (simplest)
 
 **Symlets (symN)**:
-- Nearly symmetric, orthogonal  
+- Nearly symmetric, orthogonal
 - Better phase properties than Daubechies
 
 **Coiflets (coifN)**:

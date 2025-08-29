@@ -36,7 +36,7 @@ wavelet_init(tensor, wavelet_type, levels)
     Initialize parameters for wavelet transforms.
 init_linear_spectral(linear_layer, method, **kwargs)
     Initialize linear layers for spectral operations.
-init_conv_spectral(conv_layer, method, **kwargs)  
+init_conv_spectral(conv_layer, method, **kwargs)
     Initialize convolutional layers for spectral operations.
 
 Examples
@@ -56,7 +56,7 @@ Complex parameter initialization:
 >>> # Initialize complex-valued parameters
 >>> complex_weights = torch.empty(256, 256, dtype=torch.complex64)
 >>> complex_xavier_init(complex_weights, gain=1.0)
->>> 
+>>>
 >>> # Manual complex initialization
 >>> real_part = torch.empty(256, 256)
 >>> imag_part = torch.empty(256, 256)
@@ -70,11 +70,11 @@ Transform-specific initialization:
 >>> # DCT parameter initialization
 >>> dct_params = torch.empty(512, 512)
 >>> dct_init(dct_params, normalized=True)
->>> 
+>>>
 >>> # Hadamard transform parameters
 >>> hadamard_params = torch.empty(256, 256)  # Must be power of 2
 >>> hadamard_init(hadamard_params, normalized=True)
->>> 
+>>>
 >>> # Wavelet parameters
 >>> wavelet_params = torch.empty(1024, 1024)
 >>> wavelet_init(wavelet_params, wavelet_type='db4', levels=3)
@@ -85,7 +85,7 @@ Layer initialization:
 >>> # Initialize entire layers
 >>> linear_layer = nn.Linear(768, 768)
 >>> init_linear_spectral(linear_layer, method='xavier_spectral', transform_type='fourier')
->>> 
+>>>
 >>> # Convolutional layer for spectral processing
 >>> conv_layer = nn.Conv1d(512, 512, kernel_size=3)
 >>> init_conv_spectral(conv_layer, method='kaiming_spectral', transform_type='dct')
@@ -205,7 +205,7 @@ __all__ = [
 
 def spectral_init(tensor: Tensor, mode: str = "normal", gain: float = 1.0) -> Tensor:
     """Initialize tensor with spectral-aware method.
-    
+
     Parameters
     ----------
     tensor : Tensor
@@ -214,12 +214,12 @@ def spectral_init(tensor: Tensor, mode: str = "normal", gain: float = 1.0) -> Te
         Initialization mode: "normal", "uniform", "xavier", "kaiming", "orthogonal".
     gain : float, default=1.0
         Scaling factor for initialization.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor.
-        
+
     Raises
     ------
     ValueError
@@ -255,10 +255,10 @@ def xavier_spectral_init(
     distribution: Literal["normal", "uniform"] = "normal"
 ) -> Tensor:
     """Xavier/Glorot initialization adapted for spectral transforms.
-    
+
     Maintains variance of activations and gradients across layers by scaling
     based on input and output dimensions.
-    
+
     Parameters
     ----------
     tensor : Tensor
@@ -267,12 +267,12 @@ def xavier_spectral_init(
         Scaling factor for initialization.
     distribution : {"normal", "uniform"}, default="normal"
         Distribution to use for initialization.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor.
-        
+
     Raises
     ------
     ValueError
@@ -314,10 +314,10 @@ def kaiming_spectral_init(
     nonlinearity: str = "relu"
 ) -> Tensor:
     """Kaiming/He initialization adapted for spectral transforms.
-    
+
     Designed for networks with ReLU-like activations, maintaining
     variance through forward/backward passes.
-    
+
     Parameters
     ----------
     tensor : Tensor
@@ -328,12 +328,12 @@ def kaiming_spectral_init(
         Fan mode for variance calculation.
     nonlinearity : str, default="relu"
         Nonlinearity type for gain calculation.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor.
-        
+
     Raises
     ------
     ValueError
@@ -378,22 +378,22 @@ def kaiming_spectral_init(
 
 def orthogonal_spectral_init(tensor: Tensor, gain: float = 1.0) -> Tensor:
     """Orthogonal initialization for spectral transform matrices.
-    
+
     Creates orthogonal matrices that preserve norms, which is important
     for spectral transforms that should maintain energy conservation.
-    
+
     Parameters
     ----------
     tensor : Tensor
         2D tensor to initialize.
     gain : float, default=1.0
         Scaling factor for the orthogonal matrix.
-        
+
     Returns
     -------
     Tensor
         Initialized orthogonal tensor.
-        
+
     Raises
     ------
     ValueError
@@ -413,22 +413,22 @@ def orthogonal_spectral_init(tensor: Tensor, gain: float = 1.0) -> Tensor:
 
 def complex_normal_init(tensor: Tensor, std: float = 1.0) -> Tensor:
     """Initialize complex tensor with complex normal distribution.
-    
+
     Both real and imaginary parts are initialized independently with
     normal distribution scaled to maintain proper variance.
-    
+
     Parameters
     ----------
     tensor : Tensor
         Complex tensor to initialize.
     std : float, default=1.0
         Standard deviation for each component.
-        
+
     Returns
     -------
     Tensor
         Initialized complex tensor.
-        
+
     Raises
     ------
     TypeError
@@ -456,19 +456,19 @@ def complex_normal_init(tensor: Tensor, std: float = 1.0) -> Tensor:
 
 def complex_xavier_init(tensor: Tensor, gain: float = 1.0) -> Tensor:
     """Xavier initialization for complex tensors.
-    
+
     Parameters
     ----------
     tensor : Tensor
         Complex tensor to initialize.
     gain : float, default=1.0
         Scaling factor for initialization.
-        
+
     Returns
     -------
     Tensor
         Initialized complex tensor.
-        
+
     Raises
     ------
     TypeError
@@ -499,7 +499,7 @@ def complex_kaiming_init(
     mode: Literal["fan_in", "fan_out"] = "fan_in"
 ) -> Tensor:
     """Kaiming initialization for complex tensors.
-    
+
     Parameters
     ----------
     tensor : Tensor
@@ -508,12 +508,12 @@ def complex_kaiming_init(
         Scaling factor for initialization.
     mode : {"fan_in", "fan_out"}, default="fan_in"
         Fan mode for variance calculation.
-        
+
     Returns
     -------
     Tensor
         Initialized complex tensor.
-        
+
     Raises
     ------
     TypeError
@@ -544,22 +544,22 @@ def complex_kaiming_init(
 
 def frequency_init(tensor: Tensor, max_freq: float = 1.0) -> Tensor:
     """Initialize tensor with frequency-domain aware values.
-    
+
     Initializes with small values at high frequencies and larger values
     at low frequencies, mimicking natural signal characteristics.
-    
+
     Parameters
     ----------
     tensor : Tensor
         Tensor to initialize (typically frequency domain parameters).
     max_freq : float, default=1.0
         Maximum frequency for scaling.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor.
-        
+
     Raises
     ------
     ValueError
@@ -591,19 +591,19 @@ def frequency_init(tensor: Tensor, max_freq: float = 1.0) -> Tensor:
 
 def wavelet_init(tensor: Tensor, wavelet_type: str = "db1") -> Tensor:
     """Initialize tensor with wavelet-like properties.
-    
+
     Parameters
     ----------
     tensor : Tensor
         Tensor to initialize.
     wavelet_type : str, default="db1"
         Type of wavelet initialization.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor.
-        
+
     Raises
     ------
     ValueError
@@ -638,17 +638,17 @@ def wavelet_init(tensor: Tensor, wavelet_type: str = "db1") -> Tensor:
 
 def hadamard_init(tensor: Tensor) -> Tensor:
     """Initialize tensor with Hadamard matrix properties.
-    
+
     Parameters
     ----------
     tensor : Tensor
         Square tensor to initialize.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor with Hadamard-like structure.
-        
+
     Raises
     ------
     ValueError
@@ -688,17 +688,17 @@ def hadamard_init(tensor: Tensor) -> Tensor:
 
 def dct_init(tensor: Tensor) -> Tensor:
     """Initialize tensor with DCT matrix properties.
-    
+
     Parameters
     ----------
     tensor : Tensor
         2D tensor to initialize.
-        
+
     Returns
     -------
     Tensor
         Initialized tensor with DCT-like structure.
-        
+
     Raises
     ------
     ValueError
@@ -727,19 +727,19 @@ def dct_init(tensor: Tensor) -> Tensor:
 
 def init_linear_spectral(linear: nn.Linear, method: str = "xavier") -> nn.Linear:
     """Initialize linear layer with spectral-aware method.
-    
+
     Parameters
     ----------
     linear : nn.Linear
         Linear layer to initialize.
     method : str, default="xavier"
         Initialization method: "xavier", "kaiming", "orthogonal".
-        
+
     Returns
     -------
     nn.Linear
         Initialized linear layer.
-        
+
     Raises
     ------
     ValueError
@@ -762,19 +762,19 @@ def init_linear_spectral(linear: nn.Linear, method: str = "xavier") -> nn.Linear
 
 def init_conv_spectral(conv: nn.Conv1d | nn.Conv2d, method: str = "kaiming") -> nn.Conv1d | nn.Conv2d:
     """Initialize convolution layer with spectral-aware method.
-    
+
     Parameters
     ----------
     conv : nn.Conv1d | nn.Conv2d
         Convolution layer to initialize.
     method : str, default="kaiming"
         Initialization method: "xavier", "kaiming".
-        
+
     Returns
     -------
     nn.Conv1d | nn.Conv2d
         Initialized convolution layer.
-        
+
     Raises
     ------
     ValueError
