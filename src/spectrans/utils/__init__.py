@@ -1,10 +1,85 @@
 """Utility functions for spectrans."""
 
-# Utilities will be imported here as they are implemented
-# from .complex import complex_multiply, complex_conjugate
-# from .padding import pad_sequence, unpad_sequence
-# from .initialization import spectral_init, xavier_spectral_init
+from .complex import (
+    complex_conjugate,
+    complex_divide,
+    complex_dropout,
+    complex_exp,
+    complex_log,
+    complex_modulus,
+    complex_multiply,
+    complex_phase,
+    complex_polar,
+    complex_relu,
+    make_complex,
+    split_complex,
+)
+from .initialization import (
+    complex_kaiming_init,
+    complex_normal_init,
+    complex_xavier_init,
+    dct_init,
+    frequency_init,
+    hadamard_init,
+    init_conv_spectral,
+    init_linear_spectral,
+    kaiming_spectral_init,
+    orthogonal_spectral_init,
+    spectral_init,
+    wavelet_init,
+    xavier_spectral_init,
+)
+from .padding import (
+    circular_pad,
+    pad_for_convolution,
+    pad_for_fft,
+    pad_sequence,
+    pad_to_length,
+    pad_to_power_of_2,
+    reflect_pad,
+    symmetric_pad,
+    unpad_sequence,
+    unpad_to_length,
+    zero_pad,
+)
 
-__all__: list[str] = [
-    # Will be populated as utilities are implemented
+__all__ = [
+    # Complex operations
+    "complex_conjugate",
+    "complex_divide",
+    "complex_dropout",
+    "complex_exp",
+    "complex_kaiming_init",
+    "complex_log",
+    "complex_modulus",
+    "complex_multiply",
+    "complex_normal_init",
+    "complex_phase",
+    "complex_polar",
+    "complex_relu",
+    "complex_xavier_init",
+    # Padding and general utilities
+    "circular_pad",
+    "dct_init",
+    "frequency_init",
+    "hadamard_init",
+    "init_conv_spectral",
+    "init_linear_spectral",
+    "kaiming_spectral_init",
+    "make_complex",
+    "orthogonal_spectral_init",
+    "pad_for_convolution",
+    "pad_for_fft",
+    "pad_sequence",
+    "pad_to_length",
+    "pad_to_power_of_2",
+    "reflect_pad",
+    "spectral_init",
+    "split_complex",
+    "symmetric_pad",
+    "unpad_sequence",
+    "unpad_to_length",
+    "wavelet_init",
+    "xavier_spectral_init",
+    "zero_pad",
 ]
