@@ -1,4 +1,122 @@
-"""Hadamard transform implementations."""
+"""Hadamard transform implementations for spectral neural networks.
+
+This module provides fast implementations of the Walsh-Hadamard Transform and related
+orthogonal transforms that use only +1 and -1 basis functions. These transforms are
+computationally efficient alternatives to Fourier transforms, requiring only addition
+and subtraction operations without multiplications.
+
+Hadamard transforms are particularly useful in spectral neural networks for their
+simplicity, orthogonality, and ability to provide fast mixing operations with
+minimal computational overhead.
+
+Classes
+-------
+HadamardTransform
+    Fast Walsh-Hadamard Transform for efficient orthogonal mixing.
+HadamardTransform2D
+    2D Hadamard Transform for image-like data processing.
+SequencyHadamardTransform
+    Sequency-ordered Hadamard Transform with frequency-like interpretation.
+SlantTransform
+    Slant transform with sawtooth basis functions.
+
+Examples
+--------
+Basic Hadamard Transform:
+
+>>> import torch
+>>> from spectrans.transforms.hadamard import HadamardTransform
+>>> hadamard = HadamardTransform(normalized=True)
+>>> # Input size must be power of 2
+>>> signal = torch.randn(32, 512)  # 512 = 2^9
+>>> transformed = hadamard.transform(signal, dim=-1)
+>>> reconstructed = hadamard.inverse_transform(transformed, dim=-1)
+
+2D Hadamard for image processing:
+
+>>> from spectrans.transforms.hadamard import HadamardTransform2D
+>>> hadamard2d = HadamardTransform2D(normalized=True)
+>>> # Both dimensions must be powers of 2
+>>> image = torch.randn(32, 64, 64)  # 64 = 2^6
+>>> transformed_image = hadamard2d.transform(image, dim=(-2, -1))
+
+Sequency-ordered transform:
+
+>>> from spectrans.transforms.hadamard import SequencyHadamardTransform
+>>> seq_hadamard = SequencyHadamardTransform(normalized=True)
+>>> seq_coeffs = seq_hadamard.transform(signal, dim=-1)
+>>> # Coefficients ordered by sequency (analog of frequency)
+
+Slant transform for edge detection:
+
+>>> from spectrans.transforms.hadamard import SlantTransform
+>>> slant = SlantTransform(normalized=True)
+>>> slant_coeffs = slant.transform(signal, dim=-1)
+
+Notes
+-----
+Mathematical Properties:
+
+**Walsh-Hadamard Transform**:
+The Hadamard matrix H_n for size n=2^k is defined recursively:
+H_1 = [1], H_2 = [[1, 1], [1, -1]]
+H_{2n} = [[H_n, H_n], [H_n, -H_n]]
+
+**Orthogonality**:
+- H_n * H_n^T = n * I (unnormalized)
+- H_n * H_n^T = I (normalized by 1/√n)
+- Perfect reconstruction: H^(-1) = H^T / n
+
+**Computational Advantages**:
+- Only requires +1 and -1 multiplications
+- Fast O(n log n) algorithm similar to FFT
+- Memory efficient: can be computed in-place
+- Highly parallel: suitable for vector operations
+
+**Sequency Ordering**:
+Standard Hadamard ordering is not frequency-like. Sequency ordering
+rearranges coefficients by their "sequency" (number of sign changes),
+providing a more intuitive frequency-domain interpretation.
+
+Applications in Spectral Transformers:
+
+1. **Efficient Mixing**: Hadamard transforms provide orthogonal mixing
+   with minimal computational cost (only additions/subtractions)
+
+2. **Binary Neural Networks**: Natural fit for binary/quantized networks
+   due to {+1, -1} basis functions
+
+3. **Compressive Sensing**: Hadamard matrices provide good measurement
+   matrices for sparse signal recovery
+
+4. **Pattern Recognition**: Walsh functions capture different pattern
+   frequencies useful for classification tasks
+
+Implementation Details:
+
+- **Fast Algorithm**: Uses recursive butterfly structure similar to FFT
+- **Power-of-2 Constraint**: Input size must be 2^k for fast algorithm
+- **Bit-Reversal**: Efficient implementation uses bit-reversed indexing
+- **Normalization**: Supports both normalized and unnormalized variants
+- **Gradient Support**: Full autodiff compatibility for neural networks
+
+Performance Characteristics:
+- Time Complexity: O(n log n) for fast algorithm
+- Space Complexity: O(1) additional memory (in-place computation)
+- Operations: Only additions and subtractions (no multiplications)
+- Memory Bandwidth: Optimal cache usage due to regular access patterns
+
+Limitations:
+- Input size must be power of 2 for fast algorithm
+- Less frequency selectivity compared to Fourier transforms
+- Binary nature may not suit all signal types
+
+See Also
+--------
+spectrans.transforms.base : Base classes for orthogonal transforms
+spectrans.transforms.fourier : Fourier transforms for comparison
+spectrans.layers.mixing : Neural layers using Hadamard transforms
+"""
 
 import math
 

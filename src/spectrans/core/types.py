@@ -1,4 +1,89 @@
-"""Type definitions and aliases for the spectrans library."""
+"""Type definitions and aliases for the spectrans library.
+
+This module provides comprehensive type definitions, aliases, and literal types used
+throughout the spectrans library. The type system ensures type safety, enables better
+IDE support, and provides clear documentation of expected parameter types for all
+spectral transformer components.
+
+The types are organized into logical groups covering tensors, shapes, transforms,
+neural network components, training configurations, and mathematical operations.
+All type definitions use modern Python 3.13 type syntax with union operators and
+the new type statement for aliases.
+
+Attributes
+----------
+Tensor : type
+    Alias for torch.Tensor, the primary data type.
+ComplexTensor : type
+    Alias for complex-valued torch.Tensor.
+BatchSize, SequenceLength, HiddenDim : int
+    Common tensor dimension types.
+
+Classes
+-------
+TransformType : Literal
+    Valid spectral transform names ('fourier', 'cosine', 'hadamard', 'wavelet').
+WaveletType : Literal
+    Valid wavelet family names (Daubechies, Symlets, Coiflets, Biorthogonal).
+ActivationType : Literal
+    Valid activation function names ('relu', 'gelu', 'swish', etc.).
+NormType : Literal
+    Valid normalization layer types ('layernorm', 'batchnorm', etc.).
+ModelType : Literal
+    Valid model architecture names ('fnet', 'gfnet', 'afno', etc.).
+ComponentType : Literal
+    Component categories for the registry system.
+
+Examples
+--------
+Using type annotations in function signatures:
+
+>>> from spectrans.core.types import Tensor, TransformType, ComplexityInfo
+>>> def apply_transform(x: Tensor, transform: TransformType) -> Tensor:
+...     # Implementation with proper type hints
+...     pass
+
+Working with configuration dictionaries:
+
+>>> from spectrans.core.types import ConfigDict, ModelType
+>>> config: ConfigDict = {
+...     'model_type': 'fnet',
+...     'hidden_dim': 768,
+...     'num_layers': 12
+... }
+
+Complex tensor operations:
+
+>>> from spectrans.core.types import ComplexTensor, ComplexityInfo
+>>> def analyze_spectral_component(x: ComplexTensor) -> ComplexityInfo:
+...     return {'time': 'O(n log n)', 'space': 'O(n)'}
+
+Notes
+-----
+Type System Philosophy:
+
+1. **Explicit over Implicit**: All function signatures should include type hints
+2. **Literal Types**: Use Literal for enumerated options to prevent typos
+3. **Type Aliases**: Semantic names (BatchSize) over raw types (int)
+4. **Union Syntax**: Modern | syntax instead of Union[] for Python 3.13
+5. **Optional Types**: T | None pattern instead of Optional[T]
+
+Mathematical Type Categories:
+
+- **Tensor Types**: Basic tensor operations and complex number support
+- **Shape Types**: Common tensor dimension patterns (2D, 3D, 4D)
+- **Transform Types**: Spectral transform varieties and parameters
+- **Complexity Types**: Computational complexity analysis
+- **Configuration Types**: Structured configuration and parameter passing
+
+The type system supports both runtime type checking (where appropriate) and
+static analysis with mypy, providing comprehensive type safety for the library.
+
+See Also
+--------
+spectrans.core.base : Base classes that use these type definitions
+spectrans.utils.complex : Complex tensor operations with proper typing
+"""
 
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, TypeVar

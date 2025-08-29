@@ -1,4 +1,126 @@
-"""Base classes and interfaces for spectral transforms."""
+"""Base classes and interfaces for spectral transforms.
+
+This module defines the foundational interfaces for all spectral transform implementations
+used in spectral transformer neural networks. The class hierarchy is designed to
+accommodate the mathematical diversity of different transform types while maintaining
+consistent APIs for integration with neural network layers.
+
+The transforms are categorized by their mathematical properties and interface requirements,
+enabling type-safe composition and clear separation of concerns between different
+spectral analysis approaches.
+
+Classes
+-------
+Transform
+    Minimal base class for all transforms.
+SpectralTransform
+    Interface for simple 1D spectral transforms (FFT, DCT, DST, Hadamard).
+SpectralTransform2D
+    Interface for 2D spectral transforms with tuple dimension parameters.
+MultiResolutionTransform
+    Interface for transforms returning multi-resolution coefficients (DWT).
+MultiResolutionTransform2D
+    Interface for 2D multi-resolution transforms.
+OrthogonalTransform
+    Base class for orthogonal transforms preserving inner products.
+UnitaryTransform
+    Base class for unitary transforms preserving complex inner products.
+NeuralSpectralTransform
+    Base class for learnable transforms with neural network parameters.
+InvertibleTransform
+    Base class for transforms guaranteeing exact invertibility.
+AdaptiveTransform
+    Base class for transforms with learnable basis functions.
+
+Examples
+--------
+Implementing a custom 1D spectral transform:
+
+>>> from spectrans.transforms.base import SpectralTransform
+>>> import torch
+>>> class IdentityTransform(SpectralTransform):
+...     def transform(self, x, dim=-1):
+...         return x
+...     def inverse_transform(self, x, dim=-1):
+...         return x
+
+Using the invertibility checker:
+
+>>> from spectrans.transforms.base import InvertibleTransform
+>>> class MyTransform(InvertibleTransform):
+...     def transform(self, x, dim=-1):
+...         return torch.fft.fft(x, dim=dim)
+...     def inverse_transform(self, x, dim=-1):
+...         return torch.fft.ifft(x, dim=dim)
+>>> transform = MyTransform()
+>>> test_input = torch.randn(10, 256, dtype=torch.complex64)
+>>> is_invertible = transform.check_invertibility(test_input)
+
+Implementing a multi-resolution transform:
+
+>>> from spectrans.transforms.base import MultiResolutionTransform
+>>> class SimpleWavelet(MultiResolutionTransform):
+...     def decompose(self, x, levels=None, dim=-1):
+...         # Implementation returns (approximation, [details])
+...         approx = x[..., ::2]  # Simplified downsampling
+...         detail = x[..., 1::2]
+...         return approx, [detail]
+...     def reconstruct(self, coeffs, dim=-1):
+...         # Simplified reconstruction
+...         approx, details = coeffs
+...         return torch.stack([approx, details[0]], dim=-1).flatten(-2)
+
+Notes
+-----
+Design Principles:
+
+1. **Mathematical Correctness**: Each base class enforces the mathematical
+   properties of its transform family (orthogonality, unitarity, etc.)
+
+2. **Interface Segregation**: Different transform types have separate interfaces
+   to avoid forcing incompatible operations into the same signature
+
+3. **Composition Support**: All transforms can be composed and chained while
+   maintaining proper mathematical properties
+
+4. **Gradient Compatibility**: All transforms support automatic differentiation
+   for end-to-end neural network training
+
+Transform Categories by Mathematical Properties:
+
+**Simple Spectral Transforms** (SpectralTransform):
+- Map Tensor → Tensor along a single dimension
+- Examples: 1D FFT, DCT, DST, Hadamard
+- Interface: transform(), inverse_transform() with dim parameter
+
+**2D Spectral Transforms** (SpectralTransform2D):
+- Operate on 2D data with tuple dimension parameters
+- Examples: 2D FFT for AFNO, 2D DCT
+- Interface: transform(), inverse_transform() with dim tuple
+
+**Multi-Resolution Transforms** (MultiResolutionTransform):
+- Decompose into multiple resolution levels
+- Examples: Discrete Wavelet Transform (DWT)
+- Interface: decompose(), reconstruct() returning coefficient tuples
+
+**Property-Based Classifications**:
+- **Orthogonal**: Preserve real inner products (DCT, Hadamard)
+- **Unitary**: Preserve complex inner products (FFT)
+- **Invertible**: Guarantee numerical invertibility with tolerance checking
+- **Adaptive**: Learn transform parameters during training
+
+Complexity Analysis:
+All transform implementations should document their computational complexity
+through the complexity property, enabling informed architectural choices.
+
+See Also
+--------
+spectrans.transforms.fourier : FFT implementations
+spectrans.transforms.cosine : DCT/DST implementations  
+spectrans.transforms.hadamard : Hadamard transform implementations
+spectrans.transforms.wavelet : Wavelet transform implementations
+spectrans.core.types : Type definitions for transform interfaces
+"""
 
 from abc import ABC, abstractmethod
 

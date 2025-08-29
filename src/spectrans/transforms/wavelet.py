@@ -1,4 +1,148 @@
-"""Discrete Wavelet Transform implementations."""
+"""Discrete Wavelet Transform implementations for spectral neural networks.
+
+This module provides comprehensive implementations of the Discrete Wavelet Transform (DWT)
+and its 2D extension, enabling multi-resolution analysis for spectral transformer
+architectures. The transforms decompose signals into approximation and detail coefficients
+at multiple scales, providing both time and frequency localization.
+
+Wavelets are particularly valuable for spectral transformers because they provide
+hierarchical representations with different levels of detail, enabling models to
+capture patterns at multiple scales simultaneously.
+
+Classes
+-------
+DWT1D
+    1D Discrete Wavelet Transform with multiple wavelet families.
+DWT2D
+    2D Discrete Wavelet Transform for image-like data.
+
+Examples
+--------
+Basic 1D Wavelet Transform:
+
+>>> import torch
+>>> from spectrans.transforms.wavelet import DWT1D
+>>> dwt = DWT1D(wavelet='db4', levels=3)
+>>> signal = torch.randn(32, 1024)
+>>> approx_coeffs, detail_coeffs = dwt.decompose(signal, dim=-1)
+>>> reconstructed = dwt.reconstruct((approx_coeffs, detail_coeffs), dim=-1)
+
+Multi-level decomposition:
+
+>>> # detail_coeffs is a list with coefficients from each level
+>>> print(f"Approximation shape: {approx_coeffs.shape}")
+>>> for i, detail in enumerate(detail_coeffs):
+...     print(f"Detail level {i+1} shape: {detail.shape}")
+
+2D Wavelet Transform for images:
+
+>>> from spectrans.transforms.wavelet import DWT2D
+>>> dwt2d = DWT2D(wavelet='db2', levels=2)
+>>> image = torch.randn(32, 256, 256)
+>>> ll_coeffs, detail_levels = dwt2d.decompose(image, dim=(-2, -1))
+>>> # detail_levels contains (LH, HL, HH) tuples for each level
+>>> reconstructed_image = dwt2d.reconstruct((ll_coeffs, detail_levels))
+
+Different wavelet families:
+
+>>> # Haar wavelet (simplest)
+>>> haar_dwt = DWT1D(wavelet='db1', levels=4)
+>>> # Higher-order Daubechies
+>>> db8_dwt = DWT1D(wavelet='db8', levels=3)
+>>> # Biorthogonal wavelets
+>>> bior_dwt = DWT1D(wavelet='bior2.2', levels=3)
+
+Notes
+-----
+Mathematical Formulation:
+
+The DWT decomposes a signal x[n] into approximation and detail coefficients:
+- Approximation: c_{A_j}[k] = Σ_m h[m-2k] c_{A_{j-1}}[m]
+- Detail: c_{D_j}[k] = Σ_m g[m-2k] c_{A_{j-1}}[m]
+
+Where h and g are the low-pass and high-pass filter coefficients respectively.
+
+**Multi-Resolution Structure**:
+At each level j, the signal is split into:
+- Approximation coefficients (low-frequency content)
+- Detail coefficients (high-frequency content)
+
+For J levels, the complete decomposition is:
+DWT(x) = {c_{A_J}, {c_{D_j}}_{j=1}^J}
+
+**Reconstruction**:
+Perfect reconstruction is achieved by:
+x = IDWT({c_{A_J}, {c_{D_j}}_{j=1}^J})
+
+**2D Wavelet Transform**:
+Applies separable 1D transforms along rows and columns:
+1. Transform rows → (L, H)
+2. Transform columns of each → (LL, LH), (HL, HH)
+
+The LL subband contains the approximation, while LH, HL, HH contain
+horizontal, vertical, and diagonal details respectively.
+
+Wavelet Families:
+
+**Daubechies (dbN)**: 
+- Compact support, orthogonal
+- Good for general signal processing
+- db1 = Haar wavelet (simplest)
+
+**Symlets (symN)**:
+- Nearly symmetric, orthogonal  
+- Better phase properties than Daubechies
+
+**Coiflets (coifN)**:
+- Both scaling and wavelet functions have vanishing moments
+- Good for numerical analysis
+
+**Biorthogonal (biorN.M)**:
+- Perfect reconstruction with linear phase
+- Useful when symmetry is important
+
+Properties:
+
+1. **Perfect Reconstruction**: IDWT(DWT(x)) = x exactly
+2. **Energy Conservation**: ||x||² = ||DWT(x)||² (orthogonal wavelets)
+3. **Localization**: Good time-frequency localization
+4. **Sparsity**: Natural signals often have sparse wavelet representations
+5. **Multi-Scale**: Captures features at multiple scales simultaneously
+
+Applications in Spectral Transformers:
+
+1. **Multi-Scale Features**: Capture patterns at different resolutions
+2. **Hierarchical Processing**: Natural for hierarchical neural architectures
+3. **Compression**: Exploit sparsity in wavelet domain
+4. **Denoising**: Separate signal from noise across scales
+5. **Edge Detection**: Detail coefficients highlight edges/transitions
+
+Implementation Details:
+
+- **Filter Banks**: Implements analysis and synthesis filter banks
+- **Boundary Handling**: Proper treatment of signal boundaries
+- **Padding**: Supports different padding modes (symmetric, zero, periodic)
+- **Efficiency**: Optimized implementations using convolution operations
+- **Memory**: Efficient memory usage for large signals
+- **Batching**: Full support for batched operations
+
+Performance Characteristics:
+- Time Complexity: O(N) for N-point signal (linear complexity!)
+- Space Complexity: O(N) for coefficient storage
+- Parallel Processing: Levels can be processed independently during synthesis
+- GPU Acceleration: Utilizes fast convolution operations
+
+Limitations:
+- Signal length affects decomposition levels (length ≥ 2^levels)
+- Different wavelets have different characteristics and trade-offs
+- Boundary effects can occur near signal edges
+
+See Also
+--------
+spectrans.transforms.base : Multi-resolution transform base classes
+spectrans.transforms.fourier : Fourier transforms for comparison
+spectrans.layers.mixing.wavelet : Neural layers using wavelet transforms
+"""
 
 import math
 from typing import Literal

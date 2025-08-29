@@ -1,4 +1,100 @@
-"""Discrete Cosine and Sine Transform implementations."""
+"""Discrete Cosine and Sine Transform implementations.
+
+This module implements the Discrete Cosine Transform (DCT) and Discrete Sine Transform (DST)
+families, which are orthogonal transforms widely used in signal processing, image compression,
+and spectral neural networks. The implementations are mathematically rigorous and numerically
+stable, supporting various normalization conventions.
+
+The DCT and DST transforms are particularly valuable for spectral transformers because they
+provide excellent energy compaction for natural signals while maintaining orthogonality
+properties essential for neural network stability.
+
+Classes
+-------
+DCT
+    Discrete Cosine Transform Type-II (most common DCT variant).
+DCT2D
+    2D Discrete Cosine Transform for image-like data.
+DST
+    Discrete Sine Transform Type-I.
+MDCT
+    Modified Discrete Cosine Transform for audio processing.
+
+Examples
+--------
+Basic DCT usage:
+
+>>> import torch
+>>> from spectrans.transforms.cosine import DCT
+>>> dct = DCT(normalized=True)
+>>> signal = torch.randn(32, 512)
+>>> dct_coeffs = dct.transform(signal, dim=-1)
+>>> reconstructed = dct.inverse_transform(dct_coeffs, dim=-1)
+
+2D DCT for image processing:
+
+>>> from spectrans.transforms.cosine import DCT2D
+>>> dct2d = DCT2D(normalized=True)
+>>> image = torch.randn(32, 64, 64)  # Batch of 64x64 images
+>>> dct_image = dct2d.transform(image, dim=(-2, -1))
+
+DST for sine-based analysis:
+
+>>> from spectrans.transforms.cosine import DST
+>>> dst = DST(normalized=True)
+>>> dst_coeffs = dst.transform(signal, dim=-1)
+
+MDCT for overlapped transforms:
+
+>>> from spectrans.transforms.cosine import MDCT
+>>> mdct = MDCT(window_length=1024, hop_length=512)
+>>> overlapped_coeffs = mdct.transform(audio_signal)
+
+Notes
+-----
+Mathematical Formulations:
+
+**DCT Type-II** (most common):
+DCT[k] = α_k * Σ(n=0 to N-1) x[n] * cos(π(2n+1)k / 2N)
+
+Where α_k = √(1/N) if k=0, √(2/N) if k>0 (for orthonormal normalization)
+
+**DST Type-I**:
+DST[k] = Σ(n=1 to N-1) x[n] * sin(πnk / N)
+
+**Orthogonality Properties**:
+- DCT and DST matrices are orthogonal: T^T * T = I
+- Perfect reconstruction: x = DCT^(-1)(DCT(x))
+- Energy conservation: ||DCT(x)||² = ||x||² (with proper normalization)
+
+**Computational Complexity**:
+- DCT/DST: O(N log N) via FFT-based algorithms
+- Direct computation: O(N²) but rarely used due to inefficiency
+
+Implementation Details:
+- Uses FFT-based algorithms for O(N log N) complexity
+- Supports both normalized and unnormalized variants
+- Proper handling of boundary conditions for different transform types
+- Gradient-compatible for neural network training
+
+Applications in Spectral Transformers:
+1. **Energy Compaction**: DCT concentrates signal energy in low-frequency coefficients
+2. **Orthogonal Mixing**: Provides mixing operation alternative to attention
+3. **Compression**: Natural sparsity patterns in transformed domain
+4. **Boundary Handling**: DCT has good properties for finite-length signals
+
+Performance Characteristics:
+- Memory efficient: in-place computation where possible
+- GPU accelerated: utilizes optimized CUDA kernels
+- Numerically stable: proper scaling and normalization
+- Batch processing: efficient handling of multiple signals
+
+See Also
+--------
+spectrans.transforms.base : Base classes for orthogonal transforms
+spectrans.transforms.fourier : Related Fourier transform implementations
+spectrans.layers.mixing : Neural layers using DCT/DST transforms
+"""
 
 import math
 

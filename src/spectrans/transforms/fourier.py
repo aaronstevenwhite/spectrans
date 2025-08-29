@@ -1,4 +1,94 @@
-"""Fourier transform implementations."""
+"""Fourier transform implementations for spectral neural networks.
+
+This module provides comprehensive Fourier transform implementations optimized for
+spectral transformer architectures. The transforms are built on PyTorch's native
+FFT operations for GPU acceleration and automatic differentiation support.
+
+All Fourier transforms in this module are unitary, preserving complex inner products
+and maintaining energy conservation (Parseval's theorem). They support various
+normalization modes and handle both real and complex inputs efficiently.
+
+Classes
+-------
+FFT1D
+    1D Fast Fourier Transform with configurable normalization.
+FFT2D
+    2D Fast Fourier Transform for AFNO-style 2D operations.
+RFFT
+    Real-input Fast Fourier Transform (more efficient for real signals).
+RFFT2D
+    2D Real-input Fast Fourier Transform.
+SpectralPooling
+    Spectral domain pooling operation via frequency truncation.
+
+Examples
+--------
+Basic 1D FFT usage:
+
+>>> import torch
+>>> from spectrans.transforms.fourier import FFT1D
+>>> fft = FFT1D(norm='ortho')
+>>> signal = torch.randn(32, 512, dtype=torch.complex64)
+>>> freq_domain = fft.transform(signal, dim=-1)
+>>> reconstructed = fft.inverse_transform(freq_domain, dim=-1)
+
+Efficient real-input FFT:
+
+>>> from spectrans.transforms.fourier import RFFT
+>>> rfft = RFFT(norm='ortho')
+>>> real_signal = torch.randn(32, 512)
+>>> freq_domain = rfft.transform(real_signal)  # Returns complex output
+>>> # Note: inverse returns real values for real-input FFTs
+
+2D FFT for AFNO operations:
+
+>>> from spectrans.transforms.fourier import FFT2D
+>>> fft2d = FFT2D(norm='ortho')
+>>> tensor_2d = torch.randn(32, 64, 64, dtype=torch.complex64)
+>>> freq_2d = fft2d.transform(tensor_2d, dim=(-2, -1))
+
+Spectral pooling for downsampling:
+
+>>> from spectrans.transforms.fourier import SpectralPooling
+>>> pool = SpectralPooling(output_size=256, input_size=512)
+>>> downsampled = pool.transform(freq_domain)
+
+Notes
+-----
+Mathematical Properties:
+
+All Fourier transforms maintain unitarity:
+- Energy conservation: ||F(x)||² = ||x||²  
+- Parseval's theorem: ⟨x, y⟩ = ⟨F(x), F(y)⟩
+- Perfect reconstruction: F⁻¹(F(x)) = x
+
+Normalization Modes:
+- 'forward': No scaling on forward transform, 1/n scaling on inverse
+- 'backward': 1/n scaling on forward transform, no scaling on inverse  
+- 'ortho': 1/√n scaling on both directions (unitary)
+
+The 'ortho' mode is recommended for neural networks as it preserves numerical
+stability and maintains consistent scaling throughout the network.
+
+Real-Input FFT Optimizations:
+RFFT and RFFT2D exploit Hermitian symmetry of real-input FFTs, storing only
+the non-redundant frequency components. This provides ~2x memory savings and
+computational speedup for real-valued inputs.
+
+GPU Acceleration:
+All transforms utilize PyTorch's optimized cuFFT backend when tensors are on GPU,
+providing significant speedup over CPU implementations.
+
+Gradient Support:
+All transforms support automatic differentiation through PyTorch's autograd system,
+enabling end-to-end training of spectral neural networks.
+
+See Also
+--------
+spectrans.transforms.base : Base classes for transform interfaces
+spectrans.utils.complex : Complex tensor utility functions
+spectrans.layers.mixing.fourier : Neural layers using these transforms
+"""
 
 import torch
 

@@ -1,7 +1,181 @@
 """Weight initialization utilities for spectral transformer components.
 
-This module provides specialized initialization schemes for spectral transforms,
-including frequency-domain aware initialization and complex parameter initialization.
+This module provides specialized initialization schemes tailored for spectral neural
+networks, including complex-valued parameters, frequency-domain aware initialization,
+and transform-specific initialization strategies. Proper initialization is crucial
+for spectral transformers due to their unique mathematical properties and parameter
+scaling requirements.
+
+The initialization functions account for the specific characteristics of spectral
+transforms, including orthogonality constraints, complex number scaling, frequency
+domain properties, and stability requirements for gradient-based optimization.
+
+Functions
+---------
+spectral_init(tensor, method, **kwargs)
+    General-purpose spectral parameter initialization.
+frequency_init(tensor, freq_range, scale)
+    Initialize parameters with frequency-domain properties.
+complex_xavier_init(tensor, gain)
+    Xavier/Glorot initialization for complex-valued parameters.
+complex_kaiming_init(tensor, a, mode, nonlinearity)
+    Kaiming/He initialization for complex parameters.
+complex_normal_init(tensor, mean, std)
+    Normal initialization for complex tensors.
+orthogonal_spectral_init(tensor, gain)
+    Orthogonal initialization preserving spectral properties.
+xavier_spectral_init(tensor, gain, transform_type)
+    Xavier initialization adapted for spectral transforms.
+kaiming_spectral_init(tensor, a, mode, nonlinearity, transform_type)
+    Kaiming initialization adapted for spectral transforms.
+dct_init(tensor, normalized)
+    Specialized initialization for DCT parameters.
+hadamard_init(tensor, normalized)
+    Initialization for Hadamard transform parameters.
+wavelet_init(tensor, wavelet_type, levels)
+    Initialize parameters for wavelet transforms.
+init_linear_spectral(linear_layer, method, **kwargs)
+    Initialize linear layers for spectral operations.
+init_conv_spectral(conv_layer, method, **kwargs)  
+    Initialize convolutional layers for spectral operations.
+
+Examples
+--------
+Basic spectral initialization:
+
+>>> import torch
+>>> import torch.nn as nn
+>>> from spectrans.utils.initialization import spectral_init, complex_xavier_init
+>>> # Initialize a linear layer for spectral transforms
+>>> linear = nn.Linear(512, 512)
+>>> spectral_init(linear.weight, method='frequency', freq_range=(0.0, 0.5))
+>>> spectral_init(linear.bias, method='zero')
+
+Complex parameter initialization:
+
+>>> # Initialize complex-valued parameters
+>>> complex_weights = torch.empty(256, 256, dtype=torch.complex64)
+>>> complex_xavier_init(complex_weights, gain=1.0)
+>>> 
+>>> # Manual complex initialization
+>>> real_part = torch.empty(256, 256)
+>>> imag_part = torch.empty(256, 256)
+>>> torch.nn.init.xavier_uniform_(real_part, gain=1.0/math.sqrt(2))
+>>> torch.nn.init.xavier_uniform_(imag_part, gain=1.0/math.sqrt(2))
+>>> complex_weights = torch.complex(real_part, imag_part)
+
+Transform-specific initialization:
+
+>>> from spectrans.utils.initialization import dct_init, hadamard_init, wavelet_init
+>>> # DCT parameter initialization
+>>> dct_params = torch.empty(512, 512)
+>>> dct_init(dct_params, normalized=True)
+>>> 
+>>> # Hadamard transform parameters
+>>> hadamard_params = torch.empty(256, 256)  # Must be power of 2
+>>> hadamard_init(hadamard_params, normalized=True)
+>>> 
+>>> # Wavelet parameters
+>>> wavelet_params = torch.empty(1024, 1024)
+>>> wavelet_init(wavelet_params, wavelet_type='db4', levels=3)
+
+Layer initialization:
+
+>>> from spectrans.utils.initialization import init_linear_spectral, init_conv_spectral
+>>> # Initialize entire layers
+>>> linear_layer = nn.Linear(768, 768)
+>>> init_linear_spectral(linear_layer, method='xavier_spectral', transform_type='fourier')
+>>> 
+>>> # Convolutional layer for spectral processing
+>>> conv_layer = nn.Conv1d(512, 512, kernel_size=3)
+>>> init_conv_spectral(conv_layer, method='kaiming_spectral', transform_type='dct')
+
+Notes
+-----
+Initialization Theory for Spectral Networks:
+
+**Complex Parameter Scaling**:
+Complex parameters require careful scaling to maintain proper variance:
+- Real and imaginary parts should be scaled by 1/√2 relative to real-valued case
+- This maintains the same total variance while distributing it across both components
+- Critical for stable training of complex neural networks
+
+**Frequency-Domain Considerations**:
+Parameters operating in frequency domain have different scaling requirements:
+- Low frequencies often have higher magnitude than high frequencies
+- Initialization should reflect expected frequency content
+- Different spectral transforms have different frequency characteristics
+
+**Orthogonal Transform Properties**:
+Many spectral transforms are orthogonal/unitary and require special treatment:
+- Parameters should preserve orthogonality during training
+- Initial values should respect the mathematical structure
+- Gradients may need special handling to maintain constraints
+
+Mathematical Foundations:
+
+**Xavier/Glorot Initialization**:
+For real-valued parameters: σ² = 2/(n_in + n_out)
+For complex-valued: σ² = 1/(n_in + n_out), split equally between real/imaginary
+
+**Kaiming/He Initialization**:
+For ReLU activation: σ² = 2/n_in
+Complex variant: σ² = 1/n_in, split equally
+
+**Orthogonal Initialization**:
+Creates matrices with orthonormal rows/columns using QR decomposition
+Essential for transforms requiring orthogonality constraints
+
+Transform-Specific Considerations:
+
+**FFT Parameters**:
+- Complex-valued requiring careful magnitude/phase initialization
+- Often benefit from frequency-aware initialization
+- Should maintain Parseval's theorem properties
+
+**DCT/DST Parameters**:
+- Real-valued but with cosine/sine basis constraints
+- Energy compaction properties should be preserved
+- Orthogonality is crucial for proper reconstruction
+
+**Hadamard Parameters**:
+- Binary {-1, +1} structure should be respected
+- Fast transform structure affects parameter scaling
+- Power-of-2 constraints affect initialization patterns
+
+**Wavelet Parameters**:
+- Multi-resolution structure requires level-aware initialization
+- Different wavelets have different scaling properties
+- Perfect reconstruction constraints must be maintained
+
+Implementation Details:
+
+- **Gradient Preservation**: All initializations maintain gradient flow
+- **Device Handling**: Automatically matches input tensor device and dtype
+- **Batch Operations**: Efficient initialization for large parameter sets
+- **Memory Efficiency**: In-place initialization where possible
+- **Numerical Stability**: Careful handling of edge cases and extreme values
+
+Common Patterns:
+
+1. **Spectral Mixing Layers**: Use frequency_init with appropriate frequency ranges
+2. **Complex Attention**: Use complex_xavier_init for query/key/value projections
+3. **Transform Embeddings**: Use transform-specific initialization (dct_init, etc.)
+4. **Learnable Filters**: Use orthogonal_spectral_init to maintain properties
+5. **Residual Connections**: Use xavier_spectral_init with proper gain scheduling
+
+Performance Considerations:
+- All initialization functions are vectorized and GPU-compatible
+- Large parameter tensors are handled efficiently
+- Memory usage is optimized for typical spectral network sizes
+- Initialization time is minimized through optimized algorithms
+
+See Also
+--------
+spectrans.core.base : Base classes requiring proper initialization
+spectrans.transforms : Transform classes with specific initialization needs
+spectrans.utils.complex : Complex tensor operations for initialized parameters
+torch.nn.init : PyTorch's standard initialization functions
 """
 
 import math

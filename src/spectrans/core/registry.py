@@ -1,4 +1,86 @@
-"""Component registry system for dynamic component registration and retrieval."""
+"""Component registry system for dynamic component registration and retrieval.
+
+This module implements a flexible registry pattern that allows spectral transformer
+components to be registered at runtime and retrieved by name. The registry system
+enables modular composition of different spectral transforms, mixing layers, attention
+mechanisms, and complete models without tight coupling.
+
+The registry supports metadata storage, configuration-driven instantiation, and
+category-based organization. This design facilitates experimentation with different
+component combinations and makes the library easily extensible with custom implementations.
+
+Classes
+-------
+ComponentRegistry
+    Central registry for storing and retrieving component classes.
+
+Functions  
+---------
+register_component(category, name, metadata=None)
+    Decorator to register component classes in the global registry.
+get_component(category, name)
+    Retrieve a registered component class by category and name.
+create_component(category, name, **kwargs)
+    Create an instance of a registered component with parameters.
+list_components(category=None)
+    List available components in a category or all categories.
+
+Examples
+--------
+Registering a custom component:
+
+>>> from spectrans.core.registry import register_component
+>>> from spectrans.core.base import MixingLayer
+>>> @register_component('mixing', 'my_custom_mixer')
+... class CustomMixer(MixingLayer):
+...     def forward(self, x):
+...         return x  # Custom implementation
+
+Using the registry to create components:
+
+>>> from spectrans.core.registry import create_component, list_components
+>>> # List available transforms
+>>> list_components('transform')
+['fourier', 'cosine', 'hadamard', 'wavelet']
+>>> # Create a Fourier transform instance
+>>> fft = create_component('transform', 'fourier', dim=-1)
+
+Configuration-driven component creation:
+
+>>> from spectrans.core.registry import registry
+>>> config = {'type': 'fourier', 'params': {'dim': -1}}
+>>> transform = registry.create_from_config('transform', config)
+
+Notes
+-----
+Registry Architecture:
+
+The registry implements several design patterns:
+1. **Singleton Pattern**: Global registry instance for system-wide access
+2. **Factory Pattern**: Component creation through factory methods
+3. **Registry Pattern**: Dynamic component discovery and instantiation
+4. **Decorator Pattern**: Clean component registration via decorators
+
+Component Categories:
+- 'transform': Spectral transforms (FFT, DCT, DWT, Hadamard)  
+- 'mixing': Token mixing layers (FourierMixing, GlobalFilter, AFNO)
+- 'attention': Spectral attention mechanisms (SpectralAttention, LST)
+- 'block': Complete transformer blocks combining mixing + FFN
+- 'model': Full model implementations (FNet, GFNet, etc.)
+- 'kernel': Kernel functions for attention approximation
+- 'operator': Neural operators (FNO layers)
+
+The registry supports metadata storage for each component, enabling rich
+component descriptions, complexity information, and configuration schemas.
+
+Thread Safety: The registry is not thread-safe. Component registration should
+occur during module initialization, before concurrent access.
+
+See Also
+--------
+spectrans.core.base : Base classes for components stored in registry
+spectrans.core.types : Type definitions for registry operations
+"""
 
 from collections.abc import Callable
 from typing import Any

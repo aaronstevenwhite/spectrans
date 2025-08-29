@@ -1,4 +1,74 @@
-"""Base classes and interfaces for spectral transformer components."""
+"""Base classes and interfaces for spectral transformer components.
+
+This module defines the core abstract base classes and interfaces that all spectral
+transformer components must implement. These classes establish consistent APIs for
+forward propagation, complexity analysis, and component composition throughout the
+spectrans library.
+
+The inheritance hierarchy provides both mathematical rigor and software engineering
+best practices, ensuring that all spectral transforms maintain proper interfaces
+while allowing for flexible implementation strategies.
+
+Classes
+-------
+SpectralComponent
+    Abstract base class requiring forward() and complexity implementations.
+SpectralTransform
+    Interface for spectral transforms with transform/inverse_transform methods.
+MixingLayer
+    Base class for token mixing layers with dropout support.
+AttentionLayer
+    Base class for attention mechanisms with multi-head support.
+TransformerBlock
+    Complete transformer block with mixing, FFN, and residual connections.
+BaseModel
+    Full model class with embedding, positional encoding, and classification.
+
+Examples
+--------
+Implementing a custom spectral component:
+
+>>> import torch.nn as nn
+>>> from spectrans.core.base import SpectralComponent
+>>> class CustomComponent(SpectralComponent):
+...     def forward(self, x):
+...         return x * 2  # Simple scaling
+...     @property
+...     def complexity(self):
+...         return {'time': 'O(n)', 'space': 'O(1)'}
+
+Building a transformer block:
+
+>>> from spectrans.core.base import TransformerBlock, MixingLayer
+>>> mixing_layer = SomeSpectralMixing(hidden_dim=768)
+>>> ffn = nn.Sequential(nn.Linear(768, 3072), nn.GELU(), nn.Linear(3072, 768))
+>>> block = TransformerBlock(mixing_layer, ffn)
+
+Notes
+-----
+The base classes implement several key design patterns:
+
+1. **Template Method Pattern**: TransformerBlock defines the structure while allowing
+   flexible mixing layer implementations
+2. **Strategy Pattern**: Different spectral transforms can be swapped via the same interface
+3. **Composition over Inheritance**: Complex behaviors built by composing simple components
+4. **Complexity Analysis**: All components must report their computational complexity
+
+Mathematical Properties:
+- All spectral components preserve tensor shapes in the sequence dimension
+- Residual connections maintain gradient flow and training stability
+- Dropout is applied consistently after each sub-layer
+- Layer normalization follows the pre-norm architecture pattern
+
+The TransformerBlock implements the standard architecture:
+H_l = LayerNorm(X_l + MixingLayer(X_l))
+X_{l+1} = LayerNorm(H_l + FFN(H_l))
+
+See Also
+--------
+spectrans.core.types : Type definitions used in base classes
+spectrans.transforms.base : Transform-specific base classes
+"""
 
 from abc import ABC, abstractmethod
 from typing import Any

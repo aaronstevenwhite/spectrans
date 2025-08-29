@@ -1,8 +1,140 @@
-"""Padding utilities for spectral transformations.
+"""Padding utilities for spectral transformations and signal processing.
 
-This module provides various padding strategies optimized for spectral transforms,
-including support for maintaining mathematical properties of transforms and
-handling edge cases properly.
+This module provides comprehensive padding strategies specifically designed for
+spectral neural networks and signal processing operations. The padding functions
+maintain mathematical properties of transforms, handle boundary conditions properly,
+and optimize computational efficiency for various spectral operations.
+
+Different padding modes are crucial for spectral transformers as they affect the
+mathematical properties of transforms, boundary artifacts, and computational
+efficiency. This module provides both basic and specialized padding operations
+with proper handling of edge cases and batch processing.
+
+Functions
+---------
+pad_to_length(x, target_length, dim, mode)
+    Pad tensor to specified length with various padding modes.
+pad_to_power_of_2(x, dim)
+    Pad tensor to next power of 2 for efficient FFT operations.
+pad_for_fft(x, target_length, dim, mode)
+    Specialized padding for FFT operations with optimal performance.
+pad_for_convolution(x, kernel_size, mode, dim)
+    Pad tensor for convolution operations to maintain output size.
+zero_pad(x, padding, dim)
+    Apply zero padding along specified dimension.
+circular_pad(x, padding, dim)
+    Apply circular (periodic) padding for periodic signals.
+reflect_pad(x, padding, dim)
+    Apply reflection padding to minimize boundary artifacts.
+symmetric_pad(x, padding, dim) 
+    Apply symmetric padding with proper boundary handling.
+pad_sequence(sequences, batch_first, padding_value)
+    Pad variable-length sequences to uniform length.
+unpad_to_length(x, original_length, dim)
+    Remove padding to restore original tensor length.
+unpad_sequence(padded, lengths)
+    Remove padding from batch of padded sequences.
+
+Examples
+--------
+Padding for FFT operations:
+
+>>> import torch
+>>> from spectrans.utils.padding import pad_to_power_of_2, pad_for_fft
+>>> # Pad to nearest power of 2 for efficient FFT
+>>> signal = torch.randn(32, 500)  # Length 500
+>>> padded = pad_to_power_of_2(signal, dim=-1)  # Pads to 512
+>>> print(f"Original: {signal.shape}, Padded: {padded.shape}")
+>>>
+>>> # Pad to specific FFT length
+>>> fft_signal = pad_for_fft(signal, target_length=1024, dim=-1)
+>>> # Use torch.fft.fft on fft_signal for optimal performance
+
+Circular padding for periodic signals:
+
+>>> from spectrans.utils.padding import circular_pad
+>>> periodic_signal = torch.randn(32, 256)
+>>> # Add 64 samples of circular padding on each side
+>>> circularly_padded = circular_pad(periodic_signal, padding=64, dim=-1)
+>>> # Signal boundaries are continuous (no edge discontinuities)
+
+Reflection padding for boundary handling:
+
+>>> from spectrans.utils.padding import reflect_pad
+>>> image = torch.randn(32, 3, 224, 224)
+>>> # Reflect pad for 2D convolution
+>>> reflected = reflect_pad(image, padding=3, dim=(-2, -1))
+>>> # Boundaries are smooth transitions
+
+Variable-length sequence padding:
+
+>>> from spectrans.utils.padding import pad_sequence
+>>> sequences = [torch.randn(100, 768), torch.randn(150, 768), torch.randn(80, 768)]
+>>> padded_batch = pad_sequence(sequences, batch_first=True, padding_value=0.0)
+>>> # All sequences now have length 150 (max length)
+
+Notes
+-----
+Padding Strategies and Their Properties:
+
+**Zero Padding**:
+- Adds zeros at boundaries
+- Simple and computationally efficient
+- Can introduce spectral artifacts due to discontinuities
+- Best for: General-purpose padding where simplicity is preferred
+
+**Circular Padding** (Periodic):
+- Wraps signal around to create continuity
+- Maintains periodicity assumptions of DFT/FFT
+- No boundary artifacts in frequency domain
+- Best for: Periodic signals, DFT/FFT operations
+
+**Reflection Padding**:
+- Mirrors signal at boundaries
+- Reduces boundary discontinuities
+- Maintains signal characteristics near boundaries
+- Best for: Image processing, minimizing edge effects
+
+**Symmetric Padding**:
+- Creates symmetric extension of signal
+- Preserves certain symmetry properties
+- Useful for transforms with symmetry assumptions
+- Best for: DCT operations, symmetric signal processing
+
+Mathematical Considerations:
+
+1. **FFT Efficiency**: Powers of 2 enable radix-2 FFT algorithms with optimal O(n log n) complexity
+2. **Boundary Conditions**: Different padding affects transform properties and numerical stability
+3. **Aliasing**: Improper padding can introduce aliasing artifacts in frequency domain
+4. **Memory Usage**: Padding increases memory requirements, important for large signals
+
+Implementation Details:
+
+- **Batch Processing**: All functions handle batched inputs efficiently
+- **Multi-Dimensional**: Support for padding along multiple dimensions simultaneously
+- **Type Preservation**: Maintains input tensor dtype and device
+- **Memory Efficiency**: In-place operations where safe, memory-efficient algorithms
+- **Error Handling**: Comprehensive validation of input parameters and dimensions
+
+Performance Optimizations:
+
+- **Vectorized Operations**: Use PyTorch's native vectorized padding operations
+- **GPU Acceleration**: All operations are GPU-compatible
+- **Memory Layout**: Optimized for PyTorch's memory layout conventions
+- **Caching**: Efficient memory allocation patterns for repeated operations
+
+Common Pitfalls:
+
+- Padding too aggressively can change signal characteristics
+- Wrong padding mode can introduce artifacts in spectral domain
+- Not accounting for padding when calculating output sizes
+- Forgetting to unpad results when original size is needed
+
+See Also
+--------
+spectrans.transforms : Spectral transforms requiring specific padding
+spectrans.utils.complex : Complex tensor operations for padded signals
+torch.nn.functional : PyTorch's native padding functions
 """
 
 import torch
