@@ -1,8 +1,10 @@
 """Neural operator implementations."""
 
-# Operators will be imported here as they are implemented
-# from .fno import FourierNeuralOperator
+from .fno import FNOBlock, FourierNeuralOperator, SpectralConv1d, SpectralConv2d
 
-__all__: list[str] = [
-    # Will be populated as operators are implemented
+__all__ = [
+    "FNOBlock",
+    "FourierNeuralOperator",
+    "SpectralConv1d",
+    "SpectralConv2d",
 ]

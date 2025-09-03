@@ -1,14 +1,14 @@
 """Type definitions and aliases for the spectrans library.
 
-This module provides comprehensive type definitions, aliases, and literal types used
-throughout the spectrans library. The type system ensures type safety, enables better
+This module provides comprehensive definitions, aliases, and literal types used
+throughout the spectrans library. The system ensures safety, enables better
 IDE support, and provides clear documentation of expected parameter types for all
 spectral transformer components.
 
 The types are organized into logical groups covering tensors, shapes, transforms,
 neural network components, training configurations, and mathematical operations.
-All type definitions use modern Python 3.13 type syntax with union operators and
-the new type statement for aliases.
+All definitions use modern Python 3.13 syntax with union operators and
+the new statement for aliases.
 
 Attributes
 ----------
@@ -36,11 +36,11 @@ ComponentType : Literal
 
 Examples
 --------
-Using type annotations in function signatures:
+Using annotations in function signatures:
 
 >>> from spectrans.core.types import Tensor, TransformType, ComplexityInfo
 >>> def apply_transform(x: Tensor, transform: TransformType) -> Tensor:
-...     # Implementation with proper type hints
+...     # Implementation with proper hints
 ...     pass
 
 Working with configuration dictionaries:
@@ -62,11 +62,11 @@ Notes
 -----
 Type System Philosophy:
 
-1. **Explicit over Implicit**: All function signatures should include type hints
+1. **Explicit over Implicit**: All function signatures should include hints
 2. **Literal Types**: Use Literal for enumerated options to prevent typos
 3. **Type Aliases**: Semantic names (BatchSize) over raw types (int)
 4. **Union Syntax**: Modern | syntax instead of Union[] for Python 3.13
-5. **Optional Types**: T | None pattern instead of Optional[T]
+5. **Optional Types**: T, None pattern instead of Optional[T]
 
 Mathematical Type Categories:
 
@@ -76,12 +76,12 @@ Mathematical Type Categories:
 - **Complexity Types**: Computational complexity analysis
 - **Configuration Types**: Structured configuration and parameter passing
 
-The type system supports both runtime type checking (where appropriate) and
-static analysis with mypy, providing comprehensive type safety for the library.
+The system supports both runtime checking (where appropriate) and
+static analysis with mypy, providing comprehensive safety for the library.
 
 See Also
 --------
-spectrans.core.base : Base classes that use these type definitions
+spectrans.core.base : Base classes that use these definitions
 spectrans.utils.complex : Complex tensor operations with proper typing
 """
 
@@ -107,15 +107,15 @@ type LongTensor = torch.LongTensor
 type BoolTensor = torch.BoolTensor
 
 # Shape type aliases
-BatchSize = int
-SequenceLength = int
-HiddenDim = int
-NumHeads = int
-HeadDim = int
-IntermediateDim = int
-NumLayers = int
-VocabSize = int
-NumClasses = int
+type BatchSize = int
+type SequenceLength = int
+type HiddenDim = int
+type NumHeads = int
+type HeadDim = int
+type IntermediateDim = int
+type NumLayers = int
+type VocabSize = int
+type NumClasses = int
 
 # Common tensor shapes
 type Shape2D = tuple[int, int]
@@ -223,8 +223,6 @@ AttentionModuleType = TypeVar("AttentionModuleType", bound="AttentionLayer")
 BlockModuleType = TypeVar("BlockModuleType", bound="TransformerBlock")
 ModelModuleType = TypeVar("ModelModuleType", bound="BaseModel")
 
-# Note: Use torch.dtype directly for dtype type hints instead of creating an alias
-
 # Device types
 type Device = torch.device | str | None
 
@@ -233,12 +231,12 @@ type OptionalTensor = Tensor | None
 type OptionalModule = nn.Module | None
 
 # Fourier mode types
-FourierModes = int  # Number of Fourier modes to keep
+type FourierModes = int  # Number of Fourier modes to keep
 type ModeTruncation = tuple[int, ...]  # Mode truncation per dimension
 
 # Random feature types
-NumRandomFeatures = int
-RandomSeed = int | None
+type NumRandomFeatures = int
+type RandomSeed = int | None
 
 # Complexity information
 type ComplexityInfo = dict[Literal["time", "space"], str]
@@ -305,17 +303,17 @@ type BatchDict = dict[str, Tensor]
 type BatchTuple = tuple[Tensor, ...]
 
 # Gradient clipping types
-GradientClipValue = float | None
-GradientClipNorm = float | None
+type GradientClipValue = float | None
+type GradientClipNorm = float | None
 
 # Mixed precision types
-MixedPrecisionDType = Literal["float16", "bfloat16", "float32"]
+type MixedPrecisionDType = Literal["float16", "bfloat16", "float32"]
 type AutocastDType = torch.dtype | None
 
 # Distributed training types
-WorldSize = int
-Rank = int
-LocalRank = int
+type WorldSize = int
+type Rank = int
+type LocalRank = int
 
 # Kernel function types
 type KernelFunction = Callable[[Tensor, Tensor], Tensor]
@@ -326,7 +324,7 @@ type SpectralFilter = ComplexTensor
 type LearnableFilter = nn.Parameter
 
 # Mode selection for spectral methods
-ModeSelection = Literal["top", "random", "learned"]
+type ModeSelection = Literal["top", "random", "learned"]
 type ModeIndices = LongTensor
 
 # Window functions for spectral analysis
@@ -340,7 +338,7 @@ WindowFunction = Literal[
     "none",
 ]
 
-# Export all type aliases
+# Export all aliases
 __all__: list[str] = [
     "ActivationType",
     "AttentionMask",

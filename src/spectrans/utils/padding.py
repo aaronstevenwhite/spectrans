@@ -634,6 +634,109 @@ def pad_to_power_of_2(length: int) -> int:
     return power
 
 
+def wavelet_symmetric_pad(x: Tensor, pad_len: int, dim: int = -1) -> Tensor:
+    """Apply symmetric padding for wavelet transforms (PyWavelets-compatible).
+    
+    This implements the exact symmetric padding used by PyWavelets which
+    reflects the signal WITH edge repeat. This is equivalent to numpy's
+    'symmetric' mode and PyTorch's 'reflect' mode.
+    
+    Parameters
+    ----------
+    x : Tensor
+        Input tensor to pad.
+    pad_len : int
+        Number of samples to pad on each side.
+    dim : int, default=-1
+        Dimension along which to pad.
+        
+    Returns
+    -------
+    Tensor
+        Symmetrically padded tensor.
+        
+    Examples
+    --------
+    >>> x = torch.tensor([1, 2, 3, 4])
+    >>> padded = wavelet_symmetric_pad(x, 3)
+    >>> # Result: [3, 2, 1, 1, 2, 3, 4, 4, 3, 2]
+    
+    Notes
+    -----
+    For signal [a,b,c,d] with pad_len=3, creates [c,b,a|a,b,c,d|d,c,b].
+    This ensures continuity at boundaries for wavelet transforms.
+    """
+    if pad_len == 0:
+        return x
+    
+    if pad_len < 0:
+        raise ValueError(f"Pad length must be non-negative, got {pad_len}")
+    
+    if dim >= x.ndim or dim < -x.ndim:
+        raise IndexError(f"Dimension {dim} out of bounds for tensor with {x.ndim} dimensions")
+    
+    # Normalize dimension
+    dim = dim % x.ndim
+    signal_len = x.shape[dim]
+    
+    if signal_len == 1:
+        # Single element: just repeat it
+        if x.ndim == 1:
+            return x[0].repeat(2 * pad_len + 1)
+        else:
+            repeat_dims = [1] * x.ndim
+            repeat_dims[dim] = 2 * pad_len + 1
+            return x.repeat(*repeat_dims)
+    
+    # Build reflection indices with edge repeat (symmetric mode)
+    # Left padding: reflect starting from index 0
+    left_indices = []
+    pos = 0
+    direction = 1
+    for _ in range(pad_len):
+        left_indices.append(pos)
+        # Reflect at boundaries
+        if direction == 1 and pos == signal_len - 1:
+            direction = -1
+        elif direction == -1 and pos == 0:
+            direction = 1
+        pos += direction
+    left_indices.reverse()
+    
+    # Right padding: reflect starting from last index
+    right_indices = []
+    pos = signal_len - 1
+    direction = -1
+    for _ in range(pad_len):
+        right_indices.append(pos)
+        # Reflect at boundaries
+        if direction == -1 and pos == 0:
+            direction = 1
+        elif direction == 1 and pos == signal_len - 1:
+            direction = -1
+        pos += direction
+    
+    # Convert to tensor indices
+    left_indices_t = torch.tensor(left_indices, dtype=torch.long, device=x.device)
+    right_indices_t = torch.tensor(right_indices, dtype=torch.long, device=x.device)
+    
+    # Apply padding
+    if x.ndim == 1:
+        left_pad = x[left_indices_t]
+        right_pad = x[right_indices_t]
+        return torch.cat([left_pad, x, right_pad])
+    else:
+        # Multi-dimensional: use advanced indexing
+        slices = [slice(None)] * x.ndim
+        slices[dim] = left_indices_t
+        left_pad = x[tuple(slices)]
+        
+        slices[dim] = right_indices_t
+        right_pad = x[tuple(slices)]
+        
+        return torch.cat([left_pad, x, right_pad], dim=dim)
+
+
 def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = "zero") -> Tensor:
     """Pad tensor for valid convolution without size reduction.
 

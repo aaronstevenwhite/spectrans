@@ -23,8 +23,10 @@ classifiers = [
 dependencies = [
     "torch>=2.5.0",
     "numpy>=2.0.0",
+    "scipy>=1.16.1",
     "pyyaml>=6.0.2",
     "einops>=0.8.0",
+    "PyWavelets>=1.6.0",
 ]
 
 [project.optional-dependencies]

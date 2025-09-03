@@ -216,6 +216,9 @@ class DCT(OrthogonalTransform):
             alpha[1:] = math.sqrt(2.0 / n)
             # Apply normalization to each row k
             matrix = matrix * alpha.unsqueeze(1)
+        else:
+            # For unnormalized DCT-II, apply scaling factor 2 to match scipy convention
+            matrix = matrix * 2.0
 
         return matrix
 
@@ -252,6 +255,12 @@ class DCT(OrthogonalTransform):
             alpha[1:] = math.sqrt(2.0 / n)
             # Apply normalization to each column k (multiply by alpha_k)
             matrix = matrix * alpha.unsqueeze(0)
+        else:
+            # For unnormalized DCT, need proper scaling for reconstruction
+            # Since forward DCT has factor 2, inverse needs factor 1/(2n) with k=0 term getting 1/(2n)
+            scale = torch.full((n,), 1.0 / n, device=device, dtype=dtype)
+            scale[0] = 1.0 / (2.0 * n)  # Special scaling for DC component
+            matrix = matrix * scale.unsqueeze(0)
 
         return matrix
 
@@ -319,16 +328,16 @@ class DST(OrthogonalTransform):
         """
         n = x.shape[dim]
 
-        # Create DST matrix (transpose for inverse)
-        dst_matrix = self._create_dst_matrix(n, x.device, x.dtype)
+        # Create inverse DST matrix (DST-III)
+        idst_matrix = self._create_idst_matrix(n, x.device, x.dtype)
 
         # Apply inverse DST via matrix multiplication
         if dim == -1 or dim == x.ndim - 1:
-            result = torch.matmul(x, dst_matrix)
+            result = torch.matmul(x, idst_matrix.T)
         else:
             # Move dimension to last position
             x_moved = x.transpose(dim, -1)
-            result = torch.matmul(x_moved, dst_matrix)
+            result = torch.matmul(x_moved, idst_matrix.T)
             result = result.transpose(dim, -1)
 
         return result
@@ -350,20 +359,53 @@ class DST(OrthogonalTransform):
         Tensor
             DST transformation matrix of shape (n, n).
         """
-        # Create index grids for DST-II
-        # DST-II uses 1-based indexing in the formula: sin(π * k * j / (n + 1))
-        # where k, j ∈ {1, 2, ..., n}
-        k = torch.arange(1, n + 1, device=device, dtype=dtype).unsqueeze(1)
-        j = torch.arange(1, n + 1, device=device, dtype=dtype).unsqueeze(0)
+        # Create index grids for DST-II (scipy type=2)
+        # DST-II formula: sin(π * (k+1) * (2*j+1) / (2*n))
+        # where k, j ∈ {0, 1, ..., n-1} (0-based indexing)
+        k = torch.arange(n, device=device, dtype=dtype).unsqueeze(1)
+        j = torch.arange(n, device=device, dtype=dtype).unsqueeze(0)
 
-        # Compute DST-II matrix elements
-        # Formula: sin(π * k * j / (n + 1))
-        matrix = torch.sin(math.pi * k * j / (n + 1))
+        # Compute DST-II matrix elements according to scipy's DST type 2
+        # Formula: sin(π * (k+1) * (2*j+1) / (2*n))
+        matrix = torch.sin(math.pi * (k + 1) * (2 * j + 1) / (2 * n))
 
         if self.normalized:
-            # Apply orthonormal normalization factor
-            # For DST-II: √(2/(n+1)) for all elements
-            matrix *= math.sqrt(2.0 / (n + 1))
+            # For orthonormal DST-II, apply scaling factor to match scipy ortho convention
+            # Scipy uses sqrt(2/n) normalization factor
+            matrix *= math.sqrt(2.0 / n)
+            # Additionally, scipy applies orthogonalize=True by default for norm="ortho"
+            # This divides the last row (coefficient k=n-1) by sqrt(2)
+            matrix[-1, :] /= math.sqrt(2.0)
+        else:
+            # For unnormalized DST-II, apply scaling factor to match scipy convention
+            # Scipy DST type 2 includes a factor of 2 in the definition
+            matrix *= 2.0
+
+        return matrix
+
+    def _create_idst_matrix(self, n: int, device: torch.device, dtype: torch.dtype) -> Tensor:
+        """Create the DST-III (inverse DST) matrix.
+
+        Parameters
+        ----------
+        n : int
+            Size of the transform.
+        device : torch.device
+            Device to create the matrix on.
+        dtype : torch.dtype
+            Data type of the matrix.
+
+        Returns
+        -------
+        Tensor
+            DST-III transformation matrix of shape (n, n).
+        """
+        # For perfect reconstruction, compute the matrix inverse of the forward DST matrix
+        dst_matrix = self._create_dst_matrix(n, device, dtype)
+
+        # The inverse DST matrix is the matrix inverse of the forward DST matrix
+        # This ensures perfect reconstruction: IDST(DST(x)) = x
+        matrix = torch.linalg.inv(dst_matrix)
 
         return matrix
 

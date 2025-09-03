@@ -123,7 +123,6 @@ spectrans.core.types : Type definitions for transform interfaces
 """
 
 from abc import ABC, abstractmethod
-
 import torch
 import torch.nn as nn
 

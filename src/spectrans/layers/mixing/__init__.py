@@ -75,7 +75,7 @@ spectrans.transforms : Underlying spectral transform implementations
 spectrans.blocks : Transformer blocks that use these mixing layers
 """
 
-# Import base classes
+from .afno import AFNOMixing
 from .base import FilterMixingLayer, MixingLayer, UnitaryMixingLayer
 
 # Import Fourier-based mixing layers
@@ -92,8 +92,10 @@ from .global_filter import (
     GlobalFilterMixing,
     GlobalFilterMixing2D,
 )
+from .wavelet import WaveletMixing, WaveletMixing2D
 
 __all__: list[str] = [
+    "AFNOMixing",
     "AdaptiveGlobalFilter",
     "FilterMixingLayer",
     # Fourier mixing layers
@@ -107,4 +109,7 @@ __all__: list[str] = [
     "RealFourierMixing",
     "SeparableFourierMixing",
     "UnitaryMixingLayer",
+    # Wavelet mixing layers
+    "WaveletMixing",
+    "WaveletMixing2D",
 ]
