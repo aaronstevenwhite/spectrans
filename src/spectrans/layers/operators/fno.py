@@ -166,7 +166,7 @@ class SpectralConv1d(nn.Module):
         # Inverse FFT to get back to spatial domain
         out = torch.fft.irfft(out_ft, n=seq_len, dim=-1)
 
-        return out
+        return out  # type: ignore[no-any-return]
 
 
 class SpectralConv2d(nn.Module):
@@ -255,7 +255,7 @@ class SpectralConv2d(nn.Module):
         # Inverse FFT
         out = torch.fft.irfft2(out_ft, s=(h, w), dim=(-2, -1))
 
-        return out
+        return out  # type: ignore[no-any-return]
 
 
 class FourierNeuralOperator(SpectralComponent):
@@ -298,6 +298,10 @@ class FourierNeuralOperator(SpectralComponent):
     >>> output = fno(x)
     >>> assert output.shape == x.shape
     """
+    
+    spectral_conv: SpectralConv1d | SpectralConv2d | None
+    linear: nn.Conv1d | nn.Conv2d | None
+    activation: nn.Module
 
     def __init__(
         self,
@@ -348,20 +352,23 @@ class FourierNeuralOperator(SpectralComponent):
             raise ValueError(f"Unsupported modes shape: {modes}")
 
         # Activation function
+        activation_fn: nn.Module
         if activation == 'gelu':
-            self.activation = nn.GELU()
+            activation_fn = nn.GELU()
         elif activation == 'relu':
-            self.activation = nn.ReLU()
+            activation_fn = nn.ReLU()
         elif activation == 'silu' or activation == 'swish':
-            self.activation = nn.SiLU()
+            activation_fn = nn.SiLU()
         elif activation == 'tanh':
-            self.activation = nn.Tanh()
+            activation_fn = nn.Tanh()
         elif activation == 'sigmoid':
-            self.activation = nn.Sigmoid()
+            activation_fn = nn.Sigmoid()
         elif activation == 'identity':
-            self.activation = nn.Identity()
+            activation_fn = nn.Identity()
         else:
             raise ValueError(f"Unsupported activation: {activation}")
+        
+        self.activation = activation_fn
 
         self._init_weights()
 
@@ -391,7 +398,7 @@ class FourierNeuralOperator(SpectralComponent):
         input_dtype = x.dtype
         if self.linear is not None and self.linear.weight.dtype != input_dtype:
             self.linear = self.linear.to(input_dtype)
-            
+
         if self.dim == 1:
             # For 1D, expect (batch, sequence, channels)
             # Transpose to (batch, channels, sequence) for convolution
@@ -521,6 +528,7 @@ class FNOBlock(SpectralComponent):
         # Normalization
         self.norm1: nn.Module | None
         self.norm2: nn.Module | None
+        self.ffn: nn.Sequential | None
         if norm_type == 'layernorm':
             self.norm1 = nn.LayerNorm(hidden_dim)
             self.norm2 = nn.LayerNorm(hidden_dim) if mlp_ratio > 0 else None
@@ -536,6 +544,7 @@ class FNOBlock(SpectralComponent):
         # Feedforward network
         if mlp_ratio > 0:
             mlp_hidden = int(hidden_dim * mlp_ratio)
+            activation_fn: nn.Module
             if activation == 'gelu':
                 activation_fn = nn.GELU()
             elif activation == 'relu':
@@ -578,24 +587,30 @@ class FNOBlock(SpectralComponent):
             Output tensor of same shape as input.
         """
         # FNO with residual connection
-        if isinstance(self.norm1, nn.BatchNorm1d):
-            # BatchNorm expects (batch, channels, length)
-            x_norm = x.transpose(1, 2)
-            x_norm = self.norm1(x_norm)
-            x_norm = x_norm.transpose(1, 2)
+        if self.norm1 is not None:
+            if isinstance(self.norm1, nn.BatchNorm1d):
+                # BatchNorm expects (batch, channels, length)
+                x_norm = x.transpose(1, 2)
+                x_norm = self.norm1(x_norm)
+                x_norm = x_norm.transpose(1, 2)
+            else:
+                x_norm = self.norm1(x)
         else:
-            x_norm = self.norm1(x)
+            x_norm = x
 
         x = x + self.dropout(self.fno(x_norm))
 
         # Feedforward network with residual connection
         if self.ffn is not None:
-            if isinstance(self.norm2, nn.BatchNorm1d):
-                x_norm = x.transpose(1, 2)
-                x_norm = self.norm2(x_norm)
-                x_norm = x_norm.transpose(1, 2)
+            if self.norm2 is not None:
+                if isinstance(self.norm2, nn.BatchNorm1d):
+                    x_norm = x.transpose(1, 2)
+                    x_norm = self.norm2(x_norm)
+                    x_norm = x_norm.transpose(1, 2)
+                else:
+                    x_norm = self.norm2(x)
             else:
-                x_norm = self.norm2(x)
+                x_norm = x
 
             x = x + self.ffn(x_norm)
 

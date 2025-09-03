@@ -152,6 +152,12 @@ class DWT1D(MultiResolutionTransform):
     >>> print(f"Reconstruction error: {error:.2e}")
     """
 
+    # Explicit type annotations for buffers (mypy doesn't understand register_buffer)
+    dec_lo: Tensor
+    dec_hi: Tensor
+    rec_lo: Tensor
+    rec_hi: Tensor
+    
     def __init__(
         self,
         wavelet: WaveletType = 'db4',
@@ -337,11 +343,6 @@ class DWT1D(MultiResolutionTransform):
         Tensor
             Reconstructed signal.
         """
-        if cA is None:
-            cA = torch.zeros_like(cD)
-        if cD is None:
-            cD = torch.zeros_like(cA)
-
         # Ensure tensors have same shape
         if cA.shape != cD.shape:
             raise ValueError(f"Coefficients must have same shape. Got cA: {cA.shape}, cD: {cD.shape}")

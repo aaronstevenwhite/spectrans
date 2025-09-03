@@ -85,7 +85,7 @@ import torch.nn as nn
 from torch import Tensor
 
 from ...core.registry import register_component
-from ...core.types import ConfigDict
+from ...core.types import ConfigDict, WaveletType
 from ...transforms.wavelet import DWT1D, DWT2D
 
 
@@ -130,7 +130,7 @@ class WaveletMixing(nn.Module):
     def __init__(
         self,
         hidden_dim: int,
-        wavelet: str = 'db4',
+        wavelet: WaveletType = 'db4',
         levels: int = 3,
         mixing_mode: str = 'pointwise',
         dropout: float = 0.0,
@@ -267,7 +267,8 @@ class WaveletMixing(nn.Module):
         output = self.dropout(output)
         output = output + residual
 
-        return output
+        result: Tensor = output
+        return result
 
     @classmethod
     def from_config(cls, config: ConfigDict) -> "WaveletMixing":
@@ -321,7 +322,7 @@ class WaveletMixing2D(nn.Module):
     def __init__(
         self,
         channels: int,
-        wavelet: str = 'db4',
+        wavelet: WaveletType = 'db4',
         levels: int = 2,
         mixing_mode: str = 'subband',
     ):
@@ -395,7 +396,7 @@ class WaveletMixing2D(nn.Module):
             x_channel = x[:, c:c+1, :, :]
 
             # Decompose using 2D DWT
-            ll, details = self.dwt.decompose(x_channel, dim=(-2, -1))  # type: ignore
+            ll, details = self.dwt.decompose(x_channel, dim=(-2, -1))
 
             # Apply mixing based on mode
             if self.mixing_mode == 'subband':
@@ -452,7 +453,7 @@ class WaveletMixing2D(nn.Module):
                 details_mixed = details
 
             # Reconstruct
-            reconstructed = self.dwt.reconstruct((ll_mixed, details_mixed), dim=(-2, -1))  # type: ignore
+            reconstructed = self.dwt.reconstruct((ll_mixed, details_mixed), dim=(-2, -1))
 
             # Ensure correct shape
             if reconstructed.shape[-2:] != (height, width):

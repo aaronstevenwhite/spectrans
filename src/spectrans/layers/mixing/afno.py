@@ -276,7 +276,7 @@ class AFNOMixing(MixingLayer):
         if output.dtype != input_dtype:
             output = output.to(input_dtype)
 
-        return output
+        return output  # type: ignore[no-any-return]
 
     @property
     def complexity(self) -> dict[str, str]:

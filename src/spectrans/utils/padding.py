@@ -727,7 +727,7 @@ def wavelet_symmetric_pad(x: Tensor, pad_len: int, dim: int = -1) -> Tensor:
         return torch.cat([left_pad, x, right_pad])
     else:
         # Multi-dimensional: use advanced indexing
-        slices = [slice(None)] * x.ndim
+        slices: list[slice | torch.Tensor] = [slice(None)] * x.ndim
         slices[dim] = left_indices_t
         left_pad = x[tuple(slices)]
 

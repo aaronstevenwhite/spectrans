@@ -407,7 +407,7 @@ class DST(OrthogonalTransform):
 
         # The inverse DST matrix is the matrix inverse of the forward DST matrix
         # This ensures perfect reconstruction: IDST(DST(x)) = x
-        matrix = torch.linalg.inv(dst_matrix)
+        matrix: Tensor = torch.linalg.inv(dst_matrix)
 
         return matrix
 
