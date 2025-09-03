@@ -63,7 +63,7 @@ The Hadamard matrix :math:`H_n` for size :math:`n=2^k` is defined recursively:
 
 .. math::
     H_1 = [1], \quad H_2 = \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
-    
+
 .. math::
     H_{2n} = \begin{bmatrix} H_n & H_n \\ H_n & -H_n \end{bmatrix}
 

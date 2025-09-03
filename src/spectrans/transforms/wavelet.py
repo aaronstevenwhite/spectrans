@@ -157,7 +157,7 @@ class DWT1D(MultiResolutionTransform):
     dec_hi: Tensor
     rec_lo: Tensor
     rec_hi: Tensor
-    
+
     def __init__(
         self,
         wavelet: WaveletType = 'db4',

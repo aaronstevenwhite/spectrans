@@ -98,7 +98,7 @@ class ComponentRegistry:
     ----------
     _components : RegistryDict
         Dictionary mapping component categories to their registered components.
-    _metadata : dict
+    _metadata : dict[str, dict[str, dict[str, Any]]]
         Dictionary storing metadata about registered components.
     """
 
@@ -295,9 +295,13 @@ class ComponentRegistry:
             raise ValueError("Configuration must contain 'type' key")
 
         name = config['type']
-        params = config.get('params', {})
+        raw_params: int | float | str | bool | list[int | float | str | bool] | dict[str, int | float | str | bool | list[int | float | str | bool]] = config.get('params', {})
+        if isinstance(raw_params, dict):
+            params: dict[str, int | float | str | bool | list[int | float | str | bool]] = raw_params
+        else:
+            params = {}
 
-        return self.create(category, name, **params)
+        return self.create(category, name, **params)  # type: ignore[arg-type]
 
     def __contains__(self, item: tuple[ComponentType, str]) -> bool:
         """Check if a component is registered.

@@ -84,23 +84,23 @@ from .spectral import (
 )
 
 __all__ = [
+    # Basic kernels
+    "CosineKernel",
+    # Spectral kernels
+    "FourierKernel",
+    # RFF kernels
+    "GaussianRFFKernel",
     # Base interfaces
     "KernelFunction",
     "KernelType",
+    "LaplacianRFFKernel",
+    "LearnableSpectralKernel",
+    "OrthogonalRandomFeatures",
+    "PolynomialKernel",
+    "PolynomialSpectralKernel",
+    "RFFAttentionKernel",
     "RandomFeatureMap",
     "ShiftInvariantKernel",
-    # Basic kernels
-    "CosineKernel",
-    "PolynomialKernel",
-    # RFF kernels
-    "GaussianRFFKernel",
-    "LaplacianRFFKernel",
-    "OrthogonalRandomFeatures",
-    "RFFAttentionKernel",
-    # Spectral kernels
-    "FourierKernel",
-    "LearnableSpectralKernel",
-    "PolynomialSpectralKernel",
     "SpectralKernel",
     "TruncatedSVDKernel",
 ]

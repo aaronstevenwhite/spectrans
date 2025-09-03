@@ -93,9 +93,9 @@ from .base import RandomFeatureMap, ShiftInvariantKernel
 @register_component("kernel", "gaussian_rff")
 class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Gaussian (RBF) kernel with Random Fourier Features approximation.
-    
+
     Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|^2}{2\sigma^2}\right)` using RFF.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -112,7 +112,7 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         If True, make random parameters trainable.
     seed : int | None, default=None
         Random seed for reproducibility.
-        
+
     Attributes
     ----------
     omega : nn.Parameter or Tensor
@@ -145,7 +145,7 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         # Initialize random parameters
         self._initialize_parameters()
 
-    def _initialize_parameters(self):
+    def _initialize_parameters(self) -> None:
         """Initialize random frequencies and biases."""
         if self.orthogonal:
             # Orthogonal random features
@@ -168,16 +168,16 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def _sample_orthogonal_gaussian(self, n: int, m: int) -> Tensor:
         """Sample from orthogonal Gaussian distribution.
-        
+
         Uses QR decomposition to generate orthogonal random features.
-        
+
         Parameters
         ----------
         n : int
             Number of rows (input dimension).
         m : int
             Number of columns (features).
-            
+
         Returns
         -------
         Tensor
@@ -204,12 +204,12 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply random Fourier feature map.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -239,12 +239,12 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def evaluate_difference(self, diff: Tensor) -> Tensor:
         """Evaluate Gaussian kernel on difference vectors.
-        
+
         Parameters
         ----------
         diff : Tensor
             Difference vectors of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -255,12 +255,12 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def spectral_density(self, omega: Tensor) -> Tensor:
         """Spectral density for Gaussian kernel (Gaussian distribution).
-        
+
         Parameters
         ----------
         omega : Tensor
             Frequency vectors of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -269,8 +269,9 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         d = omega.shape[-1]
         norm_squared = torch.sum(omega ** 2, dim=-1)
         # Gaussian spectral density
-        return ((2 * math.pi * self.sigma ** 2) ** (d / 2) *
-                torch.exp(-0.5 * self.sigma ** 2 * norm_squared))
+        result: Tensor = ((2 * math.pi * self.sigma ** 2) ** (d / 2) *
+                          torch.exp(-0.5 * self.sigma ** 2 * norm_squared))
+        return result
 
     @property
     def complexity(self) -> ComplexityInfo:
@@ -284,10 +285,10 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 @register_component("kernel", "laplacian_rff")
 class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Laplacian kernel with Random Fourier Features approximation.
-    
+
     Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|_1}{\sigma}\right)` using RFF with Cauchy
     distribution for sampling frequencies.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -324,10 +325,10 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
         self._initialize_parameters()
 
-    def _initialize_parameters(self):
+    def _initialize_parameters(self) -> None:
         """Initialize random frequencies from Cauchy distribution."""
         # Sample from Cauchy distribution for Laplacian kernel
-        # Cauchy(0, 1/σ) using inverse transform sampling
+        # Cauchy(0, 1/sigma) using inverse transform sampling
         uniform = torch.rand(self.input_dim, self.num_features)
         omega = torch.tan(math.pi * (uniform - 0.5)) / self.sigma
 
@@ -342,12 +343,12 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply random Fourier feature map.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -368,12 +369,12 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def evaluate_difference(self, diff: Tensor) -> Tensor:
         """Evaluate Laplacian kernel on difference vectors.
-        
+
         Parameters
         ----------
         diff : Tensor
             Difference vectors of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -384,12 +385,12 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
     def spectral_density(self, omega: Tensor) -> Tensor:
         """Spectral density for Laplacian kernel (Cauchy distribution).
-        
+
         Parameters
         ----------
         omega : Tensor
             Frequency vectors of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -415,10 +416,10 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 @register_component("kernel", "orthogonal_rff")
 class OrthogonalRandomFeatures(RandomFeatureMap):
     """Orthogonal Random Features for improved kernel approximation.
-    
+
     Uses structured orthogonal matrices for better approximation quality
     compared to standard i.i.d. Gaussian features.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -456,7 +457,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
 
         self._initialize_parameters()
 
-    def _initialize_parameters(self):
+    def _initialize_parameters(self) -> None:
         """Initialize orthogonal random features."""
         if self.use_hadamard:
             # Use Hadamard matrix with random diagonal
@@ -472,7 +473,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
         else:
             self.register_buffer('bias', bias)
 
-    def _setup_qr_features(self):
+    def _setup_qr_features(self) -> None:
         """Setup orthogonal features using QR decomposition."""
         # Generate blocks of orthogonal matrices
         num_blocks = (self.num_features + self.input_dim - 1) // self.input_dim
@@ -501,7 +502,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
         else:
             self.register_buffer('projection', W)
 
-    def _setup_hadamard_features(self):
+    def _setup_hadamard_features(self) -> None:
         """Setup features using fast Hadamard transform."""
         # Find next power of 2
         d_padded = 2 ** math.ceil(math.log2(max(self.input_dim, self.num_features)))
@@ -539,12 +540,12 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply orthogonal random feature map.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -597,10 +598,10 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
 @register_component("kernel", "rff_attention")
 class RFFAttentionKernel(RandomFeatureMap):
     """Random Fourier Features specifically designed for attention mechanisms.
-    
+
     Implements positive random features for use in linear attention,
     following the Performer architecture.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -635,7 +636,7 @@ class RFFAttentionKernel(RandomFeatureMap):
         if not redraw:
             self._initialize_parameters()
 
-    def _initialize_parameters(self):
+    def _initialize_parameters(self) -> None:
         """Initialize random projection matrix."""
         if self.use_orthogonal:
             # Orthogonal Gaussian features
@@ -663,12 +664,12 @@ class RFFAttentionKernel(RandomFeatureMap):
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply random feature map for attention.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor

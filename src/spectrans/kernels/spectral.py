@@ -55,9 +55,9 @@ quality and computational efficiency.
 
 References
 ----------
-.. [1] Chen, Y. et al., "Scatterbrain: Unifying Sparse and Low-rank 
+.. [1] Chen, Y. et al., "Scatterbrain: Unifying Sparse and Low-rank
        Attention Approximation", NeurIPS 2021.
-.. [2] Wang, S. et al., "Linformer: Self-Attention with Linear 
+.. [2] Wang, S. et al., "Linformer: Self-Attention with Linear
        Complexity", 2020.
 
 See Also
@@ -79,17 +79,17 @@ from .base import KernelFunction
 
 class SpectralKernel(KernelFunction):
     """Base class for spectral kernel functions.
-    
+
     Spectral kernels use eigendecomposition or spectral analysis
     for efficient kernel computation.
-    
+
     Parameters
     ----------
     rank : int
         Rank of spectral approximation.
     normalize : bool, default=True
         Whether to normalize kernel values.
-        
+
     Attributes
     ----------
     rank : int
@@ -104,12 +104,12 @@ class SpectralKernel(KernelFunction):
 
     def spectral_decomposition(self, x: Tensor) -> tuple[Tensor, Tensor]:
         """Compute spectral decomposition of input.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         eigenvectors : Tensor
@@ -143,12 +143,12 @@ class SpectralKernel(KernelFunction):
         }
 
 
-@register_component("kernel", "polynomial_spectral")
+@register_component("kernel", "polynomial_spectral")  # type: ignore[arg-type]
 class PolynomialSpectralKernel(SpectralKernel):
     r"""Polynomial kernel with spectral decomposition.
-    
+
     Computes :math:`(XY^T + c)^d` using eigendecomposition for efficiency.
-    
+
     Parameters
     ----------
     rank : int
@@ -161,7 +161,7 @@ class PolynomialSpectralKernel(SpectralKernel):
         Scaling factor.
     normalize : bool, default=True
         Whether to normalize.
-        
+
     Attributes
     ----------
     degree : int
@@ -187,14 +187,14 @@ class PolynomialSpectralKernel(SpectralKernel):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute polynomial spectral kernel.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
-        y : Tensor  
+        y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -215,14 +215,14 @@ class PolynomialSpectralKernel(SpectralKernel):
 
     def compute_attention(self, q: Tensor, k: Tensor) -> Tensor:
         """Compute attention weights using spectral decomposition.
-        
+
         Parameters
         ----------
         q : Tensor
             Queries of shape (..., n, d).
         k : Tensor
             Keys of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -246,13 +246,13 @@ class PolynomialSpectralKernel(SpectralKernel):
 
     def _reduce_rank(self, x: Tensor) -> Tensor:
         """Reduce dimensionality via PCA/SVD.
-        
+
         Parameters
         ----------
         x : Tensor
             Input of shape (..., n, d).
-            
-        Returns  
+
+        Returns
         -------
         Tensor
             Reduced tensor of shape (..., n, r).
@@ -277,12 +277,12 @@ class PolynomialSpectralKernel(SpectralKernel):
         return x_reduced
 
 
-@register_component("kernel", "truncated_svd")
+@register_component("kernel", "truncated_svd")  # type: ignore[arg-type]
 class TruncatedSVDKernel(SpectralKernel):
     """Kernel approximation via truncated SVD.
-    
+
     Uses SVD to compute low-rank approximation of kernel matrix.
-    
+
     Parameters
     ----------
     rank : int
@@ -291,7 +291,7 @@ class TruncatedSVDKernel(SpectralKernel):
         Whether to normalize.
     use_randomized : bool, default=False
         Use randomized SVD for efficiency.
-        
+
     Attributes
     ----------
     use_randomized : bool
@@ -309,14 +309,14 @@ class TruncatedSVDKernel(SpectralKernel):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute kernel via truncated SVD.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -349,12 +349,12 @@ class TruncatedSVDKernel(SpectralKernel):
 
     def _randomized_svd_approximation(self, matrix: Tensor) -> Tensor:
         """Randomized SVD for fast approximation.
-        
+
         Parameters
         ----------
         matrix : Tensor
             Matrix to approximate of shape (..., n, m).
-            
+
         Returns
         -------
         Tensor
@@ -388,7 +388,7 @@ class TruncatedSVDKernel(SpectralKernel):
 @register_component("kernel", "learnable_spectral")
 class LearnableSpectralKernel(nn.Module, SpectralKernel):
     """Spectral kernel with learnable eigenvalues and eigenfunctions.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -401,7 +401,7 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
         Whether eigenvectors are trainable.
     normalize : bool, default=True
         Whether to normalize.
-        
+
     Attributes
     ----------
     eigenvectors : nn.Parameter
@@ -439,14 +439,14 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute learnable spectral kernel.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -471,12 +471,12 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
 
     def extract_features(self, x: Tensor) -> Tensor:
         """Extract spectral features.
-        
+
         Parameters
         ----------
         x : Tensor
             Input of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -492,14 +492,14 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
 
     def forward(self, x: Tensor, y: Tensor | None = None) -> Tensor:
         """Forward pass for nn.Module compatibility.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor | None, default=None
             Second input. If None, returns features.
-            
+
         Returns
         -------
         Tensor
@@ -519,11 +519,11 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
 
 
 @register_component("kernel", "fourier_kernel")
-class FourierKernel(SpectralKernel):
+class FourierKernel(nn.Module, SpectralKernel):
     """Kernel defined in Fourier domain.
-    
+
     Defines kernel through spectral filters in frequency space.
-    
+
     Parameters
     ----------
     rank : int
@@ -536,7 +536,7 @@ class FourierKernel(SpectralKernel):
         Type of spectral filter.
     cutoff_freq : float, default=0.5
         Normalized cutoff frequency.
-        
+
     Attributes
     ----------
     filter : nn.Parameter or Tensor
@@ -586,14 +586,14 @@ class FourierKernel(SpectralKernel):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute Fourier kernel.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -616,7 +616,7 @@ class FourierKernel(SpectralKernel):
         kernel_freq = x_filtered.unsqueeze(-2) * y_filtered.unsqueeze(-3).conj()
 
         # Average over frequency dimension
-        kernel = kernel_freq.real.mean(dim=-1)
+        kernel: Tensor = kernel_freq.real.mean(dim=-1)
 
         return kernel
 

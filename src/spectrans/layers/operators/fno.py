@@ -298,7 +298,7 @@ class FourierNeuralOperator(SpectralComponent):
     >>> output = fno(x)
     >>> assert output.shape == x.shape
     """
-    
+
     spectral_conv: SpectralConv1d | SpectralConv2d | None
     linear: nn.Conv1d | nn.Conv2d | None
     activation: nn.Module
@@ -367,7 +367,7 @@ class FourierNeuralOperator(SpectralComponent):
             activation_fn = nn.Identity()
         else:
             raise ValueError(f"Unsupported activation: {activation}")
-        
+
         self.activation = activation_fn
 
         self._init_weights()

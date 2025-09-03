@@ -72,7 +72,7 @@ spectrans.transforms.base : Transform-specific base classes
 """
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import torch
 import torch.nn as nn
@@ -90,18 +90,23 @@ class SpectralComponent(nn.Module, ABC):
     """
 
     @abstractmethod
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, *args, **kwargs) -> torch.Tensor | tuple[torch.Tensor, ...]:  # type: ignore[no-untyped-def]
         """Forward pass.
 
         Parameters
         ----------
         x : torch.Tensor
             Input tensor of shape (batch_size, sequence_length, hidden_dim).
+        *args : Any
+            Additional positional arguments for subclass-specific parameters.
+        **kwargs : Any
+            Additional keyword arguments for subclass-specific parameters.
 
         Returns
         -------
-        torch.Tensor
-            Output tensor of same shape as input.
+        torch.Tensor | tuple[torch.Tensor, ...]
+            Output tensor(s). Single tensor for most cases, tuple for attention 
+            layers that optionally return attention weights.
         """
         pass
 
@@ -113,7 +118,8 @@ class SpectralComponent(nn.Module, ABC):
         Returns
         -------
         dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
+            Dictionary with 'time' and 'space' complexity keys, may include
+            additional keys like 'levels' for specific component types.
         """
         pass
 
@@ -375,21 +381,25 @@ class BaseModel(nn.Module):
 
         return x
 
-    def get_complexity(self) -> dict[str, Any]:
+    def get_complexity(self) -> dict[str, int | list[dict[str, dict[str, str]]]]:
         """Get computational complexity of the model.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, int | list[dict[str, dict[str, str]]]]
             Dictionary containing complexity information for each layer.
         """
-        layers: list[dict[str, Any]] = []
+        layers: list[dict[str, dict[str, str]]] = []
 
         for i, block in enumerate(self.blocks):
-            layer_complexity = {f'layer_{i}': block.complexity}
-            layers.append(layer_complexity)
+            block_complexity = block.complexity
+            if isinstance(block_complexity, dict) and all(isinstance(v, str) for v in block_complexity.values()):
+                # Type check ensures this is dict[str, str]
+                complexity_dict: dict[str, str] = block_complexity
+                layer_complexity = {f'layer_{i}': complexity_dict}
+                layers.append(layer_complexity)
 
-        complexity = {
+        complexity: dict[str, int | list[dict[str, dict[str, str]]]] = {
             'num_layers': self.num_layers,
             'hidden_dim': self.hidden_dim,
             'max_seq_length': self.max_seq_length,

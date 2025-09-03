@@ -56,13 +56,13 @@ from .spectral import (
 )
 
 __all__ = [
-    # Spectral attention variants
-    "SpectralAttention",
-    "PerformerAttention",
+    "DCTAttention",
+    "HadamardAttention",
     "KernelAttention",
     # LST attention variants
     "LSTAttention",
-    "DCTAttention",
-    "HadamardAttention",
     "MixedSpectralAttention",
+    "PerformerAttention",
+    # Spectral attention variants
+    "SpectralAttention",
 ]

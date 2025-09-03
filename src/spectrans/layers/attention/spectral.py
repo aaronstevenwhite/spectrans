@@ -82,10 +82,10 @@ from ...kernels.rff import GaussianRFFKernel, RFFAttentionKernel
 @register_component("attention", "spectral")
 class SpectralAttention(AttentionLayer):
     """Multi-head spectral attention using RFF approximation.
-    
+
     Implements efficient attention using Random Fourier Features to
     approximate the softmax kernel with linear complexity.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -106,7 +106,7 @@ class SpectralAttention(AttentionLayer):
         Dropout probability.
     use_bias : bool, default=True
         Whether to use bias in projections.
-    
+
     Attributes
     ----------
     head_dim : int
@@ -180,7 +180,7 @@ class SpectralAttention(AttentionLayer):
         return_attention: bool = False,
     ) -> Tensor | tuple[Tensor, Tensor]:
         """Forward pass of spectral attention.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -189,7 +189,7 @@ class SpectralAttention(AttentionLayer):
             Attention mask of shape (batch_size, seq_len).
         return_attention : bool, default=False
             Whether to return attention weights (not supported).
-            
+
         Returns
         -------
         Tensor or tuple[Tensor, Tensor]
@@ -261,10 +261,10 @@ class SpectralAttention(AttentionLayer):
 @register_component("attention", "performer")
 class PerformerAttention(SpectralAttention):
     """Performer-style attention with FAVOR+ algorithm.
-    
+
     Implements the Performer architecture with positive orthogonal
     random features (FAVOR+) for unbiased softmax kernel approximation.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -279,7 +279,7 @@ class PerformerAttention(SpectralAttention):
         Deprecated alias for num_features.
     dropout : float, default=0.0
         Dropout probability.
-    
+
     Attributes
     ----------
     generalized : bool
@@ -327,7 +327,7 @@ class PerformerAttention(SpectralAttention):
         return_attention: bool = False,
     ) -> Tensor | tuple[Tensor, Tensor]:
         """Forward pass of Performer attention.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -336,7 +336,7 @@ class PerformerAttention(SpectralAttention):
             Attention mask.
         return_attention : bool, default=False
             Whether to return attention weights.
-            
+
         Returns
         -------
         Tensor or tuple[Tensor, Tensor]
@@ -391,10 +391,10 @@ class PerformerAttention(SpectralAttention):
 @register_component("attention", "kernel")
 class KernelAttention(AttentionLayer):
     """General kernel-based attention with various kernel options.
-    
+
     Supports multiple kernel types including Gaussian, polynomial,
     and learnable spectral kernels.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -409,7 +409,7 @@ class KernelAttention(AttentionLayer):
         Number of features for RFF kernels.
     dropout : float, default=0.0
         Dropout probability.
-    
+
     Attributes
     ----------
     kernel_type : str
@@ -473,7 +473,7 @@ class KernelAttention(AttentionLayer):
         return_attention: bool = False,
     ) -> Tensor | tuple[Tensor, Tensor]:
         """Forward pass of kernel attention.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -482,7 +482,7 @@ class KernelAttention(AttentionLayer):
             Attention mask.
         return_attention : bool, default=False
             Whether to return attention weights.
-            
+
         Returns
         -------
         Tensor or tuple[Tensor, Tensor]

@@ -1,9 +1,64 @@
-"""Transformer block implementations."""
+"""Transformer blocks module for spectrans.
 
-# Blocks will be imported here as they are implemented
-# from .spectral import SpectralBlock
-# from .hybrid import HybridBlock
+This module provides various transformer block implementations that combine
+mixing/attention layers with feedforward networks using residual connections
+and normalization.
 
-__all__: list[str] = [
-    # Will be populated as blocks are implemented
+Modules
+-------
+base
+    Base classes for transformer blocks.
+spectral
+    Spectral transformer blocks using various frequency-domain methods.
+hybrid
+    Hybrid blocks combining multiple mixing strategies.
+"""
+
+from .base import (
+    FeedForwardNetwork,
+    ParallelBlock,
+    PostNormBlock,
+    PreNormBlock,
+    TransformerBlock,
+)
+from .hybrid import (
+    AdaptiveBlock,
+    AlternatingBlock,
+    CascadeBlock,
+    HybridBlock,
+    MultiscaleBlock,
+)
+from .spectral import (
+    AFNOBlock,
+    FNetBlock,
+    FNO2DBlock,
+    FNOBlock,
+    GFNetBlock,
+    LSTBlock,
+    SpectralAttentionBlock,
+    WaveletBlock,
+)
+
+__all__ = [
+    "AFNOBlock",
+    "AdaptiveBlock",
+    "AlternatingBlock",
+    "CascadeBlock",
+    "FNO2DBlock",
+    "FNOBlock",
+    # Spectral blocks
+    "FNetBlock",
+    "FeedForwardNetwork",
+    "GFNetBlock",
+    # Hybrid blocks
+    "HybridBlock",
+    "LSTBlock",
+    "MultiscaleBlock",
+    "ParallelBlock",
+    "PostNormBlock",
+    "PreNormBlock",
+    "SpectralAttentionBlock",
+    # Base blocks
+    "TransformerBlock",
+    "WaveletBlock",
 ]

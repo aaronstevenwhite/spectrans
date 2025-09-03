@@ -86,7 +86,7 @@ spectrans.utils.complex : Complex tensor operations with proper typing
 """
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, TypeVar
+from typing import TYPE_CHECKING, Literal, TypeVar
 
 import torch
 import torch.nn as nn
@@ -207,8 +207,8 @@ ComponentType = Literal[
 ]
 
 # Configuration types
-type ConfigDict = dict[str, Any]
-type ParamsDict = dict[str, Any]
+type ConfigDict = dict[str, int | float | str | bool | list[int | float | str | bool]]
+type ParamsDict = dict[str, int | float | str | bool | list[int | float | str | bool]]
 
 # Callback types
 type LossFunction = Callable[[Tensor, Tensor], Tensor]
@@ -239,16 +239,16 @@ type NumRandomFeatures = int
 type RandomSeed = int | None
 
 # Complexity information
-type ComplexityInfo = dict[Literal["time", "space"], str]
+type ComplexityInfo = dict[str, str]
 
 # Training configuration
-type OptimizerConfig = dict[str, Any]
-type SchedulerConfig = dict[str, Any]
-type TrainingConfig = dict[str, Any]
+type OptimizerConfig = dict[str, int | float | str | bool]
+type SchedulerConfig = dict[str, int | float | str | bool]
+type TrainingConfig = dict[str, int | float | str | bool]
 
 # Model state
 type StateDict = dict[str, Tensor]
-type CheckpointDict = dict[str, Any]
+type CheckpointDict = dict[str, Tensor | int | float | str | bool | StateDict]
 
 # Registry types
 type ComponentClass = type[nn.Module]
@@ -319,6 +319,13 @@ type LocalRank = int
 type KernelFunction = Callable[[Tensor, Tensor], Tensor]
 type FeatureMapFunction = Callable[[Tensor], Tensor]
 
+# Kernel type aliases for attention layers
+type KernelType = Literal["gaussian", "softmax"]
+type SpectralKernelType = Literal["gaussian", "polynomial", "spectral"]
+
+# Transform type aliases for attention layers
+type TransformLSTType = Literal["dct", "dst", "hadamard", "mixed"]
+
 # Filter types for spectral methods
 type SpectralFilter = ComplexTensor
 type LearnableFilter = nn.Parameter
@@ -373,6 +380,7 @@ __all__: list[str] = [
     "InitializationType",
     "IntermediateDim",
     "KernelFunction",
+    "KernelType",
     "LearnableFilter",
     "LocalRank",
     "LongTensor",
@@ -412,10 +420,12 @@ __all__: list[str] = [
     "Shape3D",
     "Shape4D",
     "SpectralFilter",
+    "SpectralKernelType",
     "StateDict",
     # Tensor types
     "Tensor",
     "TrainingConfig",
+    "TransformLSTType",
     "TransformModuleType",
     # Transform and model types
     "TransformType",

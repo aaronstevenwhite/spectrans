@@ -88,7 +88,7 @@ from ..core.types import ComplexityInfo, Tensor
 
 class KernelFunction(ABC):
     r"""Abstract base class for kernel functions.
-    
+
     A kernel function :math:`k(x, y)` defines a similarity measure between
     inputs :math:`x` and :math:`y`, satisfying positive semi-definiteness properties.
     This interface supports both explicit kernel evaluation and
@@ -98,14 +98,14 @@ class KernelFunction(ABC):
     @abstractmethod
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         r"""Compute kernel values between x and y.
-        
+
         Parameters
         ----------
         x : Tensor
             First input tensor of shape (..., n, d).
         y : Tensor
             Second input tensor of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -118,7 +118,7 @@ class KernelFunction(ABC):
     @abstractmethod
     def complexity(self) -> ComplexityInfo:
         """Computational complexity of kernel evaluation.
-        
+
         Returns
         -------
         ComplexityInfo
@@ -128,12 +128,12 @@ class KernelFunction(ABC):
 
     def gram_matrix(self, x: Tensor) -> Tensor:
         r"""Compute Gram matrix :math:`K_{ij} = k(x_i, x_j)`.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -143,14 +143,14 @@ class KernelFunction(ABC):
 
     def is_positive_definite(self, x: Tensor, eps: float = 1e-6) -> bool:
         """Check if the kernel yields a positive definite Gram matrix.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
         eps : float, default=1e-6
             Tolerance for eigenvalue positivity check.
-            
+
         Returns
         -------
         bool
@@ -163,15 +163,15 @@ class KernelFunction(ABC):
 
 class RandomFeatureMap(nn.Module, ABC):
     r"""Abstract base class for random feature map approximations.
-    
+
     Random feature maps provide finite-dimensional approximations
     to kernel functions through the mapping:
-    
+
     .. math::
         k(x, y) \approx \varphi(x)^T \varphi(y)
-    
+
     This enables linear-time computation of kernel operations.
-    
+
     Parameters
     ----------
     input_dim : int
@@ -182,7 +182,7 @@ class RandomFeatureMap(nn.Module, ABC):
         Scaling parameter for the kernel.
     seed : int | None, default=None
         Random seed for reproducibility.
-        
+
     Attributes
     ----------
     input_dim : int
@@ -211,12 +211,12 @@ class RandomFeatureMap(nn.Module, ABC):
     @abstractmethod
     def forward(self, x: Tensor) -> Tensor:
         """Apply feature map to input.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of shape (..., n, d).
-            
+
         Returns
         -------
         Tensor
@@ -227,14 +227,14 @@ class RandomFeatureMap(nn.Module, ABC):
 
     def kernel_approximation(self, x: Tensor, y: Tensor) -> Tensor:
         """Approximate kernel matrix using feature maps.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -247,7 +247,7 @@ class RandomFeatureMap(nn.Module, ABC):
     @property
     def complexity(self) -> ComplexityInfo:
         """Computational complexity of feature mapping.
-        
+
         Returns
         -------
         ComplexityInfo
@@ -261,19 +261,19 @@ class RandomFeatureMap(nn.Module, ABC):
 
 class ShiftInvariantKernel(KernelFunction):
     r"""Base class for shift-invariant (stationary) kernels.
-    
+
     Shift-invariant kernels depend only on the difference :math:`x - y`,
     i.e., :math:`k(x, y) = k(x - y, 0) = \kappa(x - y)` for some function :math:`\kappa`.
-    
+
     These kernels admit Random Fourier Features approximation
     via Bochner's theorem.
-    
+
     Parameters
     ----------
     bandwidth : float, default=1.0
         Kernel bandwidth parameter (inverse of length scale).
-        
-    Attributes  
+
+    Attributes
     ----------
     bandwidth : float
         The bandwidth parameter.
@@ -285,12 +285,12 @@ class ShiftInvariantKernel(KernelFunction):
     @abstractmethod
     def evaluate_difference(self, diff: Tensor) -> Tensor:
         r"""Evaluate kernel on difference vectors.
-        
+
         Parameters
         ----------
         diff : Tensor
             Difference vectors :math:`x - y` of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -300,14 +300,14 @@ class ShiftInvariantKernel(KernelFunction):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute kernel matrix for shift-invariant kernel.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -324,15 +324,15 @@ class ShiftInvariantKernel(KernelFunction):
     @abstractmethod
     def spectral_density(self, omega: Tensor) -> Tensor:
         """Fourier transform of the kernel (spectral density).
-        
+
         For shift-invariant kernels, this defines the sampling
         distribution for Random Fourier Features.
-        
+
         Parameters
         ----------
         omega : Tensor
             Frequency vectors of shape (..., d).
-            
+
         Returns
         -------
         Tensor
@@ -343,7 +343,7 @@ class ShiftInvariantKernel(KernelFunction):
 
 class PolynomialKernel(KernelFunction):
     r"""Polynomial kernel :math:`k(x, y) = (\alpha \langle x, y \rangle + c)^d`.
-    
+
     Parameters
     ----------
     degree : int, default=2
@@ -352,7 +352,7 @@ class PolynomialKernel(KernelFunction):
         Scaling of inner product.
     coef0 : float, default=0.0
         Constant term.
-        
+
     Attributes
     ----------
     degree : int
@@ -375,14 +375,14 @@ class PolynomialKernel(KernelFunction):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute polynomial kernel matrix.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor
@@ -399,12 +399,12 @@ class PolynomialKernel(KernelFunction):
 
 class CosineKernel(KernelFunction):
     r"""Cosine similarity kernel :math:`k(x, y) = \frac{\langle x, y \rangle}{\|x\| \|y\|}`.
-    
+
     Parameters
     ----------
     eps : float, default=1e-8
         Small value for numerical stability.
-        
+
     Attributes
     ----------
     eps : float
@@ -416,14 +416,14 @@ class CosineKernel(KernelFunction):
 
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
         """Compute cosine similarity kernel matrix.
-        
+
         Parameters
         ----------
         x : Tensor
             First input of shape (..., n, d).
         y : Tensor
             Second input of shape (..., m, d).
-            
+
         Returns
         -------
         Tensor

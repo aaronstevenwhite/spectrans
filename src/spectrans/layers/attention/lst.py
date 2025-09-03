@@ -88,15 +88,16 @@ from ...core.base import AttentionLayer
 from ...core.registry import register_component
 from ...core.types import ComplexityInfo, Tensor
 from ...transforms import DCT, DST, HadamardTransform
+from ...transforms.base import SpectralTransform
 
 
 @register_component("attention", "lst")
 class LSTAttention(AttentionLayer):
     """Linear Spectral Transform attention mechanism.
-    
+
     Implements efficient attention using orthogonal transforms
     (DCT, DST, Hadamard) with learnable diagonal scaling.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -113,7 +114,7 @@ class LSTAttention(AttentionLayer):
         Dropout probability.
     use_bias : bool, default=True
         Whether to use bias in projections.
-    
+
     Attributes
     ----------
     head_dim : int
@@ -152,7 +153,7 @@ class LSTAttention(AttentionLayer):
         self.out_proj = nn.Linear(hidden_dim, hidden_dim, bias=use_bias)
 
         # Initialize transforms
-        self.transforms = nn.ModuleList()
+        self.transforms: nn.ModuleList = nn.ModuleList()  # Contains SpectralTransform objects
         if transform_type == "mixed":
             # Use different transforms for different heads
             transform_types = ["dct", "dst", "hadamard"]
@@ -180,17 +181,17 @@ class LSTAttention(AttentionLayer):
     def _create_transform(
         self,
         transform_type: str,
-    ) -> nn.Module:
+    ) -> SpectralTransform:
         """Create a transform module.
-        
+
         Parameters
         ----------
         transform_type : str
             Type of transform ("dct", "dst", or "hadamard").
-            
+
         Returns
         -------
-        nn.Module
+        SpectralTransform
             Transform module.
         """
         if transform_type == "dct":
@@ -207,9 +208,9 @@ class LSTAttention(AttentionLayer):
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor]:
+    ) -> Tensor | tuple[Tensor, ...]:
         """Forward pass of LST attention.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -218,7 +219,7 @@ class LSTAttention(AttentionLayer):
             Attention mask of shape (batch_size, seq_len).
         return_attention : bool, default=False
             Whether to return attention weights (not supported).
-            
+
         Returns
         -------
         Tensor or tuple[Tensor, Tensor]
@@ -250,10 +251,11 @@ class LSTAttention(AttentionLayer):
             v_head = V[:, head_idx]
 
             # Get transform for this head
+            transform: SpectralTransform
             if self.transform_type == "mixed":
-                transform = self.transforms[head_idx]
+                transform = self.transforms[head_idx]  # type: ignore[assignment]
             else:
-                transform = self.transforms[0]
+                transform = self.transforms[0]  # type: ignore[assignment]
 
             # Apply transform along sequence dimension
             q_transformed = transform.transform(q_head, dim=-2)
@@ -303,10 +305,11 @@ class LSTAttention(AttentionLayer):
         out = self.out_proj(out)
         out = self.dropout(out)
 
+        output: Tensor = out
         if return_attention:
             # Attention weights not available in LST
-            return out, None
-        return out
+            return output, None  # type: ignore[return-value]
+        return output
 
     @property
     def complexity(self) -> ComplexityInfo:
@@ -320,10 +323,10 @@ class LSTAttention(AttentionLayer):
 @register_component("attention", "dct")
 class DCTAttention(LSTAttention):
     """Attention using Discrete Cosine Transform.
-    
+
     Specialized LST attention that uses DCT for all heads,
     optimized for real-valued signals with energy compaction.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -368,10 +371,10 @@ class DCTAttention(LSTAttention):
 @register_component("attention", "hadamard")
 class HadamardAttention(LSTAttention):
     """Attention using fast Hadamard transform.
-    
+
     Uses Hadamard transform for O(n log n) attention computation
     with binary coefficients for efficiency.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -415,10 +418,10 @@ class HadamardAttention(LSTAttention):
 @register_component("attention", "mixed_spectral")
 class MixedSpectralAttention(AttentionLayer):
     """Mixed spectral attention using multiple transform types.
-    
+
     Combines different spectral transforms across heads for
     diverse frequency representations.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -490,20 +493,20 @@ class MixedSpectralAttention(AttentionLayer):
     def forward(
         self,
         x: Tensor,
-        mask: Tensor | None = None,
+        _mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor]:
+    ) -> Tensor | tuple[Tensor, ...]:
         """Forward pass of mixed spectral attention.
-        
+
         Parameters
         ----------
         x : Tensor
             Input of shape (batch_size, seq_len, hidden_dim).
-        mask : Tensor | None, default=None
-            Attention mask.
+        _mask : Tensor | None, default=None
+            Attention mask (not implemented for spectral attention).
         return_attention : bool, default=False
             Whether to return attention weights.
-            
+
         Returns
         -------
         Tensor or tuple[Tensor, Tensor]
@@ -532,6 +535,8 @@ class MixedSpectralAttention(AttentionLayer):
 
             # Apply appropriate transform
             if transform_type == "fft":
+                if self.fft is None:
+                    raise RuntimeError("FFT transform not initialized")
                 q_t = self.fft.transform(q_head, dim=-2)
                 k_t = self.fft.transform(k_head, dim=-2)
                 v_t = self.fft.transform(v_head, dim=-2)
@@ -544,6 +549,8 @@ class MixedSpectralAttention(AttentionLayer):
                 out_head = self.fft.inverse_transform(out_t, dim=-2).real
 
             elif transform_type == "dct":
+                if self.dct is None:
+                    raise RuntimeError("DCT transform not initialized")
                 q_t = self.dct.transform(q_head, dim=-2)
                 k_t = self.dct.transform(k_head, dim=-2)
                 v_t = self.dct.transform(v_head, dim=-2)
@@ -554,6 +561,8 @@ class MixedSpectralAttention(AttentionLayer):
                 out_head = self.dct.inverse_transform(out_t, dim=-2)
 
             else:  # hadamard
+                if self.hadamard is None:
+                    raise RuntimeError("Hadamard transform not initialized")
                 q_t = self.hadamard.transform(q_head, dim=-2)
                 k_t = self.hadamard.transform(k_head, dim=-2)
                 v_t = self.hadamard.transform(v_head, dim=-2)
@@ -574,9 +583,10 @@ class MixedSpectralAttention(AttentionLayer):
         out = self.out_proj(out)
         out = self.dropout(out)
 
+        output: Tensor = out
         if return_attention:
-            return out, None
-        return out
+            return output, None  # type: ignore[return-value]
+        return output
 
     @property
     def complexity(self) -> ComplexityInfo:
