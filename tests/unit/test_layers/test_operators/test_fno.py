@@ -531,7 +531,6 @@ class TestFNOEdgeCases:
         assert output.shape == x.shape
         assert torch.isfinite(output).all()
         
-    @pytest.mark.xfail(reason="Complex dtype preservation not yet implemented")
     def test_fno_dtype_preservation(self):
         """Test dtype preservation."""
         batch_size = 2

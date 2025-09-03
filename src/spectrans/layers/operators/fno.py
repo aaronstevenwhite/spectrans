@@ -151,8 +151,8 @@ class SpectralConv1d(nn.Module):
         )
 
         # Apply spectral convolution via complex multiplication
-        # Convert weights to complex
-        weights_complex = torch.view_as_complex(self.weights)
+        # Convert weights to complex and match input dtype
+        weights_complex = torch.view_as_complex(self.weights.to(x.dtype))
 
         # Perform einsum for channel mixing with mode-wise multiplication
         # Shape: (batch, in_channels, modes) x (in_channels, out_channels, modes)
@@ -243,7 +243,7 @@ class SpectralConv2d(nn.Module):
         )
 
         # Truncate and apply convolution
-        weights_complex = torch.view_as_complex(self.weights)
+        weights_complex = torch.view_as_complex(self.weights.to(x.dtype))
 
         # Apply convolution on truncated modes
         out_ft[:, :, :self.modes1, :self.modes2] = torch.einsum(
@@ -387,6 +387,11 @@ class FourierNeuralOperator(SpectralComponent):
         torch.Tensor
             Output tensor of same shape as input.
         """
+        # Ensure all layers match input dtype for proper dtype preservation
+        input_dtype = x.dtype
+        if self.linear is not None and self.linear.weight.dtype != input_dtype:
+            self.linear = self.linear.to(input_dtype)
+            
         if self.dim == 1:
             # For 1D, expect (batch, sequence, channels)
             # Transpose to (batch, channels, sequence) for convolution
