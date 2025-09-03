@@ -1,9 +1,8 @@
 """Mixing layer implementations.
 
-This module provides efficient alternatives to attention mechanisms by implementing
-various spectral mixing layers. These layers operate in frequency domains using
-transforms like FFT, maintaining linear or log-linear complexity while providing
-effective token mixing capabilities.
+This module implements spectral mixing layers that serve as alternatives to attention
+mechanisms. These layers operate in frequency domains using transforms like FFT,
+maintaining linear or log-linear computational complexity for token mixing operations.
 
 The mixing layers implement different mathematical approaches:
 - Fourier mixing: Parameter-free frequency domain mixing (FNet style)
@@ -57,9 +56,9 @@ Advanced adaptive filtering:
 Notes
 -----
 Complexity Comparison:
-- Traditional attention: O(n²d)
-- Fourier mixing: O(nd log n)
-- Global filtering: O(nd log n) + learnable parameters
+- Traditional attention: $O(n^2 d)$
+- Fourier mixing: $O(nd \log n)$
+- Global filtering: $O(nd \log n)$ + learnable parameters
 
 All mixing layers support:
 - Batch processing with consistent behavior

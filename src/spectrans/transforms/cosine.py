@@ -55,24 +55,26 @@ Notes
 Mathematical Formulations:
 
 **DCT Type-II** (most common):
-DCT[k] = alpha_k * sum(n=0 to N-1) x[n] * cos(pi(2n+1)k / 2N)
 
-Where alpha_k = sqrt(1/N) if k=0, sqrt(2/N) if k>0 (for orthonormal normalization)
+$$\text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} x[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)$$
+
+Where $\alpha_k = \sqrt{1/N}$ if $k=0$, $\alpha_k = \sqrt{2/N}$ if $k>0$ (for orthonormal normalization)
 
 **DST Type-I**:
-DST[k] = sum(n=1 to N-1) x[n] * sin(pi*n*k / N)
+
+$$\text{DST}[k] = \sum_{n=1}^{N-1} x[n] \sin\left(\frac{\pi n k}{N}\right)$$
 
 **Orthogonality Properties**:
-- DCT and DST matrices are orthogonal: T^T * T = I
-- Perfect reconstruction: x = DCT^(-1)(DCT(x))
-- Energy conservation: ||DCT(x)||² = ||x||² (with proper normalization)
+- DCT and DST matrices are orthogonal: $\mathbf{T}^T \mathbf{T} = \mathbf{I}$
+- Perfect reconstruction: $x = \text{DCT}^{-1}(\text{DCT}(x))$
+- Energy conservation: $\|\text{DCT}(x)\|^2 = \|x\|^2$ (with proper normalization)
 
 **Computational Complexity**:
-- DCT/DST: O(N log N) via FFT-based algorithms
-- Direct computation: O(N²) but rarely used due to inefficiency
+- DCT/DST: $O(N \log N)$ via FFT-based algorithms
+- Direct computation: $O(N^2)$ but rarely used due to inefficiency
 
 Implementation Details:
-- Uses FFT-based algorithms for O(N log N) complexity
+- Uses FFT-based algorithms for $O(N \log N)$ complexity
 - Supports both normalized and unnormalized variants
 - Proper handling of boundary conditions for different transform types
 - Gradient-compatible for neural network training
