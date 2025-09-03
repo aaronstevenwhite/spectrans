@@ -121,6 +121,7 @@ class DCT(OrthogonalTransform):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
 
     def transform(self, x: Tensor, dim: int = -1) -> Tensor:
@@ -280,6 +281,7 @@ class DST(OrthogonalTransform):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
 
     def transform(self, x: Tensor, dim: int = -1) -> Tensor:
@@ -426,6 +428,7 @@ class DCT2D(SpectralTransform2D):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
         self.dct = DCT(normalized=normalized)
 
@@ -488,6 +491,7 @@ class MDCT(OrthogonalTransform):
     """
 
     def __init__(self, block_size: int, window: str = "sine"):
+        super().__init__()
         if block_size % 2 != 0:
             raise ValueError("Block size must be even for MDCT")
 

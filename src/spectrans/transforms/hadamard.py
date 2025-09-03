@@ -142,6 +142,7 @@ class HadamardTransform(OrthogonalTransform):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
 
     def transform(self, x: Tensor, dim: int = -1) -> Tensor:
@@ -258,6 +259,7 @@ class HadamardTransform2D(SpectralTransform2D):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
         self.hadamard = HadamardTransform(normalized=False)  # Handle normalization here
 
@@ -326,6 +328,7 @@ class SequencyHadamardTransform(OrthogonalTransform):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
         self.hadamard = HadamardTransform(normalized=normalized)
 
@@ -424,6 +427,7 @@ class SlantTransform(OrthogonalTransform):
     """
 
     def __init__(self, normalized: bool = True):
+        super().__init__()
         self.normalized = normalized
 
     def transform(self, x: Tensor, dim: int = -1) -> Tensor:
