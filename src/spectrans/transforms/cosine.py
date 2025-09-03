@@ -1,4 +1,4 @@
-"""Discrete Cosine and Sine Transform implementations.
+r"""Discrete Cosine and Sine Transform implementations.
 
 This module implements the Discrete Cosine Transform (DCT) and Discrete Sine Transform (DST)
 families, which are orthogonal transforms widely used in signal processing, image compression,
@@ -56,25 +56,29 @@ Mathematical Formulations:
 
 **DCT Type-II** (most common):
 
-$$\text{DCT}[k] = \alpha_k \\sum_{n=0}^{N-1} x[n] \\cos\\left(\frac{\\pi(2n+1)k}{2N}\right)$$
+.. math::
+    \text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} x[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)
 
-Where $\alpha_k = \\sqrt{1/N}$ if $k=0$, $\alpha_k = \\sqrt{2/N}$ if $k>0$ (for orthonormal normalization)
+Where :math:`\alpha_k = \sqrt{1/N}` if :math:`k=0`, :math:`\alpha_k = \sqrt{2/N}` if :math:`k>0` (for orthonormal normalization)
 
 **DST Type-I**:
 
-$$\text{DST}[k] = \\sum_{n=1}^{N-1} x[n] \\sin\\left(\frac{\\pi n k}{N}\right)$$
+.. math::
+    \text{DST}[k] = \sum_{n=1}^{N-1} x[n] \sin\left(\frac{\pi n k}{N}\right)
 
 **Orthogonality Properties**:
-- DCT and DST matrices are orthogonal: $\\mathbf{T}^T \\mathbf{T} = \\mathbf{I}$
-- Perfect reconstruction: $x = \text{DCT}^{-1}(\text{DCT}(x))$
-- Energy conservation: $\\|\text{DCT}(x)\\|^2 = \\|x\\|^2$ (with proper normalization)
+
+- DCT and DST matrices are orthogonal: :math:`\mathbf{T}^T \mathbf{T} = \mathbf{I}`
+- Perfect reconstruction: :math:`x = \text{DCT}^{-1}(\text{DCT}(x))`
+- Energy conservation: :math:`\|\text{DCT}(x)\|^2 = \|x\|^2` (with proper normalization)
 
 **Computational Complexity**:
-- DCT/DST: $O(N \\log N)$ via FFT-based algorithms
-- Direct computation: $O(N^2)$ but rarely used due to inefficiency
+
+- DCT/DST: :math:`O(N \log N)` via FFT-based algorithms
+- Direct computation: :math:`O(N^2)` but rarely used due to inefficiency
 
 Implementation Details:
-- Uses FFT-based algorithms for $O(N \\log N)$ complexity
+- Uses FFT-based algorithms for :math:`O(N \log N)` complexity
 - Supports both normalized and unnormalized variants
 - Proper handling of boundary conditions for different transform types
 - Gradient-compatible for neural network training

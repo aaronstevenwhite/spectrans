@@ -1,4 +1,4 @@
-"""Base interfaces and classes for kernel functions and random feature maps.
+r"""Base interfaces and classes for kernel functions and random feature maps.
 
 This module defines the abstract base classes for kernel functions used in
 spectral attention mechanisms and other kernel-based methods. It provides
@@ -12,7 +12,7 @@ enabling efficient computation of attention mechanisms with linear complexity.
 Classes
 -------
 KernelFunction
-    Abstract base class for kernel functions k(x, y).
+    Abstract base class for kernel functions :math:`k(x, y)`.
 RandomFeatureMap
     Abstract base class for random feature approximations.
 ShiftInvariantKernel
@@ -47,14 +47,21 @@ Notes
 Kernel Approximation Theory:
 
 For shift-invariant kernels, Bochner's theorem states that:
-    k(x - y) = ∫ p(ω) exp(iω^T(x-y)) dω
+
+.. math::
+    k(x - y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
 
 This enables Random Fourier Features approximation:
-    k(x, y) ≈ φ(x)^T φ(y)
 
-Where φ(x) = √(2/D) * [cos(ω₁^Tx + b₁), ..., cos(ω_D^Tx + b_D)]
+.. math::
+    k(x, y) \approx \varphi(x)^T \varphi(y)
 
-The approximation quality improves with O(1/√D) where D is the number
+Where:
+
+.. math::
+    \varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+
+The approximation quality improves with :math:`O(1/\sqrt{D})` where :math:`D` is the number
 of random features.
 
 References
@@ -80,17 +87,17 @@ from ..core.types import ComplexityInfo, Tensor
 
 
 class KernelFunction(ABC):
-    """Abstract base class for kernel functions.
+    r"""Abstract base class for kernel functions.
     
-    A kernel function k(x, y) defines a similarity measure between
-    inputs x and y, satisfying positive semi-definiteness properties.
+    A kernel function :math:`k(x, y)` defines a similarity measure between
+    inputs :math:`x` and :math:`y`, satisfying positive semi-definiteness properties.
     This interface supports both explicit kernel evaluation and
     feature map representations.
     """
 
     @abstractmethod
     def compute(self, x: Tensor, y: Tensor) -> Tensor:
-        """Compute kernel values between x and y.
+        r"""Compute kernel values between x and y.
         
         Parameters
         ----------
@@ -102,8 +109,8 @@ class KernelFunction(ABC):
         Returns
         -------
         Tensor
-            Kernel matrix of shape (..., n, m) where element (i,j)
-            contains k(x[i], y[j]).
+            Kernel matrix of shape (..., n, m) where element :math:`(i,j)`
+            contains :math:`k(x_i, y_j)`.
         """
         pass
 
@@ -120,7 +127,7 @@ class KernelFunction(ABC):
         pass
 
     def gram_matrix(self, x: Tensor) -> Tensor:
-        """Compute Gram matrix K[i,j] = k(x[i], x[j]).
+        r"""Compute Gram matrix :math:`K_{ij} = k(x_i, x_j)`.
         
         Parameters
         ----------
@@ -155,11 +162,13 @@ class KernelFunction(ABC):
 
 
 class RandomFeatureMap(nn.Module, ABC):
-    """Abstract base class for random feature map approximations.
+    r"""Abstract base class for random feature map approximations.
     
     Random feature maps provide finite-dimensional approximations
     to kernel functions through the mapping:
-        k(x, y) ≈ φ(x)^T φ(y)
+    
+    .. math::
+        k(x, y) \approx \varphi(x)^T \varphi(y)
     
     This enables linear-time computation of kernel operations.
     
@@ -251,10 +260,10 @@ class RandomFeatureMap(nn.Module, ABC):
 
 
 class ShiftInvariantKernel(KernelFunction):
-    """Base class for shift-invariant (stationary) kernels.
+    r"""Base class for shift-invariant (stationary) kernels.
     
-    Shift-invariant kernels depend only on the difference x - y,
-    i.e., k(x, y) = k(x - y, 0) = κ(x - y) for some function κ.
+    Shift-invariant kernels depend only on the difference :math:`x - y`,
+    i.e., :math:`k(x, y) = k(x - y, 0) = \kappa(x - y)` for some function :math:`\kappa`.
     
     These kernels admit Random Fourier Features approximation
     via Bochner's theorem.
@@ -275,17 +284,17 @@ class ShiftInvariantKernel(KernelFunction):
 
     @abstractmethod
     def evaluate_difference(self, diff: Tensor) -> Tensor:
-        """Evaluate kernel on difference vectors.
+        r"""Evaluate kernel on difference vectors.
         
         Parameters
         ----------
         diff : Tensor
-            Difference vectors x - y of shape (..., d).
+            Difference vectors :math:`x - y` of shape (..., d).
             
         Returns
         -------
         Tensor
-            Kernel values κ(diff) of shape (...).
+            Kernel values :math:`\kappa(\text{diff})` of shape (...).
         """
         pass
 
@@ -333,7 +342,7 @@ class ShiftInvariantKernel(KernelFunction):
 
 
 class PolynomialKernel(KernelFunction):
-    """Polynomial kernel k(x, y) = (α⟨x, y⟩ + c)^d.
+    r"""Polynomial kernel :math:`k(x, y) = (\alpha \langle x, y \rangle + c)^d`.
     
     Parameters
     ----------
@@ -389,7 +398,7 @@ class PolynomialKernel(KernelFunction):
 
 
 class CosineKernel(KernelFunction):
-    """Cosine similarity kernel k(x, y) = ⟨x, y⟩ / (||x|| ||y||).
+    r"""Cosine similarity kernel :math:`k(x, y) = \frac{\langle x, y \rangle}{\|x\| \|y\|}`.
     
     Parameters
     ----------

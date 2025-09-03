@@ -1,11 +1,11 @@
-"""Linear Spectral Transform (LST) attention mechanisms.
+r"""Linear Spectral Transform (LST) attention mechanisms.
 
 This module implements attention mechanisms based on Linear Spectral Transforms
 such as Discrete Cosine Transform (DCT), Discrete Sine Transform (DST), and
-Hadamard Transform. These transforms enable efficient O(n log n) attention
+Hadamard Transform. These transforms enable efficient :math:`O(n \log n)` attention
 computation while maintaining orthogonality properties.
 
-The LST attention mechanism replaces the standard QK^T computation with
+The LST attention mechanism replaces the standard :math:`QK^T` computation with
 element-wise multiplication in the transform domain, significantly reducing
 computational complexity for long sequences.
 
@@ -46,16 +46,20 @@ Multi-transform attention:
 Notes
 -----
 The LST attention computes:
-    Attention(Q, K, V) = T^(-1)(Λ ⊙ (T(Q) ⊙ T(K) ⊙ T(V)))
+
+.. math::
+    \text{Attention}(Q, K, V) = T^{-1}(\Lambda \odot (T(Q) \odot T(K) \odot T(V)))
 
 Where:
-- T is an orthogonal transform (DCT, DST, Hadamard)
-- Λ is a learnable diagonal scaling matrix
-- ⊙ denotes element-wise multiplication
+
+- :math:`T` is an orthogonal transform (DCT, DST, Hadamard)
+- :math:`\Lambda` is a learnable diagonal scaling matrix
+- :math:`\odot` denotes element-wise multiplication
 
 Complexity:
-- Standard attention: O(n²d)
-- LST attention: O(nd log n)
+
+- Standard attention: :math:`O(n^2d)`
+- LST attention: :math:`O(nd \log n)`
 
 The orthogonality of transforms preserves information while
 enabling efficient computation in the frequency domain.

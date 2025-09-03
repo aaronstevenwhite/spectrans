@@ -1,4 +1,4 @@
-"""Spectral kernel functions for attention mechanisms.
+r"""Spectral kernel functions for attention mechanisms.
 
 This module implements kernel functions based on spectral decomposition
 and eigenfunction expansions. These kernels are particularly useful for
@@ -145,9 +145,9 @@ class SpectralKernel(KernelFunction):
 
 @register_component("kernel", "polynomial_spectral")
 class PolynomialSpectralKernel(SpectralKernel):
-    """Polynomial kernel with spectral decomposition.
+    r"""Polynomial kernel with spectral decomposition.
     
-    Computes (X Y^T + c)^d using eigendecomposition for efficiency.
+    Computes :math:`(XY^T + c)^d` using eigendecomposition for efficiency.
     
     Parameters
     ----------

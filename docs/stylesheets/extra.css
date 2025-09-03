@@ -1,0 +1,101 @@
+/* Custom styles for Spectrans documentation */
+
+/* Math display improvements */
+.arithmatex {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+mjx-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+mjx-container[display="true"] {
+    margin: 1em 0 !important;
+}
+
+/* Code block improvements */
+.highlight pre {
+    line-height: 1.4;
+}
+
+/* API documentation styles */
+.doc-class {
+    border-left: 3px solid var(--md-primary-fg-color);
+    padding-left: 1rem;
+    margin: 1rem 0;
+}
+
+.doc-function {
+    border-left: 3px solid var(--md-accent-fg-color);
+    padding-left: 1rem;
+    margin: 1rem 0;
+}
+
+/* Parameter tables */
+.doc-param-table {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.doc-param-table th {
+    text-align: left;
+    background-color: var(--md-code-bg-color);
+    padding: 0.5rem;
+}
+
+.doc-param-table td {
+    padding: 0.5rem;
+    vertical-align: top;
+}
+
+/* Admonition customization */
+.admonition.math-note {
+    border-color: var(--md-primary-fg-color);
+}
+
+.admonition.math-note > .admonition-title {
+    background-color: var(--md-primary-fg-color--light);
+}
+
+/* Navigation improvements */
+.md-nav__item--nested > .md-nav__link {
+    font-weight: 600;
+}
+
+/* Search result highlighting */
+.md-search-result__article--document .md-search-result__title {
+    font-weight: 600;
+}
+
+/* Responsive math display */
+@media screen and (max-width: 768px) {
+    mjx-container[display="true"] {
+        font-size: 0.85em;
+    }
+}
+
+/* Signature highlighting */
+.highlight .sig-name {
+    color: var(--md-primary-fg-color);
+    font-weight: 600;
+}
+
+/* Docstring section headers */
+.doc-section-header {
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--md-primary-fg-color);
+}
+
+/* Return type annotations */
+.sig-return {
+    color: var(--md-accent-fg-color);
+}
+
+/* Optional parameter indicators */
+.sig-default {
+    color: var(--md-code-hl-string-color);
+}

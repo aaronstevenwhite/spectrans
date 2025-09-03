@@ -1,4 +1,4 @@
-"""Random Fourier Features (RFF) for kernel approximation.
+r"""Random Fourier Features (RFF) for kernel approximation.
 
 This module implements Random Fourier Features, a technique for approximating
 shift-invariant kernels through explicit feature maps. RFF enables linear-time
@@ -47,17 +47,22 @@ Notes
 -----
 Random Fourier Features Theory:
 
-For a shift-invariant kernel k(x, y) = κ(x - y) with Fourier transform p(ω),
+For a shift-invariant kernel :math:`k(x, y) = \kappa(x - y)` with Fourier transform :math:`p(\omega)`,
 Bochner's theorem gives:
-    k(x, y) = ∫ p(ω) exp(iω^T(x-y)) dω
 
-The RFF approximation samples ω ~ p(ω) and uses:
-    φ(x) = √(2/D) * [cos(ω₁^Tx + b₁), ..., cos(ω_D^Tx + b_D)]
+.. math::
+    k(x, y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
 
-This gives k(x, y) ≈ φ(x)^T φ(y) with approximation error O(1/√D).
+The RFF approximation samples :math:`\omega \sim p(\omega)` and uses:
 
-For Gaussian kernel: p(ω) = N(0, σ²I)
-For Laplacian kernel: p(ω) = Cauchy(0, σ)
+.. math::
+    \varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+
+This gives :math:`k(x, y) \approx \varphi(x)^T \varphi(y)` with approximation error :math:`O(1/\sqrt{D})`.
+
+For Gaussian kernel: :math:`p(\omega) = \mathcal{N}(0, \sigma^2 I)`
+
+For Laplacian kernel: :math:`p(\omega) = \text{Cauchy}(0, \sigma)`
 
 References
 ----------
@@ -87,9 +92,9 @@ from .base import RandomFeatureMap, ShiftInvariantKernel
 
 @register_component("kernel", "gaussian_rff")
 class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
-    """Gaussian (RBF) kernel with Random Fourier Features approximation.
+    r"""Gaussian (RBF) kernel with Random Fourier Features approximation.
     
-    Implements k(x, y) = exp(-||x - y||² / (2σ²)) using RFF.
+    Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|^2}{2\sigma^2}\right)` using RFF.
     
     Parameters
     ----------
@@ -278,9 +283,9 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
 @register_component("kernel", "laplacian_rff")
 class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
-    """Laplacian kernel with Random Fourier Features approximation.
+    r"""Laplacian kernel with Random Fourier Features approximation.
     
-    Implements k(x, y) = exp(-||x - y||₁ / σ) using RFF with Cauchy
+    Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|_1}{\sigma}\right)` using RFF with Cauchy
     distribution for sampling frequencies.
     
     Parameters
@@ -682,13 +687,13 @@ class RFFAttentionKernel(RandomFeatureMap):
 
         if self.kernel_type == "softmax":
             # Positive features for softmax kernel approximation
-            # φ(x) = exp(x^T ω - ||x||²/2) / √m
+            # :math:`\varphi(x) = \exp(x^T \omega - \|x\|^2/2) / \sqrt{m}`
             x_norm_sq = torch.sum(x ** 2, dim=-1, keepdim=True) / 2
             features = torch.exp(z - x_norm_sq)
             scale = 1.0 / math.sqrt(self.num_features)
 
         elif self.kernel_type == "relu":
-            # ReLU kernel: max(0, x^T ω)
+            # ReLU kernel: :math:`\max(0, x^T \omega)`
             features = F.relu(z)
             scale = math.sqrt(2.0 / self.num_features)
 

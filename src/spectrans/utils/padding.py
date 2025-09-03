@@ -103,7 +103,7 @@ Padding Strategies and Their Properties:
 
 Mathematical Considerations:
 
-1. **FFT Efficiency**: Powers of 2 enable radix-2 FFT algorithms with optimal $O(n \log n)$ complexity
+1. **FFT Efficiency**: Powers of 2 enable radix-2 FFT algorithms with optimal :math:`O(n \log n)` complexity
 2. **Boundary Conditions**: Different padding affects transform properties and numerical stability
 3. **Aliasing**: Improper padding can introduce aliasing artifacts in frequency domain
 4. **Memory Usage**: Padding increases memory requirements, important for large signals

@@ -56,9 +56,10 @@ Advanced adaptive filtering:
 Notes
 -----
 Complexity Comparison:
-- Traditional attention: $O(n^2 d)$
-- Fourier mixing: $O(nd \log n)$
-- Global filtering: $O(nd \log n)$ + learnable parameters
+
+- Traditional attention: :math:`O(n^2 d)`
+- Fourier mixing: :math:`O(nd \log n)`
+- Global filtering: :math:`O(nd \log n)` + learnable parameters
 
 All mixing layers support:
 - Batch processing with consistent behavior

@@ -39,16 +39,20 @@ Notes
 -----
 Mathematical Foundation:
 
-The discrete wavelet transform decomposes a signal $x$ into approximation
-coefficients $c_A$ and detail coefficients $\{c_{D_j}\}_{j=1}^J$ at $J$ levels:
+The discrete wavelet transform decomposes a signal :math:`x` into approximation
+coefficients :math:`c_A` and detail coefficients :math:`\{c_{D_j}\}_{j=1}^J` at :math:`J` levels:
 
-$$\text{DWT}(x) = \{c_{A_J}, \{c_{D_j}\}_{j=1}^J\}$$
+.. math::
+    \text{DWT}(x) = \{c_{A_J}, \{c_{D_j}\}_{j=1}^J\}
 
-The decomposition uses filter banks with low-pass filter $h$ and high-pass
-filter $g$:
+The decomposition uses filter banks with low-pass filter :math:`h` and high-pass
+filter :math:`g`:
 
-$$c_{A_{j+1}}[k] = \sum_m h[m-2k] c_{A_j}[m]$$
-$$c_{D_{j+1}}[k] = \sum_m g[m-2k] c_{A_j}[m]$$
+.. math::
+    c_{A_{j+1}}[k] = \sum_m h[m-2k] c_{A_j}[m]
+
+.. math::
+    c_{D_{j+1}}[k] = \sum_m g[m-2k] c_{A_j}[m]
 
 Wavelet mixing applies learnable transformations to these coefficients:
 - Pointwise mixing: Element-wise scaling of coefficients
@@ -56,8 +60,8 @@ Wavelet mixing applies learnable transformations to these coefficients:
 - Level mixing: Cross-scale interactions using attention mechanisms
 
 Computational Properties:
-- Time complexity: $O(nd)$ for $n$-length signals with $d$ channels
-- Space complexity: $O(nd)$ for coefficient storage
+- Time complexity: :math:`O(nd)` for :math:`n`-length signals with :math:`d` channels
+- Space complexity: :math:`O(nd)` for coefficient storage
 - Decomposition levels: Typically 1-5 depending on signal length
 
 The wavelet choice affects the analysis properties:

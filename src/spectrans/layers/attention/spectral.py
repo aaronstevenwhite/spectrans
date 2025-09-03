@@ -1,8 +1,8 @@
-"""Spectral attention mechanisms using kernel approximations.
+r"""Spectral attention mechanisms using kernel approximations.
 
 This module implements efficient attention mechanisms based on spectral methods
 and kernel approximations, particularly Random Fourier Features (RFF). These
-methods achieve linear complexity O(n) instead of the quadratic O(n²) complexity
+methods achieve linear complexity :math:`O(n)` instead of the quadratic :math:`O(n^2)` complexity
 of standard attention.
 
 The implementations follow the Performer architecture and related work on
@@ -42,14 +42,17 @@ Performer attention:
 Notes
 -----
 The spectral attention approximates standard attention as:
-    Attention(Q, K, V) ≈ φ(Q) (φ(K)^T V) / normalization
 
-Where φ is a feature map (e.g., RFF) that linearizes the computation:
-- Standard attention: O(n²d) time, O(n²) space
-- Spectral attention: O(nrd) time, O(nr) space for r features
+.. math::
+    \text{Attention}(Q, K, V) \approx \varphi(Q) (\varphi(K)^T V) / \text{normalization}
+
+Where :math:`\varphi` is a feature map (e.g., RFF) that linearizes the computation:
+
+- Standard attention: :math:`O(n^2d)` time, :math:`O(n^2)` space
+- Spectral attention: :math:`O(nrd)` time, :math:`O(nr)` space for :math:`r` features
 
 The approximation quality improves with more random features, with
-error decreasing as O(1/√r).
+error decreasing as :math:`O(1/\sqrt{r})`.
 
 References
 ----------
