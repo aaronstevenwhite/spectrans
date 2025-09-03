@@ -7,7 +7,7 @@ to ensure perfect reconstruction and compatibility with all wavelet families.
 
 The key insights from PyWavelets C code analysis:
 1. Convolution starts at index (step-1) = 1 for stride 2
-2. Symmetric mode uses reflection WITHOUT edge repeat  
+2. Symmetric mode uses reflection WITHOUT edge repeat
 3. Filters from PyWavelets are already in correct form
 4. IDWT uses transpose convolution with proper alignment
 
@@ -72,17 +72,17 @@ from .base import MultiResolutionTransform, MultiResolutionTransform2D
 
 def get_wavelet_filters(wavelet_name: str) -> tuple[Tensor, Tensor, Tensor, Tensor]:
     """Get filter coefficients from PyWavelets.
-    
+
     Parameters
     ----------
     wavelet_name : str
         Name of the wavelet (e.g., 'db1', 'db2', 'db4', 'sym2').
-        
+
     Returns
     -------
     tuple[Tensor, Tensor, Tensor, Tensor]
         Tuple of (dec_lo, dec_hi, rec_lo, rec_hi) filter tensors.
-        
+
     Raises
     ------
     ValueError
@@ -107,11 +107,11 @@ def get_wavelet_filters(wavelet_name: str) -> tuple[Tensor, Tensor, Tensor, Tens
 @register_component("transform", "dwt1d")
 class DWT1D(MultiResolutionTransform):
     """PyWavelets-compatible 1D Discrete Wavelet Transform.
-    
-    This implementation exactly matches PyWavelets behavior based on 
+
+    This implementation exactly matches PyWavelets behavior based on
     comprehensive C code analysis. It supports multi-level decomposition
     and achieves perfect reconstruction (< 1e-6 error) for all wavelets.
-    
+
     Parameters
     ----------
     wavelet : WaveletType, default='db4'
@@ -120,7 +120,7 @@ class DWT1D(MultiResolutionTransform):
         Number of decomposition levels.
     mode : str, default='symmetric'
         Boundary handling mode (currently only 'symmetric' supported).
-        
+
     Attributes
     ----------
     wavelet : str
@@ -139,7 +139,7 @@ class DWT1D(MultiResolutionTransform):
         High-pass reconstruction filter.
     filter_length : int
         Length of the wavelet filters.
-        
+
     Examples
     --------
     >>> dwt = DWT1D(wavelet='db4', levels=3)
@@ -180,11 +180,11 @@ class DWT1D(MultiResolutionTransform):
 
     def _pad_symmetric(self, x: Tensor, pad_len: int, dim: int = -1) -> Tensor:
         """Apply symmetric padding for wavelet transforms.
-        
+
         Uses the wavelet_symmetric_pad function from utils.padding which
         implements the exact PyWavelets symmetric padding mode WITH edge repeat.
         For signal [a,b,c,d] with pad=2, creates [b,a|a,b,c,d|d,c].
-        
+
         Parameters
         ----------
         x : Tensor
@@ -193,7 +193,7 @@ class DWT1D(MultiResolutionTransform):
             Number of samples to pad on each side.
         dim : int
             Dimension to pad along.
-            
+
         Returns
         -------
         Tensor
@@ -205,19 +205,19 @@ class DWT1D(MultiResolutionTransform):
 
     def _single_dwt(self, x: Tensor, dim: int = -1) -> tuple[Tensor, Tensor]:
         """Single-level DWT matching PyWavelets exactly.
-        
+
         Critical implementation details from C code:
         1. Start convolution at index (step-1) = 1
         2. Use symmetric padding (reflection without edge)
         3. Apply filters as provided by PyWavelets
-        
+
         Parameters
         ----------
         x : Tensor
             Input signal.
         dim : int
             Dimension to transform along.
-            
+
         Returns
         -------
         tuple[Tensor, Tensor]
@@ -241,10 +241,7 @@ class DWT1D(MultiResolutionTransform):
 
             # CRITICAL: Start from position (step - 1) = 1
             # This is the key insight from PyWavelets C code
-            if pad_len > 0:
-                x_conv = x_padded[:, :, 1:]  # Skip first element
-            else:
-                x_conv = x_padded
+            x_conv = x_padded[:, :, 1:] if pad_len > 0 else x_padded
 
             # Apply filters (flip for correlation -> convolution)
             # Ensure filters match input tensor's dtype
@@ -274,18 +271,18 @@ class DWT1D(MultiResolutionTransform):
 
     def _single_dwt_nd(self, x: Tensor, axis: int) -> tuple[Tensor, Tensor]:
         """Apply 1D DWT along any axis of n-dimensional tensor.
-        
+
         This method handles n-dimensional tensors by reshaping them to 2D,
         applying the DWT, and reshaping back. This follows PyWavelets'
         approach of having a dwt_axis function for n-dimensional arrays.
-        
+
         Parameters
         ----------
         x : Tensor
             Input tensor of any dimensionality.
         axis : int
             Axis along which to apply the DWT.
-            
+
         Returns
         -------
         tuple[Tensor, Tensor]
@@ -312,7 +309,7 @@ class DWT1D(MultiResolutionTransform):
 
         # Calculate new shape after DWT
         new_signal_len = cA.shape[-1]
-        new_shape = batch_shape + (new_signal_len,)
+        new_shape = (*batch_shape, new_signal_len)
 
         # Reshape back to original dimensionality
         cA = cA.reshape(new_shape).moveaxis(-1, axis)
@@ -322,10 +319,10 @@ class DWT1D(MultiResolutionTransform):
 
     def _single_idwt(self, cA: Tensor, cD: Tensor, dim: int = -1) -> Tensor:
         """Single-level inverse DWT in pure PyTorch using transpose convolution.
-        
+
         Based on the PyWavelets algorithm, uses transpose convolution with stride 2
         for implicit upsampling, matching the approach from pywavelets-implementation-plan.md.
-        
+
         Parameters
         ----------
         cA : Tensor
@@ -334,7 +331,7 @@ class DWT1D(MultiResolutionTransform):
             Detail coefficients.
         dim : int
             Dimension to reconstruct along.
-            
+
         Returns
         -------
         Tensor
@@ -417,10 +414,10 @@ class DWT1D(MultiResolutionTransform):
 
     def _single_idwt_nd(self, cA: Tensor, cD: Tensor, axis: int) -> Tensor:
         """Apply 1D inverse DWT along any axis of n-dimensional tensor.
-        
+
         This method handles n-dimensional coefficient tensors by reshaping
         them to 2D, applying the inverse DWT, and reshaping back.
-        
+
         Parameters
         ----------
         cA : Tensor
@@ -429,7 +426,7 @@ class DWT1D(MultiResolutionTransform):
             Detail coefficients of any dimensionality.
         axis : int
             Axis along which to apply the inverse DWT.
-            
+
         Returns
         -------
         Tensor
@@ -458,7 +455,7 @@ class DWT1D(MultiResolutionTransform):
 
         # Calculate new shape after reconstruction
         new_signal_len = reconstructed.shape[-1]
-        new_shape = batch_shape + (new_signal_len,)
+        new_shape = (*batch_shape, new_signal_len)
 
         # Reshape back to original dimensionality
         reconstructed = reconstructed.reshape(new_shape).moveaxis(-1, axis)
@@ -467,18 +464,18 @@ class DWT1D(MultiResolutionTransform):
 
     def _single_idwt_pytorch(self, cA: Tensor, cD: Tensor, dim: int = -1) -> Tensor:
         """Single-level inverse DWT matching PyWavelets.
-        
+
         Uses transpose convolution for upsampling and reconstruction.
-        
+
         Parameters
         ----------
         cA : Tensor
             Approximation coefficients.
-        cD : Tensor  
+        cD : Tensor
             Detail coefficients.
         dim : int
             Dimension to reconstruct along.
-            
+
         Returns
         -------
         Tensor
@@ -532,9 +529,9 @@ class DWT1D(MultiResolutionTransform):
         dim: int = -1
     ) -> tuple[Tensor, list[Tensor]]:
         """Multi-level DWT decomposition.
-        
+
         Recursively applies DWT to approximation coefficients.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -543,7 +540,7 @@ class DWT1D(MultiResolutionTransform):
             Number of levels. If None, uses self.levels.
         dim : int
             Dimension to decompose along.
-            
+
         Returns
         -------
         tuple[Tensor, list[Tensor]]
@@ -571,7 +568,7 @@ class DWT1D(MultiResolutionTransform):
         output_len: int | None = None
     ) -> Tensor:
         """Multi-level DWT reconstruction.
-        
+
         Parameters
         ----------
         coeffs : tuple[Tensor, list[Tensor]]
@@ -581,7 +578,7 @@ class DWT1D(MultiResolutionTransform):
         output_len : int | None
             Desired output length. If provided, the reconstructed signal
             will be trimmed or padded to this length.
-            
+
         Returns
         -------
         Tensor
@@ -591,7 +588,7 @@ class DWT1D(MultiResolutionTransform):
         current = cA
 
         # Reconstruct from coarsest to finest (reverse order)
-        for i, cD in enumerate(reversed(details)):
+        for _i, cD in enumerate(reversed(details)):
             # For multi-level, we need to handle size mismatches
             # The reconstructed signal from a coarser level may be slightly
             # longer than the detail coefficients from the finer level
@@ -635,7 +632,7 @@ class DWT1D(MultiResolutionTransform):
     @property
     def complexity(self) -> dict[str, str]:
         """Computational complexity of 1D DWT.
-        
+
         Returns
         -------
         dict[str, str]
@@ -651,11 +648,11 @@ class DWT1D(MultiResolutionTransform):
 @register_component("transform", "dwt2d")
 class DWT2D(MultiResolutionTransform2D):
     """PyWavelets-compatible 2D Discrete Wavelet Transform.
-    
+
     Implements 2D DWT using separable 1D transforms, applying DWT
     along each dimension sequentially. Returns coefficients in the
     standard format: (LL, [(LH, HL, HH) per level]).
-    
+
     Parameters
     ----------
     wavelet : WaveletType, default='db4'
@@ -664,7 +661,7 @@ class DWT2D(MultiResolutionTransform2D):
         Number of decomposition levels.
     mode : str, default='symmetric'
         Boundary handling mode.
-        
+
     Attributes
     ----------
     wavelet : str
@@ -675,7 +672,7 @@ class DWT2D(MultiResolutionTransform2D):
         Boundary handling mode.
     dwt1d : DWT1D
         1D DWT instance used for separable transforms.
-        
+
     Examples
     --------
     >>> dwt2d = DWT2D(wavelet='db2', levels=2)
@@ -706,21 +703,21 @@ class DWT2D(MultiResolutionTransform2D):
         dim: tuple[int, int] = (-2, -1)
     ) -> tuple[Tensor, Tensor, Tensor, Tensor]:
         """Single-level 2D DWT decomposition.
-        
+
         Parameters
         ----------
         x : Tensor
             2D input tensor.
         dim : tuple[int, int]
             Dimensions to decompose along.
-            
+
         Returns
         -------
         tuple[Tensor, Tensor, Tensor, Tensor]
             Tuple of (LL, LH, HL, HH) coefficients following PyWavelets convention:
             - LL: approximation on both axes (aa)
             - LH: approximation on rows, detail on columns (ad)
-            - HL: detail on rows, approximation on columns (da) 
+            - HL: detail on rows, approximation on columns (da)
             - HH: detail on both axes (dd)
         """
         # Apply 1D DWT along first dimension (rows)
@@ -748,7 +745,7 @@ class DWT2D(MultiResolutionTransform2D):
         dim: tuple[int, int] = (-2, -1)
     ) -> Tensor:
         """Single-level 2D DWT reconstruction.
-        
+
         Parameters
         ----------
         ll, lh, hl, hh : Tensor
@@ -756,7 +753,7 @@ class DWT2D(MultiResolutionTransform2D):
             in multi-level reconstruction due to IDWT producing slightly longer output.
         dim : tuple[int, int]
             Dimensions to reconstruct along.
-            
+
         Returns
         -------
         Tensor
@@ -831,7 +828,7 @@ class DWT2D(MultiResolutionTransform2D):
         dim: tuple[int, int] = (-2, -1)
     ) -> tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]]:
         """Multi-level 2D DWT decomposition.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -840,7 +837,7 @@ class DWT2D(MultiResolutionTransform2D):
             Number of levels. If None, uses self.levels.
         dim : tuple[int, int]
             Dimensions to decompose along.
-            
+
         Returns
         -------
         tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]]
@@ -868,14 +865,14 @@ class DWT2D(MultiResolutionTransform2D):
         dim: tuple[int, int] = (-2, -1)
     ) -> Tensor:
         """Multi-level 2D DWT reconstruction.
-        
+
         Parameters
         ----------
         coeffs : tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]]
             Tuple of (LL, [(HL, LH, HH) per level]) following PyWavelets convention.
         dim : tuple[int, int]
             Dimensions to reconstruct along.
-            
+
         Returns
         -------
         Tensor
@@ -894,7 +891,7 @@ class DWT2D(MultiResolutionTransform2D):
     @property
     def complexity(self) -> dict[str, str]:
         """Computational complexity of 2D DWT.
-        
+
         Returns
         -------
         dict[str, str]

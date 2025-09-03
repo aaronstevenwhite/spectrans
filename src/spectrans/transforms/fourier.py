@@ -1,6 +1,6 @@
 """Fourier transform implementations for spectral neural networks.
 
-This module provides comprehensive Fourier transform implementations optimized for
+This module provides Fourier transform implementations optimized for
 spectral transformer architectures. The transforms are built on PyTorch's native
 FFT operations for GPU acceleration and automatic differentiation support.
 
@@ -58,14 +58,14 @@ Notes
 Mathematical Properties:
 
 All Fourier transforms maintain unitarity:
-- Energy conservation: ||F(x)||² = ||x||²
-- Parseval's theorem: ⟨x, y⟩ = ⟨F(x), F(y)⟩
-- Perfect reconstruction: F⁻¹(F(x)) = x
+- Energy conservation: $||F(x)||^2 = ||x||^2$
+- Parseval's theorem: $\\langle x, y \rangle = \\langle F(x), F(y) \rangle$
+- Perfect reconstruction: $F^{-1}(F(x)) = x$
 
 Normalization Modes:
-- 'forward': No scaling on forward transform, 1/n scaling on inverse
-- 'backward': 1/n scaling on forward transform, no scaling on inverse
-- 'ortho': 1/√n scaling on both directions (unitary)
+- 'forward': No scaling on forward transform, $1/n$ scaling on inverse
+- 'backward': $1/n$ scaling on forward transform, no scaling on inverse
+- 'ortho': $1/\\sqrt{n}$ scaling on both directions (unitary)
 
 The 'ortho' mode is recommended for neural networks as it preserves numerical
 stability and maintains consistent scaling throughout the network.

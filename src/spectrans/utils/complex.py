@@ -1,14 +1,9 @@
 """Complex tensor operations for spectral transformations.
 
 This module provides specialized complex number operations for PyTorch tensors,
-designed for spectral transformer implementations. While many functions wrap
-existing PyTorch operations, they provide:
-
-1. **Consistent error handling**: Uniform type checking and validation
-2. **Domain-specific optimizations**: Operations tuned for spectral transforms
-3. **Mathematical safety**: Proper handling of edge cases (zeros, broadcasting)
-4. **API consistency**: Uniform interface across all complex operations
-5. **Documentation**: Clear mathematical semantics for spectral applications
+designed for spectral transformer implementations. The functions provide consistent
+error handling, mathematical safety for edge cases, and uniform interfaces for
+complex tensor operations in spectral transforms.
 
 All functions support batch operations and proper broadcasting.
 """
@@ -39,8 +34,6 @@ def complex_multiply(a: Tensor, b: Tensor) -> Tensor:
     Performs (a_real + i*a_imag) * (b_real + i*b_imag) efficiently.
     Supports broadcasting according to PyTorch broadcasting rules.
 
-    Note: This wrapper around torch.mul provides consistent error handling
-    and type validation required for spectral transformer operations.
 
     Parameters
     ----------
@@ -103,7 +96,6 @@ def complex_modulus(x: Tensor) -> Tensor:
     """Compute magnitude (absolute value) of complex tensor.
 
     Critical for spectral analysis where magnitude represents signal energy.
-    Wrapper around torch.abs with consistent error handling.
 
     Parameters
     ----------
@@ -130,7 +122,6 @@ def complex_phase(x: Tensor) -> Tensor:
     """Compute phase angle of complex tensor.
 
     Phase information is crucial for spectral transformations and filter design.
-    Wrapper around torch.angle with proper type validation.
 
     Parameters
     ----------
@@ -292,7 +283,6 @@ def make_complex(real: Tensor, imag: Tensor) -> Tensor:
     """Construct complex tensor from real and imaginary parts.
 
     Fundamental constructor for complex tensors in spectral transforms.
-    Wrapper around torch.complex with consistent error handling.
 
     Parameters
     ----------

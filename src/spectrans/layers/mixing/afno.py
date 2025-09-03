@@ -61,6 +61,7 @@ spectrans.layers.operators.fno : Fourier Neural Operator implementation.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from spectrans.core.types import ActivationType
 from spectrans.layers.mixing.base import MixingLayer
 

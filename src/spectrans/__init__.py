@@ -1,16 +1,15 @@
 """Modular spectral transformer implementations in PyTorch.
 
-Spectrans is a comprehensive library for spectral transformers that provides efficient
-alternatives to traditional attention mechanisms. The library implements state-of-the-art
-spectral transform methods including Fourier Neural Networks (FNet), Global Filter Networks
-(GFNet), Adaptive Fourier Neural Operators (AFNO), spectral attention mechanisms, and
-wavelet-based transformers.
+Spectrans is a library for spectral transformers that provides mathematically rigorous
+alternatives to traditional attention mechanisms. The library implements spectral transform
+methods including Fourier Neural Networks (FNet), Global Filter Networks (GFNet), Adaptive
+Fourier Neural Operators (AFNO), spectral attention mechanisms, and wavelet-based transformers.
 
 Key features include:
 - Modular component architecture with registry system
 - Mathematical rigor with proper complex number handling
-- Comprehensive spectral transform implementations (FFT, DCT, DWT, Hadamard)
-- Memory-efficient alternatives to quadratic attention
+- Spectral transform implementations (FFT, DCT, DWT, Hadamard)
+- Linear and log-linear complexity alternatives to quadratic attention
 - YAML-based configuration system for easy experimentation
 
 Attributes

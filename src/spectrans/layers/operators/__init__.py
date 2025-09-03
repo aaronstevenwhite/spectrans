@@ -1,4 +1,4 @@
-"""Neural operator implementations for function space mappings.
+r"""Neural operator implementations for function space mappings.
 
 This module provides neural operators that learn mappings between infinite-dimensional
 function spaces rather than between finite-dimensional vectors. These operators are
@@ -49,32 +49,32 @@ Notes
 Mathematical Foundation:
 
 The Fourier Neural Operator learns to approximate the solution operator
-$\mathcal{G}: \mathcal{A} \rightarrow \mathcal{U}$ that maps from input function
-space $\mathcal{A}$ to output function space $\mathcal{U}$.
+$\\mathcal{G}: \\mathcal{A} \rightarrow \\mathcal{U}$ that maps from input function
+space $\\mathcal{A}$ to output function space $\\mathcal{U}$.
 
-For input function $v: \Omega \rightarrow \mathbb{R}^{d_v}$, the FNO layer computes:
+For input function $v: \\Omega \rightarrow \\mathbb{R}^{d_v}$, the FNO layer computes:
 
-$$v_{l+1}(x) = \sigma\left(\mathbf{W} v_l(x) + \mathcal{K}_l(v_l)(x) + \mathbf{b}\right)$$
+$$v_{l+1}(x) = \\sigma\\left(\\mathbf{W} v_l(x) + \\mathcal{K}_l(v_l)(x) + \\mathbf{b}\right)$$
 
-The kernel operator $\mathcal{K}_l$ is parameterized in Fourier space:
+The kernel operator $\\mathcal{K}_l$ is parameterized in Fourier space:
 
-$$\mathcal{F}[\mathcal{K}_l(v)](k) = \mathbf{R}_l(k) \cdot \mathcal{F}[v](k)$$
+$$\\mathcal{F}[\\mathcal{K}_l(v)](k) = \\mathbf{R}_l(k) \\cdot \\mathcal{F}[v](k)$$
 
-where $\mathbf{R}_l(k) \in \mathbb{C}^{d \times d}$ are learnable complex weights
-and $\mathcal{F}$ denotes the Fourier transform.
+where $\\mathbf{R}_l(k) \\in \\mathbb{C}^{d \times d}$ are learnable complex weights
+and $\\mathcal{F}$ denotes the Fourier transform.
 
 Spectral convolution applies this kernel efficiently:
-1. Transform input to Fourier domain: $\hat{v} = \mathcal{F}[v]$
-2. Apply learned kernel: $\hat{u} = \mathbf{R} \cdot \hat{v}$
-3. Transform back to spatial domain: $u = \mathcal{F}^{-1}[\hat{u}]$
+1. Transform input to Fourier domain: $\\hat{v} = \\mathcal{F}[v]$
+2. Apply learned kernel: $\\hat{u} = \\mathbf{R} \\cdot \\hat{v}$
+3. Transform back to spatial domain: $u = \\mathcal{F}^{-1}[\\hat{u}]$
 
 Computational Properties:
-- Time complexity: $O(N d \log N + k d^2)$ where $k$ is number of retained modes
+- Time complexity: $O(N d \\log N + k d^2)$ where $k$ is number of retained modes
 - Space complexity: $O(k d^2)$ for learnable parameters
 - Resolution invariance: Same weights work for different discretizations
 
 The mode truncation (keeping only low-frequency modes) is crucial for:
-- Computational efficiency: Reduces from $O(N^2)$ to $O(N \log N)$
+- Computational efficiency: Reduces from $O(N^2)$ to $O(N \\log N)$
 - Generalization: High-frequency noise is filtered out
 - Stability: Avoids overfitting to discretization artifacts
 

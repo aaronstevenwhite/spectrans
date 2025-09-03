@@ -1,4 +1,4 @@
-"""Mixing layer implementations.
+r"""Mixing layer implementations.
 
 This module implements spectral mixing layers that serve as alternatives to attention
 mechanisms. These layers operate in frequency domains using transforms like FFT,

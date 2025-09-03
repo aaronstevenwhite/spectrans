@@ -1,9 +1,9 @@
 """Base classes and interfaces for spectral transforms.
 
 This module defines the foundational interfaces for all spectral transform implementations
-used in spectral transformer neural networks. The class hierarchy is designed to
-accommodate the mathematical diversity of different transform types while maintaining
-consistent APIs for integration with neural network layers.
+used in spectral transformer neural networks. The class hierarchy accommodates the
+mathematical diversity of different transform types while maintaining consistent APIs
+for integration with neural network layers.
 
 The transforms are categorized by their mathematical properties and interface requirements,
 enabling type-safe composition and clear separation of concerns between different
@@ -123,6 +123,7 @@ spectrans.core.types : Type definitions for transform interfaces
 """
 
 from abc import ABC, abstractmethod
+
 import torch
 import torch.nn as nn
 
