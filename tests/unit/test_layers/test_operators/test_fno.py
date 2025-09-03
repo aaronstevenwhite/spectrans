@@ -141,6 +141,27 @@ class TestSpectralConv2d:
         assert conv.weights.shape == (in_channels, out_channels, 8, 8, 2)
         assert conv.modes1 == 8
         assert conv.modes2 == 8
+        
+    def test_spectral_conv2d_gradient_flow(self):
+        """Test gradient flow through 2D spectral convolution."""
+        batch_size = 2
+        channels = 8
+        height = 16
+        width = 16
+        modes = (4, 4)
+        
+        x = torch.randn(batch_size, channels, height, width, requires_grad=True)
+        conv = SpectralConv2d(channels, channels, modes)
+        
+        output = conv(x)
+        loss = output.sum()
+        loss.backward()
+        
+        # Check gradients
+        assert x.grad is not None
+        assert conv.weights.grad is not None
+        assert torch.isfinite(x.grad).all()
+        assert torch.isfinite(conv.weights.grad).all()
 
 
 class TestFourierNeuralOperator:
