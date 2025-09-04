@@ -37,11 +37,9 @@ Examples
 'fnet'
 """
 
-from typing import Literal
-
 from pydantic import BaseModel, Field
 
-from spectrans.core.types import OutputHeadType, PositionalEncodingType
+from spectrans.core.types import KernelType, OutputHeadType, PositionalEncodingType, TransformLSTType
 
 
 class ModelConfig(BaseModel):
@@ -157,14 +155,14 @@ class LSTModelConfig(ModelConfig):
     
     Parameters
     ----------
-    transform_type : Literal["dct", "dst", "hadamard"]
+    transform_type : TransformLSTType
         Type of spectral transform to use, defaults to "dct".
     use_conv_bias : bool
         Whether to use bias in spectral convolution, defaults to True.
     """
     
     model_type: str = Field(default="lst", description="Model type identifier")
-    transform_type: Literal["dct", "dst", "hadamard"] = Field(
+    transform_type: TransformLSTType = Field(
         default="dct",
         description="Type of spectral transform"
     )
@@ -181,8 +179,8 @@ class SpectralAttentionModelConfig(ModelConfig):
     ----------
     num_features : int | None
         Number of random Fourier features, defaults to None (uses hidden_dim).
-    kernel_type : str
-        Type of kernel ('gaussian', 'laplacian', 'cauchy'), defaults to 'gaussian'.
+    kernel_type : KernelType
+        Type of kernel ('gaussian', 'softmax'), defaults to 'gaussian'.
     use_orthogonal : bool
         Whether to use orthogonal random features, defaults to True.
     num_heads : int
@@ -191,7 +189,7 @@ class SpectralAttentionModelConfig(ModelConfig):
     
     model_type: str = Field(default="spectral_attention", description="Model type identifier")
     num_features: int | None = Field(default=None, ge=1, description="Number of RFF features")
-    kernel_type: str = Field(
+    kernel_type: KernelType = Field(
         default="gaussian",
         description="Kernel type for RFF approximation"
     )

@@ -123,7 +123,7 @@ import torch.nn as nn
 
 from ..blocks.base import PreNormBlock
 from ..core.registry import register_component
-from ..core.types import FilterActivationType
+from ..core.types import FilterActivationType, OutputHeadType, PositionalEncodingType
 from ..layers.mixing.global_filter import GlobalFilterMixing
 from ..models.base import BaseModel
 
@@ -186,11 +186,11 @@ class GFNet(BaseModel):
         max_sequence_length: int = 512,
         num_classes: int | None = None,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         dropout: float = 0.1,
         ffn_hidden_dim: int | None = None,
         norm_eps: float = 1e-12,
-        output_type: str = "classification",
+        output_type: OutputHeadType = "classification",
         filter_activation: FilterActivationType = "sigmoid",
         gradient_checkpointing: bool = False,
     ):
@@ -332,7 +332,7 @@ class GFNetEncoder(GFNet):
         num_layers: int = 12,
         max_sequence_length: int = 512,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         dropout: float = 0.1,
         ffn_hidden_dim: int | None = None,
         norm_eps: float = 1e-12,

@@ -105,12 +105,13 @@ spectrans.kernels.rff : Random Fourier Features kernel approximations.
 spectrans.models.lst : Linear Spectral Transform models for comparison.
 """
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import torch.nn as nn
 
 from ..blocks.base import PreNormBlock
 from ..core.registry import register_component
+from ..core.types import KernelType, OutputHeadType, PositionalEncodingType
 from ..layers.attention.spectral import PerformerAttention, SpectralAttention
 from .base import BaseModel
 
@@ -140,7 +141,7 @@ class SpectralAttentionTransformer(BaseModel):
         Number of attention heads.
     num_features : int | None, optional
         Number of random features for RFF approximation. If None, uses hidden_dim.
-    kernel_type : Literal["gaussian", "softmax"], default="softmax"
+    kernel_type : KernelType, default="softmax"
         Type of kernel to approximate.
     use_orthogonal : bool, default=False
         Whether to use orthogonal random features.
@@ -186,13 +187,13 @@ class SpectralAttentionTransformer(BaseModel):
         max_sequence_length: int = 1024,
         num_heads: int = 8,
         num_features: int | None = None,
-        kernel_type: Literal["gaussian", "softmax"] = "softmax",
+        kernel_type: KernelType = "softmax",
         use_orthogonal: bool = False,
         num_classes: int | None = None,
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         gradient_checkpointing: bool = False,
     ):
         # Store all parameters before calling super().__init__ since build_blocks needs them
@@ -315,7 +316,7 @@ class SpectralAttentionEncoder(BaseModel):
         Number of attention heads.
     num_features : int | None, optional
         Number of random features.
-    kernel_type : Literal["gaussian", "softmax"], default="softmax"
+    kernel_type : KernelType, default="softmax"
         Kernel type.
     use_orthogonal : bool, default=False
         Use orthogonal features.
@@ -337,12 +338,12 @@ class SpectralAttentionEncoder(BaseModel):
         max_sequence_length: int = 1024,
         num_heads: int = 8,
         num_features: int | None = None,
-        kernel_type: Literal["gaussian", "softmax"] = "softmax",
+        kernel_type: KernelType = "softmax",
         use_orthogonal: bool = False,
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
     ):
         # Store parameters before calling super().__init__ since build_blocks needs them
         self.num_heads = num_heads
@@ -474,7 +475,7 @@ class PerformerTransformer(BaseModel):
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         gradient_checkpointing: bool = False,
     ):
         # Store parameters before calling super().__init__ since build_blocks needs them

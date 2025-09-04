@@ -108,6 +108,7 @@ import torch
 import torch.nn as nn
 
 from spectrans.core.registry import register_component
+from spectrans.core.types import PositionalEncodingType
 from spectrans.layers.operators.fno import FNOBlock
 from spectrans.models.base import BaseModel
 
@@ -188,7 +189,7 @@ class FNOTransformer(BaseModel):
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         gradient_checkpointing: bool = False,
     ):
         # Store FNO-specific parameters
@@ -341,7 +342,7 @@ class FNOEncoder(BaseModel):
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         gradient_checkpointing: bool = False,
     ):
         # Store FNO-specific parameters
@@ -462,7 +463,7 @@ class FNODecoder(BaseModel):
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         gradient_checkpointing: bool = False,
     ):
         # Store FNO-specific parameters

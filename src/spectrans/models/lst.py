@@ -113,14 +113,14 @@ spectrans.transforms.spectral : Core spectral transform implementations.
 spectrans.models.spectral_attention : Spectral attention models for comparison.
 """
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import torch
 import torch.nn as nn
 
 from ..blocks.base import PreNormBlock
 from ..core.registry import register_component
-from ..core.types import PositionalEncodingType
+from ..core.types import PositionalEncodingType, TransformLSTType
 from ..layers.attention import DCTAttention, HadamardAttention, LSTAttention
 from .base import BaseModel
 
@@ -147,7 +147,7 @@ class LSTTransformer(BaseModel):
         Number of transformer blocks.
     max_sequence_length : int
         Maximum sequence length the model can process.
-    transform_type : Literal["dct", "dst", "hadamard"], default="dct"
+    transform_type : TransformLSTType, default="dct"
         Type of spectral transform to use.
     use_conv_bias : bool, default=True
         Whether to use bias in spectral convolution.
@@ -190,7 +190,7 @@ class LSTTransformer(BaseModel):
         hidden_dim: int = 512,
         num_layers: int = 6,
         max_sequence_length: int = 1024,
-        transform_type: Literal["dct", "dst", "hadamard"] = "dct",
+        transform_type: TransformLSTType = "dct",
         use_conv_bias: bool = True,
         num_classes: int | None = None,
         ffn_hidden_dim: int | None = None,
@@ -325,7 +325,7 @@ class LSTEncoder(BaseModel):
         Number of transformer blocks.
     max_sequence_length : int
         Maximum sequence length.
-    transform_type : Literal["dct", "dst", "hadamard"], default="dct"
+    transform_type : TransformLSTType, default="dct"
         Type of spectral transform.
     use_conv_bias : bool, default=True
         Use bias in spectral convolution.
@@ -345,7 +345,7 @@ class LSTEncoder(BaseModel):
         hidden_dim: int = 512,
         num_layers: int = 6,
         max_sequence_length: int = 1024,
-        transform_type: Literal["dct", "dst", "hadamard"] = "dct",
+        transform_type: TransformLSTType = "dct",
         use_conv_bias: bool = True,
         ffn_hidden_dim: int | None = None,
         dropout: float = 0.0,
@@ -453,7 +453,7 @@ class LSTDecoder(BaseModel):
         Number of transformer blocks.
     max_sequence_length : int
         Maximum sequence length.
-    transform_type : Literal["dct", "dst", "hadamard"], default="dst"
+    transform_type : TransformLSTType, default="dst"
         Type of spectral transform (DST is preferred for causal).
     causal : bool, default=True
         Whether to use causal masking.
@@ -491,7 +491,7 @@ class LSTDecoder(BaseModel):
         hidden_dim: int = 512,
         num_layers: int = 12,
         max_sequence_length: int = 2048,
-        transform_type: Literal["dct", "dst", "hadamard"] = "dst",
+        transform_type: TransformLSTType = "dst",
         causal: bool = True,
         use_conv_bias: bool = True,
         ffn_hidden_dim: int | None = None,

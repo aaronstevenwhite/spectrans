@@ -149,6 +149,7 @@ import torch.nn as nn
 
 from ..blocks.base import PreNormBlock
 from ..core.registry import register_component
+from ..core.types import OutputHeadType, PositionalEncodingType
 from ..layers.mixing.afno import AFNOMixing
 from ..models.base import BaseModel
 
@@ -224,11 +225,11 @@ class AFNOModel(BaseModel):
         mlp_ratio: float = 2.0,
         num_classes: int | None = None,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         dropout: float = 0.1,
         ffn_hidden_dim: int | None = None,
         norm_eps: float = 1e-12,
-        output_type: str = "classification",
+        output_type: OutputHeadType = "classification",
         gradient_checkpointing: bool = False,
     ):
         self.modes_seq = modes_seq or (max_sequence_length // 2)
@@ -396,7 +397,7 @@ class AFNOEncoder(AFNOModel):
         modes_hidden: int | None = None,
         mlp_ratio: float = 2.0,
         use_positional_encoding: bool = True,
-        positional_encoding_type: str = "sinusoidal",
+        positional_encoding_type: PositionalEncodingType = "sinusoidal",
         dropout: float = 0.1,
         ffn_hidden_dim: int | None = None,
         norm_eps: float = 1e-12,
