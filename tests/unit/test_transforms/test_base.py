@@ -25,8 +25,8 @@ class TestTransformProperties:
 
     def test_transform_properties(self):
         """Test transform property flags."""
-        from spectrans.transforms import FFT1D, DCT, HadamardTransform
-        
+        from spectrans.transforms import DCT, FFT1D, HadamardTransform
+
         # FFT is unitary
         fft = FFT1D()
         assert fft.is_unitary
@@ -44,10 +44,10 @@ class TestTransformProperties:
 
     def test_transform_deterministic(self, random_tensor):
         """Test that transforms are deterministic."""
-        from spectrans.transforms import FFT1D, RFFT, DCT, DST, HadamardTransform
-        
+        from spectrans.transforms import DCT, DST, FFT1D, RFFT, HadamardTransform
+
         transform_classes = [FFT1D, RFFT, DCT, DST, HadamardTransform]
-        
+
         for transform_cls in transform_classes:
             transform = transform_cls()
 
@@ -65,7 +65,7 @@ class TestEdgeCases:
     def test_empty_tensor(self, device):
         """Test handling of empty tensors."""
         from spectrans.transforms import FFT1D
-        
+
         transform = FFT1D()
 
         # Empty tensor - FFT should handle it or raise error
@@ -77,7 +77,7 @@ class TestEdgeCases:
     def test_single_element(self, device):
         """Test single-element tensors."""
         from spectrans.transforms import DCT
-        
+
         transform = DCT()
 
         x = torch.tensor([5.0], device=device)
@@ -89,7 +89,7 @@ class TestEdgeCases:
     def test_batch_processing(self, batch_size, sequence_length, hidden_dim, device):
         """Test batch processing of transforms."""
         from spectrans.transforms import FFT1D
-        
+
         transform = FFT1D()
 
         # Create batched input

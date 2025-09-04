@@ -174,6 +174,9 @@ ActivationType = Literal[
     "identity",
 ]
 
+# Type for filter activation in GFNet models
+FilterActivationType = Literal["sigmoid", "tanh"]
+
 # Normalization types
 NormType = Literal[
     "layernorm",
@@ -209,6 +212,7 @@ ComponentType = Literal[
 # Configuration types
 type ConfigDict = dict[str, int | float | str | bool | list[int | float | str | bool]]
 type ParamsDict = dict[str, int | float | str | bool | list[int | float | str | bool]]
+
 
 # Callback types
 type LossFunction = Callable[[Tensor, Tensor], Tensor]
@@ -371,6 +375,7 @@ __all__: list[str] = [
     "Device",
     "FFTNorm",
     "FeatureMapFunction",
+    "FilterActivationType",
     # Fourier and spectral types
     "FourierModes",
     "GradientClipNorm",

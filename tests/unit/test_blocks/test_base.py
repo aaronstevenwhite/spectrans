@@ -70,7 +70,7 @@ class TestFeedForwardNetwork:
 
         # Set to training mode
         ffn.train()
-        output_train = ffn(x)
+        ffn(x)
 
         # Set to eval mode
         ffn.eval()

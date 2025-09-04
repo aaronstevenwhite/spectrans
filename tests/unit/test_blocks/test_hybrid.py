@@ -334,7 +334,7 @@ class TestCascadeBlock:
         assert output.shape == x.shape
 
         # Check that norms are different objects
-        assert len(set(id(norm) for norm in block.norms)) == len(layers)
+        assert len({id(norm) for norm in block.norms}) == len(layers)
 
     def test_cascading_multiple_layers(self):
         """Test cascading more than two layers."""

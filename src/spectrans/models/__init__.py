@@ -1,15 +1,32 @@
-"""Model implementations."""
+"""Model implementations for spectral transformers.
 
-# Models will be imported here as they are implemented
-# from .fnet import FNet
-# from .gfnet import GFNet
-# from .afno import AFNOModel
-# from .spectral_attention import SpectralAttentionModel
-# from .lst import LSTModel
-# from .fno_transformer import FNOTransformer
-# from .wavenet_transformer import WaveNetTransformer
-# from .hybrid import HybridModel
+This module provides complete transformer model implementations that use
+various spectral mixing mechanisms instead of traditional attention.
+"""
 
-__all__: list[str] = [
-    # Will be populated as models are implemented
+from .afno import AFNOEncoder, AFNOModel
+from .base import (
+    BaseModel,
+    ClassificationHead,
+    LearnedPositionalEncoding,
+    PositionalEncoding,
+    RegressionHead,
+    SequenceHead,
+)
+from .fnet import FNet, FNetEncoder
+from .gfnet import GFNet, GFNetEncoder
+
+__all__ = [
+    "AFNOEncoder",
+    "AFNOModel",
+    "BaseModel",
+    "ClassificationHead",
+    "FNet",
+    "FNetEncoder",
+    "GFNet",
+    "GFNetEncoder",
+    "LearnedPositionalEncoding",
+    "PositionalEncoding",
+    "RegressionHead",
+    "SequenceHead",
 ]
