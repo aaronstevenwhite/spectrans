@@ -39,44 +39,69 @@ pip install -e ".[dev]"
 
 ```python
 import torch
-from spectrans import create_component
+from spectrans.models import FNet
 
-# Create a model from the registry
-model = create_component("model", "fnet", 
-    num_layers=12,
+# Create FNet model directly
+model = FNet(
+    vocab_size=30000,
     hidden_dim=768,
-    max_seq_length=512
+    num_layers=12,
+    max_sequence_length=512,
+    num_classes=2
 )
 
-# Forward pass
-x = torch.randn(2, 128, 768)  # (batch, seq_len, hidden_dim)
-output = model(x)
+# Forward pass with token IDs
+input_ids = torch.randint(0, 30000, (2, 128))  # (batch, seq_len)
+logits = model(input_ids=input_ids)
+assert logits.shape == (2, 2)  # (batch, num_classes)
+
+# Or with embeddings directly
+embeddings = torch.randn(2, 128, 768)  # (batch, seq_len, hidden_dim)
+logits = model(inputs_embeds=embeddings)
 ```
 
 ## Configuration-Based Usage
 
 ```python
-from spectrans.config import ConfigParser, ModelBuilder
+from spectrans.config import ConfigBuilder
 
 # Load model from YAML configuration
-parser = ConfigParser("configs/fnet.yaml")
-model = ModelBuilder.from_config(parser.parse_model())
+builder = ConfigBuilder()
+model = builder.build_model("examples/configs/fnet.yaml")
+
+# Forward pass
+input_ids = torch.randint(0, 30000, (2, 512))
+logits = model(input_ids=input_ids)
 ```
 
 ## Custom Components
 
 ```python
-from spectrans import register_component, MixingLayer
+from spectrans.layers.mixing.base import MixingLayer
+from spectrans import register_component
+import torch
 
 @register_component("mixing", "my_custom_mixing")
 class MyCustomMixing(MixingLayer):
-    def forward(self, x):
-        # Your implementation here
-        return x
+    def __init__(self, hidden_dim: int, dropout: float = 0.0):
+        super().__init__()
+        self.hidden_dim = hidden_dim
+        self.dropout = torch.nn.Dropout(dropout)
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Custom mixing implementation
+        return self.dropout(x)  # Simplified example
     
     @property
-    def complexity(self):
-        return {"time": "O(n log n)", "space": "O(n)"}
+    def complexity(self) -> dict[str, str]:
+        return {"time": "O(n)", "space": "O(1)"}
+
+# Use in models or blocks
+from spectrans.blocks import SpectralTransformerBlock
+block = SpectralTransformerBlock(
+    mixing_layer=MyCustomMixing(hidden_dim=768),
+    hidden_dim=768
+)
 ```
 
 ## Documentation

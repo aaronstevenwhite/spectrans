@@ -181,7 +181,7 @@ class SpectralAttention(AttentionLayer):
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor | None]:
+    ) -> Tensor | tuple[Tensor, ...]:
         """Forward pass of spectral attention.
 
         Parameters
@@ -249,7 +249,7 @@ class SpectralAttention(AttentionLayer):
 
         if return_attention:
             # Attention weights not directly available in linear attention
-            return out, None
+            return out, None  # type: ignore[return-value]
         return out
 
     @property
@@ -328,7 +328,7 @@ class PerformerAttention(SpectralAttention):
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor | None]:
+    ) -> Tensor | tuple[Tensor, ...]:
         """Forward pass of Performer attention.
 
         Parameters
@@ -477,7 +477,7 @@ class KernelAttention(AttentionLayer):
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor | None]:
+    ) -> Tensor | tuple[Tensor, ...]:
         """Forward pass of kernel attention.
 
         Parameters
@@ -561,7 +561,7 @@ class KernelAttention(AttentionLayer):
         out = self.dropout(out)
 
         if return_attention:
-            return out, attention_weights
+            return out, attention_weights  # type: ignore[return-value]
         return out
 
     @property

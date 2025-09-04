@@ -38,19 +38,27 @@ Spectrans provides efficient implementations of spectral methods for deep learni
 
 ```python
 import torch
+from spectrans.models import FNet
 from spectrans.layers.mixing import FourierMixing
-from spectrans.blocks import SpectralTransformerBlock
 
-# Create a spectral transformer block
-block = SpectralTransformerBlock(
+# Create a complete FNet model for text classification
+model = FNet(
+    vocab_size=30000,
     hidden_dim=768,
-    num_heads=12,
-    mixing_type="fourier"
+    num_layers=12,
+    max_sequence_length=512,
+    num_classes=2
 )
 
-# Process input sequences
-x = torch.randn(32, 512, 768)  # (batch, seq_len, hidden_dim)
-output = block(x)
+# Forward pass with token IDs
+input_ids = torch.randint(0, 30000, (32, 256))  # (batch, seq_len)
+logits = model(input_ids=input_ids)
+print(f"Classification logits: {logits.shape}")  # (32, 2)
+
+# Or use individual components
+fourier_mixing = FourierMixing(hidden_dim=768, dropout=0.1)
+embeddings = torch.randn(32, 256, 768)  # (batch, seq_len, hidden_dim)
+mixed = fourier_mixing(embeddings)
 ```
 
 ## Installation
@@ -68,6 +76,8 @@ pip install -e ".[dev]"
 
 ## Getting Started
 
+- [Installation](installation.md) - Complete installation guide
+- [Quick Start](quickstart.md) - Step-by-step tutorial with examples  
 - [API Reference](api/index.md) - Detailed documentation of all modules
 
 ## Mathematical Foundation

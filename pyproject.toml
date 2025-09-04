@@ -41,6 +41,9 @@ dev = [
     "isort>=5.13.0",
     "pre-commit>=3.8.0",
 ]
+examples = [
+    "tqdm>=4.66.0",
+]
 docs = [
     "mkdocs>=1.6.0",
     "mkdocs-material>=9.5.0",
