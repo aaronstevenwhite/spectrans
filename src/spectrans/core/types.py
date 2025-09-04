@@ -290,12 +290,28 @@ type AttentionMask = BoolTensor | None
 type CausalMask = BoolTensor | None
 
 # Position encoding types
-PositionEncodingType = Literal[
+PositionalEncodingType = Literal[
     "learned",
     "sinusoidal",
     "rotary",
     "alibi",
     "none",
+]
+
+# Output head types for models
+OutputHeadType = Literal[
+    "classification",
+    "regression",
+    "sequence",
+    "lm",
+    "none",
+]
+
+# Pooling strategies for sequence aggregation
+PoolingType = Literal[
+    "cls",
+    "mean",
+    "max",
 ]
 
 # Output types for different model modes
@@ -411,10 +427,12 @@ __all__: list[str] = [
     "OptimizerConfig",
     "OptionalModule",
     "OptionalTensor",
+    "OutputHeadType",
     "PaddingSize",
     "PaddingType",
     "ParamsDict",
-    "PositionEncodingType",
+    "PoolingType",
+    "PositionalEncodingType",
     "RandomSeed",
     "Rank",
     "RegistryDict",
