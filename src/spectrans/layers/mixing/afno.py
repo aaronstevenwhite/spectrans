@@ -58,9 +58,14 @@ spectrans.layers.mixing.fourier : Standard Fourier mixing without mode truncatio
 spectrans.layers.operators.fno : Fourier Neural Operator implementation.
 """
 
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+if TYPE_CHECKING:
+    from ...config.layers.mixing import AFNOMixingConfig
 
 from spectrans.core.types import ActivationType
 from spectrans.layers.mixing.base import MixingLayer
@@ -313,3 +318,27 @@ class AFNOMixing(MixingLayer):
             'mode_truncation': True,  # Uses Fourier mode truncation
             'adaptive': True  # Adaptive filtering based on learned parameters
         }
+
+    @classmethod
+    def from_config(cls, config: "AFNOMixingConfig") -> "AFNOMixing":
+        """Create AFNOMixing layer from configuration.
+
+        Parameters
+        ----------
+        config : AFNOMixingConfig
+            Configuration object with layer parameters.
+
+        Returns
+        -------
+        AFNOMixing
+            Configured AFNO mixing layer.
+        """
+        return cls(
+            hidden_dim=config.hidden_dim,
+            max_sequence_length=config.max_sequence_length,
+            modes_seq=config.modes_seq,
+            modes_hidden=config.modes_hidden,
+            mlp_ratio=config.mlp_ratio,
+            activation=config.activation,
+            dropout=config.dropout,
+        )

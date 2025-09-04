@@ -308,7 +308,7 @@ class LSTAttention(AttentionLayer):
         output: Tensor = out
         if return_attention:
             # Attention weights not available in LST
-            return output, None  # type: ignore[return-value]
+            return output, None
         return output
 
     @property
@@ -585,7 +585,7 @@ class MixedSpectralAttention(AttentionLayer):
 
         output: Tensor = out
         if return_attention:
-            return output, None  # type: ignore[return-value]
+            return output, None
         return output
 
     @property

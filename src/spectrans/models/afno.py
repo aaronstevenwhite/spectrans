@@ -154,7 +154,7 @@ from ..layers.mixing.afno import AFNOMixing
 from ..models.base import BaseModel
 
 if TYPE_CHECKING:
-    from ..config.models import AFNOModelConfig, ModelConfig
+    from ..config.models import AFNOModelConfig
 
 
 @register_component("model", "afno")
@@ -308,12 +308,12 @@ class AFNOModel(BaseModel):
         }
 
     @classmethod
-    def from_config(cls, config: "AFNOModelConfig | ModelConfig") -> "AFNOModel":
+    def from_config(cls, config: "AFNOModelConfig") -> "AFNOModel":  # type: ignore[override]
         """Create AFNO model from configuration.
 
         Parameters
         ----------
-        config : AFNOModelConfig | ModelConfig
+        config : AFNOModelConfig
             Configuration object with model parameters.
 
         Returns

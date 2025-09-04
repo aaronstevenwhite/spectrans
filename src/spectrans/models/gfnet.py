@@ -128,7 +128,7 @@ from ..layers.mixing.global_filter import GlobalFilterMixing
 from ..models.base import BaseModel
 
 if TYPE_CHECKING:
-    from ..config.models import GFNetModelConfig, ModelConfig
+    from ..config.models import GFNetModelConfig
 
 
 @register_component("model", "gfnet")
@@ -264,12 +264,12 @@ class GFNet(BaseModel):
         }
 
     @classmethod
-    def from_config(cls, config: "GFNetModelConfig | ModelConfig") -> "GFNet":
+    def from_config(cls, config: "GFNetModelConfig") -> "GFNet":  # type: ignore[override]
         """Create GFNet model from configuration.
 
         Parameters
         ----------
-        config : GFNetModelConfig | ModelConfig
+        config : GFNetModelConfig
             Configuration object with model parameters.
 
         Returns

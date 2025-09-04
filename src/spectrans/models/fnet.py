@@ -119,7 +119,7 @@ from ..layers.mixing.fourier import FourierMixing, RealFourierMixing
 from ..models.base import BaseModel
 
 if TYPE_CHECKING:
-    from ..config.models import FNetModelConfig, ModelConfig
+    from ..config.models import FNetModelConfig
 
 
 @register_component("model", "fnet")
@@ -259,12 +259,12 @@ class FNet(BaseModel):
         }
 
     @classmethod
-    def from_config(cls, config: "FNetModelConfig | ModelConfig") -> "FNet":
+    def from_config(cls, config: "FNetModelConfig") -> "FNet":  # type: ignore[override]
         """Create FNet model from configuration.
 
         Parameters
         ----------
-        config : FNetModelConfig | ModelConfig
+        config : FNetModelConfig
             Configuration object with model parameters.
 
         Returns

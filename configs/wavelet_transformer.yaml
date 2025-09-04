@@ -1,0 +1,49 @@
+# Wavelet Transformer Configuration
+# Uses Discrete Wavelet Transform for multi-resolution sequence analysis
+# Provides O(n) complexity with natural hierarchical processing
+
+model:
+  model_type: "wavelet_transformer"
+  hidden_dim: 512
+  num_layers: 8
+  sequence_length: 512
+  dropout: 0.1
+  vocab_size: 25000
+  num_classes: 8
+  ffn_hidden_dim: 2048
+  use_positional_encoding: true
+  positional_encoding_type: "learned"
+  norm_eps: 1e-6
+  output_type: "classification"
+  gradient_checkpointing: false
+  # Wavelet-specific parameters
+  wavelet: "db4"  # Daubechies 4 wavelet
+  levels: 3  # Number of decomposition levels
+  mixing_mode: "pointwise"  # "pointwise", "channel", or "level"
+
+# Layer-specific configurations
+layers:
+  mixing:
+    type: "wavelet"
+    hidden_dim: 512
+    wavelet: "db4"
+    levels: 3
+    mixing_mode: "pointwise"
+    dropout: 0.1
+    
+  ffn:
+    hidden_dim: 512
+    intermediate_dim: 2048
+    activation: "mish"
+    dropout: 0.1
+
+# Training configuration
+training:
+  batch_size: 64
+  learning_rate: 2e-4
+  weight_decay: 0.03
+  warmup_steps: 6000
+  max_steps: 120000
+  save_steps: 2500
+  eval_steps: 1000
+  gradient_accumulation_steps: 1

@@ -1,0 +1,47 @@
+# Global Filter Network Configuration
+# Implements learnable spectral filters in the frequency domain
+# Paper: "Global Filter Networks for Image Classification" (2021)
+
+model:
+  model_type: "gfnet"
+  hidden_dim: 512
+  num_layers: 8
+  sequence_length: 224  # Typical for image patches (14x14 + CLS token)
+  dropout: 0.1
+  vocab_size: null  # Not used for direct image processing
+  num_classes: 1000  # ImageNet classification
+  ffn_hidden_dim: 2048
+  use_positional_encoding: true
+  positional_encoding_type: "learned"
+  norm_eps: 1e-6
+  output_type: "classification"
+  gradient_checkpointing: false
+  filter_activation: "sigmoid"
+
+# Layer-specific configurations
+layers:
+  mixing:
+    type: "global_filter"
+    hidden_dim: 512
+    sequence_length: 224
+    activation: "sigmoid"
+    dropout: 0.1
+    learnable_filters: true
+    fft_norm: "ortho"
+    filter_init_std: 0.02
+    
+  ffn:
+    hidden_dim: 512
+    intermediate_dim: 2048
+    activation: "gelu"
+    dropout: 0.1
+
+# Training configuration
+training:
+  batch_size: 64
+  learning_rate: 5e-4
+  weight_decay: 0.05
+  warmup_steps: 5000
+  max_steps: 300000
+  save_steps: 5000
+  eval_steps: 1000

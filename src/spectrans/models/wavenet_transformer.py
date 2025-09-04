@@ -134,7 +134,7 @@ from ..layers.mixing.wavelet import WaveletMixing
 from .base import BaseModel
 
 if TYPE_CHECKING:
-    from ..config.models import ModelConfig, WaveletTransformerConfig
+    from ..config.models import WaveletTransformerConfig
 
 
 @register_component("model", "wavelet_transformer")
@@ -302,12 +302,12 @@ class WaveletTransformer(BaseModel):
         }
 
     @classmethod
-    def from_config(cls, config: "WaveletTransformerConfig | ModelConfig") -> "WaveletTransformer":
+    def from_config(cls, config: "WaveletTransformerConfig") -> "WaveletTransformer":  # type: ignore[override]
         """Create wavelet transformer from configuration.
 
         Parameters
         ----------
-        config : WaveletTransformerConfig | ModelConfig
+        config : WaveletTransformerConfig
             Configuration object with model parameters.
 
         Returns

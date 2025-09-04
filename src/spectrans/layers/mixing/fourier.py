@@ -80,9 +80,12 @@ spectrans.layers.mixing.base : Base classes for mixing operations
 spectrans.transforms.fourier : Underlying FFT transform implementations
 """
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 import torch
+
+if TYPE_CHECKING:
+    from ...config.layers.mixing import FourierMixingConfig
 
 from ...core.registry import register_component
 from ...core.types import FFTNorm
@@ -172,12 +175,12 @@ class FourierMixing(UnitaryMixingLayer):
             'space': 'O(nd)'
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of Fourier mixing.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool]
             Properties including energy preservation and domain information.
         """
         return {
@@ -188,6 +191,28 @@ class FourierMixing(UnitaryMixingLayer):
             'translation_equivariant': True,
             'learnable_parameters': False,
         }
+
+    @classmethod
+    def from_config(cls, config: "FourierMixingConfig") -> "FourierMixing":
+        """Create FourierMixing layer from configuration.
+
+        Parameters
+        ----------
+        config : FourierMixingConfig
+            Configuration object with layer parameters.
+
+        Returns
+        -------
+        FourierMixing
+            Configured Fourier mixing layer.
+        """
+        return cls(
+            hidden_dim=config.hidden_dim,
+            dropout=config.dropout,
+            norm_eps=config.norm_eps,
+            energy_tolerance=config.energy_tolerance,
+            fft_norm=config.fft_norm,
+        )
 
 
 @register_component("mixing", "fourier_1d")
@@ -267,12 +292,12 @@ class FourierMixing1D(UnitaryMixingLayer):
             'space': 'O(nd)'
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of 1D Fourier mixing.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool]
             Properties specific to 1D sequence mixing.
         """
         return {
@@ -392,12 +417,12 @@ class RealFourierMixing(UnitaryMixingLayer):
                 'space': 'O(nd)'
             }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of real Fourier mixing.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool]
             Properties including efficiency characteristics.
         """
         return {
@@ -516,12 +541,12 @@ class SeparableFourierMixing(UnitaryMixingLayer):
             'space': 'O(nd)'
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get properties of separable mixing.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool]
             Properties reflecting the separable nature.
         """
         return {

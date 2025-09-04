@@ -1,0 +1,54 @@
+# Spectral Attention Configuration  
+# Uses Random Fourier Features for linear complexity attention
+# Paper: "Performer: Rethinking Attention with Performers" (2021)
+
+model:
+  model_type: "spectral_attention"
+  hidden_dim: 768
+  num_layers: 12
+  sequence_length: 2048  # Longer sequences benefit most from linear attention
+  dropout: 0.1
+  vocab_size: 50000
+  num_classes: 20
+  ffn_hidden_dim: 3072
+  use_positional_encoding: true
+  positional_encoding_type: "alibi"
+  norm_eps: 1e-12
+  output_type: "classification"
+  gradient_checkpointing: true
+  # Spectral attention specific parameters
+  num_features: 768  # Number of random Fourier features
+  kernel_type: "gaussian"  # or "softmax"
+  use_orthogonal: true
+  num_heads: 8
+
+# Layer-specific configurations
+layers:
+  attention:
+    type: "spectral_attention"
+    hidden_dim: 768
+    num_heads: 8
+    num_features: 768
+    kernel_type: "gaussian"
+    use_orthogonal: true
+    feature_redraw: false
+    dropout: 0.1
+    use_bias: true
+    
+  ffn:
+    hidden_dim: 768
+    intermediate_dim: 3072
+    activation: "gelu"
+    dropout: 0.1
+
+# Training configuration
+training:
+  batch_size: 8  # Smaller batch for longer sequences
+  learning_rate: 1e-4
+  weight_decay: 0.01
+  warmup_steps: 10000
+  max_steps: 500000
+  save_steps: 5000
+  eval_steps: 2500
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0

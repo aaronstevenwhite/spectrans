@@ -95,9 +95,12 @@ spectrans.transforms.fourier : Underlying FFT implementations
 """
 
 from collections.abc import Callable
-from typing import Any
+from typing import TYPE_CHECKING
 
 import torch
+
+if TYPE_CHECKING:
+    from ...config.layers.mixing import GlobalFilterMixingConfig
 import torch.nn as nn
 
 from ...core.registry import register_component
@@ -247,12 +250,12 @@ class GlobalFilterMixing(FilterMixingLayer):
             'parameters': '2nd'  # Real and imaginary filter parameters
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get spectral properties of global filtering.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool | int]
             Properties including filter characteristics.
         """
         return {
@@ -264,6 +267,30 @@ class GlobalFilterMixing(FilterMixingLayer):
             'activation': self.activation,
             'parameter_count': 2 * self.sequence_length * self.hidden_dim,
         }
+
+    @classmethod
+    def from_config(cls, config: "GlobalFilterMixingConfig") -> "GlobalFilterMixing":
+        """Create GlobalFilterMixing layer from configuration.
+
+        Parameters
+        ----------
+        config : GlobalFilterMixingConfig
+            Configuration object with layer parameters.
+
+        Returns
+        -------
+        GlobalFilterMixing
+            Configured global filter mixing layer.
+        """
+        return cls(
+            hidden_dim=config.hidden_dim,
+            sequence_length=config.sequence_length,
+            activation=config.activation,
+            dropout=config.dropout,
+            learnable_filters=config.learnable_filters,
+            fft_norm=config.fft_norm,
+            filter_init_std=config.filter_init_std,
+        )
 
 
 @register_component("mixing", "global_filter_2d")
@@ -404,12 +431,12 @@ class GlobalFilterMixing2D(FilterMixingLayer):
             'parameters': '2nd'
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get 2D filter properties.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool | int]
             2D filtering characteristics.
         """
         return {
@@ -616,12 +643,12 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
             'regularization': 'L2' if self.filter_regularization > 0 else 'None'
         }
 
-    def get_spectral_properties(self) -> dict[str, Any]:
+    def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get adaptive filter properties.
 
         Returns
         -------
-        dict[str, Any]
+        dict[str, str | bool | int]
             Comprehensive properties including adaptive features.
         """
         return {

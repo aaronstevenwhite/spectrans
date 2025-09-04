@@ -176,7 +176,7 @@ class SpectralAttention(AttentionLayer):
         # Normalization
         self.scale = 1.0 / math.sqrt(self.num_features)
 
-    def forward(  # type: ignore[override]
+    def forward(
         self,
         x: Tensor,
         mask: Tensor | None = None,
@@ -323,7 +323,7 @@ class PerformerAttention(SpectralAttention):
                 use_orthogonal=True,
             )
 
-    def forward(  # type: ignore[override]
+    def forward(
         self,
         x: Tensor,
         mask: Tensor | None = None,
@@ -472,7 +472,7 @@ class KernelAttention(AttentionLayer):
             )
             self.use_features = True
 
-    def forward(  # type: ignore[override]
+    def forward(
         self,
         x: Tensor,
         mask: Tensor | None = None,

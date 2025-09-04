@@ -1,0 +1,50 @@
+# Linear Spectral Transform Configuration
+# Uses DCT/DST/Hadamard transforms for efficient attention
+# Achieves O(n log n) complexity with competitive performance
+
+model:
+  model_type: "lst"
+  hidden_dim: 512
+  num_layers: 6
+  sequence_length: 1024
+  dropout: 0.1
+  vocab_size: 32000
+  num_classes: 5
+  ffn_hidden_dim: 2048
+  use_positional_encoding: true
+  positional_encoding_type: "rotary"
+  norm_eps: 1e-8
+  output_type: "classification"
+  gradient_checkpointing: true  # For longer sequences
+  # LST-specific parameters
+  transform_type: "dct"  # "dct", "dst", "hadamard", or "mixed"
+  use_conv_bias: true
+
+# Layer-specific configurations
+layers:
+  attention:
+    type: "lst"
+    hidden_dim: 512
+    num_heads: 8
+    transform_type: "dct"
+    learnable_scale: true
+    normalize: true
+    dropout: 0.1
+    use_bias: true
+    
+  ffn:
+    hidden_dim: 512
+    intermediate_dim: 2048
+    activation: "swish"
+    dropout: 0.1
+
+# Training configuration
+training:
+  batch_size: 32
+  learning_rate: 3e-4
+  weight_decay: 0.02
+  warmup_steps: 4000
+  max_steps: 150000
+  save_steps: 3000
+  eval_steps: 1500
+  gradient_accumulation_steps: 1

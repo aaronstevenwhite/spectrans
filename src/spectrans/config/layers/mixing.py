@@ -115,3 +115,27 @@ class GlobalFilterMixingConfig(FilterLayerConfig):
         default="sigmoid",
         description="Filter activation function"
     )
+
+
+class AFNOMixingConfig(BaseLayerConfig):
+    """Configuration for Adaptive Fourier Neural Operator mixing layers.
+
+    Parameters
+    ----------
+    max_sequence_length : int
+        Maximum sequence length for mode truncation, must be positive.
+    modes_seq : int | None
+        Number of Fourier modes in sequence dimension, defaults to max_sequence_length // 2.
+    modes_hidden : int | None
+        Number of Fourier modes in hidden dimension, defaults to hidden_dim // 2.
+    mlp_ratio : float
+        MLP expansion ratio in frequency domain, defaults to 2.0.
+    activation : ActivationType
+        Activation function for MLP, defaults to "gelu".
+    """
+
+    max_sequence_length: int = Field(gt=0, description="Maximum sequence length")
+    modes_seq: int | None = Field(default=None, ge=1, description="Fourier modes in sequence dimension")
+    modes_hidden: int | None = Field(default=None, ge=1, description="Fourier modes in hidden dimension")
+    mlp_ratio: float = Field(default=2.0, gt=0.0, description="MLP expansion ratio")
+    activation: ActivationType = Field(default="gelu", description="MLP activation function")

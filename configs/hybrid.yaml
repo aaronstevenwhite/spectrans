@@ -1,0 +1,65 @@
+# Hybrid Spectral-Spatial Transformer Configuration
+# Alternates between spectral and spatial mixing layers
+# Combines benefits of both approaches for optimal performance
+
+model:
+  model_type: "hybrid"
+  hidden_dim: 768
+  num_layers: 12  # Will alternate between spectral and spatial
+  sequence_length: 1024
+  dropout: 0.1
+  vocab_size: 40000
+  num_classes: 15
+  ffn_hidden_dim: 3072
+  use_positional_encoding: true
+  positional_encoding_type: "rotary"
+  norm_eps: 1e-12
+  output_type: "classification"
+  gradient_checkpointing: true
+  # Hybrid-specific parameters
+  spectral_type: "fourier"  # "fourier", "wavelet", "afno", "gfnet"
+  spatial_type: "attention"  # "attention", "spectral_attention", "lst"
+  alternation_pattern: "even_spectral"  # "even_spectral", "alternate", "custom"
+  num_heads: 12
+  spectral_config:
+    fft_norm: "ortho"
+    energy_tolerance: 1e-4
+  spatial_config:
+    head_dim: 64
+    dropout: 0.1
+
+# Layer-specific configurations
+layers:
+  spectral_mixing:
+    type: "fourier"
+    hidden_dim: 768
+    dropout: 0.1
+    fft_norm: "ortho"
+    energy_tolerance: 1e-4
+    
+  spatial_attention:
+    type: "attention"
+    hidden_dim: 768
+    num_heads: 12
+    head_dim: 64
+    dropout: 0.1
+    use_bias: true
+    
+  ffn:
+    hidden_dim: 768
+    intermediate_dim: 3072
+    activation: "gelu"
+    dropout: 0.1
+
+# Training configuration
+training:
+  batch_size: 16
+  learning_rate: 5e-5
+  weight_decay: 0.01
+  warmup_steps: 12000
+  max_steps: 400000
+  save_steps: 4000
+  eval_steps: 2000
+  gradient_accumulation_steps: 2
+  max_grad_norm: 1.0
+  scheduler_type: "cosine"

@@ -139,7 +139,7 @@ from ..layers.mixing.wavelet import WaveletMixing
 from .base import BaseModel
 
 if TYPE_CHECKING:
-    from ..config.models import HybridModelConfig, ModelConfig
+    from ..config.models import HybridModelConfig
 
 
 class StandardAttention(nn.Module):
@@ -484,12 +484,12 @@ class HybridTransformer(BaseModel):
         }
 
     @classmethod
-    def from_config(cls, config: "HybridModelConfig | ModelConfig") -> "HybridTransformer":
+    def from_config(cls, config: "HybridModelConfig") -> "HybridTransformer":  # type: ignore[override]
         """Create hybrid transformer from configuration.
 
         Parameters
         ----------
-        config : HybridModelConfig | ModelConfig
+        config : HybridModelConfig
             Configuration object with model parameters.
 
         Returns

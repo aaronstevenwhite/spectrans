@@ -1,0 +1,45 @@
+# FNet Model Configuration
+# Implements the FNet architecture using 2D Fourier transforms for token mixing
+# Paper: "FNet: Mixing Tokens with Fourier Transforms" (2022)
+
+model:
+  model_type: "fnet"
+  hidden_dim: 768
+  num_layers: 12
+  sequence_length: 512
+  dropout: 0.1
+  vocab_size: 30000
+  num_classes: 2
+  ffn_hidden_dim: 3072
+  use_positional_encoding: true
+  positional_encoding_type: "sinusoidal"
+  norm_eps: 1e-12
+  output_type: "classification"
+  gradient_checkpointing: false
+  use_real_fft: true
+
+# Layer-specific configurations
+layers:
+  mixing:
+    type: "fourier"
+    hidden_dim: 768
+    dropout: 0.1
+    norm_eps: 1e-5
+    energy_tolerance: 1e-4
+    fft_norm: "ortho"
+    
+  ffn:
+    hidden_dim: 768
+    intermediate_dim: 3072
+    activation: "gelu"
+    dropout: 0.1
+
+# Training configuration (optional)
+training:
+  batch_size: 32
+  learning_rate: 1e-4
+  weight_decay: 0.01
+  warmup_steps: 10000
+  max_steps: 100000
+  save_steps: 1000
+  eval_steps: 500
