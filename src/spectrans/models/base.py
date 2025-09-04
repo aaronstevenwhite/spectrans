@@ -163,6 +163,8 @@ class BaseModel(SpectralComponent, ABC):
         self.ffn_hidden_dim = ffn_hidden_dim or (4 * hidden_dim)
         self.norm_eps = norm_eps
         self.gradient_checkpointing = gradient_checkpointing
+        self.output_type = output_type
+        self.num_classes = num_classes
 
         # Input embedding
         if vocab_size is not None:
@@ -212,7 +214,16 @@ class BaseModel(SpectralComponent, ABC):
         elif output_type == "regression":
             self.output_head = RegressionHead(hidden_dim, dropout)
         elif output_type == "sequence":
-            vocab_size_out = vocab_size if vocab_size is not None else hidden_dim
+            vocab_size_out = num_classes if num_classes is not None else (vocab_size if vocab_size is not None else hidden_dim)
+            self.output_head = SequenceHead(hidden_dim, vocab_size_out, dropout)
+        elif output_type == "lm":
+            # Language modeling head outputs vocab_size
+            if num_classes is not None:
+                vocab_size_out = num_classes
+            elif vocab_size is not None:
+                vocab_size_out = vocab_size
+            else:
+                raise ValueError("Either num_classes or vocab_size must be specified for language modeling output")
             self.output_head = SequenceHead(hidden_dim, vocab_size_out, dropout)
         else:
             self.output_head = None
@@ -502,11 +513,11 @@ class LearnedPositionalEncoding(nn.Module):
 
 class RotaryPositionalEncoding(nn.Module):
     """Rotary Position Embedding (RoPE).
-    
+
     This module implements Rotary Position Embeddings as described in the RoFormer paper.
-    RoPE encodes absolute position with rotation matrix and naturally incorporates 
+    RoPE encodes absolute position with rotation matrix and naturally incorporates
     relative position dependency in self-attention formulation.
-    
+
     Parameters
     ----------
     hidden_dim : int
@@ -515,7 +526,7 @@ class RotaryPositionalEncoding(nn.Module):
         Maximum sequence length to encode.
     base : float, optional
         Base for the frequency calculation. Default is 10000.
-    
+
     Attributes
     ----------
     inv_freq : Tensor
@@ -524,13 +535,13 @@ class RotaryPositionalEncoding(nn.Module):
         Cached cosine values for positions.
     sin_cached : Tensor | None
         Cached sine values for positions.
-    
+
     References
     ----------
     .. [1] Su et al., "RoFormer: Enhanced Transformer with Rotary Position Embedding",
            arXiv:2104.09864, 2021.
     """
-    
+
     def __init__(
         self,
         hidden_dim: int,
@@ -540,43 +551,43 @@ class RotaryPositionalEncoding(nn.Module):
         super().__init__()
         if hidden_dim % 2 != 0:
             raise ValueError(f"hidden_dim must be even for RoPE, got {hidden_dim}")
-        
+
         self.hidden_dim = hidden_dim
         self.max_sequence_length = max_sequence_length
         self.base = base
-        
+
         # Compute inverse frequencies
         inv_freq = 1.0 / (base ** (torch.arange(0, hidden_dim, 2).float() / hidden_dim))
         self.register_buffer("inv_freq", inv_freq)
-        
+
         # Cache for precomputed cos/sin
         self.cos_cached: Tensor | None = None
         self.sin_cached: Tensor | None = None
         self._build_cache(max_sequence_length)
-    
+
     def _build_cache(self, seq_len: int) -> None:
         """Build cache for cos/sin values up to seq_len."""
         if self.cos_cached is not None and self.cos_cached.size(0) >= seq_len:
             return
-        
+
         # Create position indices
         inv_freq = self.inv_freq
         assert isinstance(inv_freq, torch.Tensor)
         t = torch.arange(seq_len).type_as(inv_freq)
-        
+
         # Compute frequencies for each position
         freqs = torch.einsum("i,j->ij", t, inv_freq)
-        
+
         # Duplicate frequencies for cos/sin pairs
         emb = torch.cat((freqs, freqs), dim=-1)
-        
+
         # Cache cos/sin values
         self.cos_cached = emb.cos()[None, None, :, :]
         self.sin_cached = emb.sin()[None, None, :, :]
-    
+
     def forward(self, x: Tensor, offset: int = 0) -> Tensor:
         """Apply rotary position embedding to input tensor.
-        
+
         Parameters
         ----------
         x : Tensor
@@ -584,7 +595,7 @@ class RotaryPositionalEncoding(nn.Module):
             or (batch_size, sequence_length, hidden_dim).
         offset : int, optional
             Position offset for incremental decoding. Default is 0.
-        
+
         Returns
         -------
         Tensor
@@ -597,26 +608,26 @@ class RotaryPositionalEncoding(nn.Module):
             # In practice, this would be applied separately to Q and K in attention
             was_3d = True
         else:
-            batch_size = x.shape[0]
+            x.shape[0]
             seq_len = x.shape[2] if x.ndim == 4 else x.shape[1]
             was_3d = False
-        
+
         # Rebuild cache if needed
         self._build_cache(seq_len + offset)
-        
+
         if was_3d:
             # For 3D tensor, apply rotation directly
             assert self.cos_cached is not None
             assert self.sin_cached is not None
             cos = self.cos_cached[:, :, offset:offset + seq_len, :].squeeze(1)
             sin = self.sin_cached[:, :, offset:offset + seq_len, :].squeeze(1)
-            
+
             # Split x into two halves for rotation
             x1, x2 = x.chunk(2, dim=-1)
-            
+
             # Apply rotation
             rotated = torch.cat(
-                [x1 * cos[:, :, :x1.shape[-1]] - x2 * sin[:, :, :x2.shape[-1]], 
+                [x1 * cos[:, :, :x1.shape[-1]] - x2 * sin[:, :, :x2.shape[-1]],
                  x1 * sin[:, :, :x1.shape[-1]] + x2 * cos[:, :, :x2.shape[-1]]],
                 dim=-1
             )
@@ -626,34 +637,34 @@ class RotaryPositionalEncoding(nn.Module):
             assert self.sin_cached is not None
             cos = self.cos_cached[:, :, offset:offset + seq_len, :]
             sin = self.sin_cached[:, :, offset:offset + seq_len, :]
-            
+
             # Split x into two halves for rotation
             x1, x2 = x.chunk(2, dim=-1)
-            
+
             # Apply rotation
             rotated = torch.cat(
-                [x1 * cos[:, :, :, :x1.shape[-1]] - x2 * sin[:, :, :, :x2.shape[-1]], 
+                [x1 * cos[:, :, :, :x1.shape[-1]] - x2 * sin[:, :, :, :x2.shape[-1]],
                  x1 * sin[:, :, :, :x1.shape[-1]] + x2 * cos[:, :, :, :x2.shape[-1]]],
                 dim=-1
             )
-        
+
         return rotated
 
 
 class ALiBiPositionalBias(nn.Module):
     """Attention with Linear Biases (ALiBi) positional encoding.
-    
+
     This module implements ALiBi, which adds a linear bias to attention scores
     based on the relative distance between tokens. Unlike traditional position
     embeddings, ALiBi enables extrapolation to longer sequences.
-    
+
     Parameters
     ----------
     num_heads : int
         Number of attention heads.
     max_sequence_length : int
         Maximum sequence length to encode.
-    
+
     Attributes
     ----------
     num_heads : int
@@ -662,13 +673,13 @@ class ALiBiPositionalBias(nn.Module):
         Head-specific slope parameters.
     alibi : Tensor | None
         Cached linear bias matrix.
-    
+
     References
     ----------
     .. [1] Press et al., "Train Short, Test Long: Attention with Linear Biases
            Enables Input Length Extrapolation", ICLR 2022.
     """
-    
+
     def __init__(
         self,
         num_heads: int,
@@ -677,18 +688,18 @@ class ALiBiPositionalBias(nn.Module):
         super().__init__()
         self.num_heads = num_heads
         self.max_sequence_length = max_sequence_length
-        
+
         # Compute slopes for each head
         slopes = self._get_slopes(num_heads)
         self.register_buffer("slopes", slopes)
-        
+
         # Cache for bias matrix
         self.alibi: Tensor | None = None
         self._build_alibi_tensor(max_sequence_length)
-    
+
     def _get_slopes(self, num_heads: int) -> Tensor:
         """Compute slope parameters for each attention head.
-        
+
         Following the paper, slopes are geometric sequence of ratios
         starting from 2^(-8/num_heads) for better extrapolation.
         """
@@ -696,73 +707,73 @@ class ALiBiPositionalBias(nn.Module):
             start = 2 ** (-8 / n)
             ratio = start
             return [start * (ratio ** i) for i in range(n)]
-        
+
         if math.log2(num_heads).is_integer():
             slopes = torch.tensor(get_slopes_power_of_2(num_heads))
         else:
             # If num_heads is not a power of 2, interpolate
             closest_power_of_2 = 2 ** math.floor(math.log2(num_heads))
             slopes_power_of_2 = get_slopes_power_of_2(closest_power_of_2)
-            
+
             # Interpolate to get the remaining slopes
             extra_slopes = []
             for i in range(num_heads - closest_power_of_2):
                 extra_slopes.append(
                     slopes_power_of_2[i % closest_power_of_2] * 0.5
                 )
-            
+
             slopes = torch.tensor(slopes_power_of_2 + extra_slopes)
-        
+
         return slopes.view(1, num_heads, 1, 1)
-    
+
     def _build_alibi_tensor(self, seq_len: int) -> None:
         """Build ALiBi bias tensor for given sequence length."""
         if self.alibi is not None and self.alibi.size(-1) >= seq_len:
             return
-        
+
         # Create relative position matrix
         positions = torch.arange(seq_len)[None, :]
         distances = positions - positions.transpose(0, 1)
-        
+
         # Apply slopes to get biases for each head
         slopes = self.slopes
         assert isinstance(slopes, torch.Tensor)
         alibi = distances[None, None, :, :] * slopes
         self.alibi = alibi
-    
+
     def forward(self, attention_scores: Tensor) -> Tensor:
         """Add ALiBi bias to attention scores.
-        
+
         Parameters
         ----------
         attention_scores : Tensor
             Attention scores of shape (batch_size, num_heads, seq_len, seq_len).
-        
+
         Returns
         -------
         Tensor
             Attention scores with ALiBi bias added.
         """
         batch_size, num_heads, seq_len, _ = attention_scores.shape
-        
+
         # Rebuild cache if needed
         self._build_alibi_tensor(seq_len)
-        
+
         # Add ALiBi bias
         assert self.alibi is not None
         alibi_bias = self.alibi[:, :, :seq_len, :seq_len].to(attention_scores.device)
         return attention_scores + alibi_bias
-    
+
     def get_bias(self, seq_len: int, device: torch.device | None = None) -> Tensor:
         """Get ALiBi bias matrix for a given sequence length.
-        
+
         Parameters
         ----------
         seq_len : int
             Sequence length.
         device : torch.device | None, optional
             Device to place the bias tensor.
-        
+
         Returns
         -------
         Tensor

@@ -5,7 +5,6 @@ configuration-based construction, and edge cases for LSTTransformer, LSTEncoder,
 and LSTDecoder models.
 """
 
-import pytest
 import torch
 import torch.nn as nn
 
@@ -99,10 +98,10 @@ class TestLSTTransformer:
     def test_lst_encoder(self):
         """Test encoder-only model variant."""
         batch_size, hidden_dim = 2, 256
-        
+
         # For Hadamard transform, use power-of-2 sequence length
         seq_length_hadamard = 128  # Power of 2
-        
+
         encoder = LSTEncoder(
             hidden_dim=hidden_dim,
             num_layers=3,
@@ -239,7 +238,7 @@ class TestLSTTransformer:
     def test_lst_transform_types(self):
         """Test different spectral transform types."""
         batch_size, hidden_dim = 2, 128
-        
+
         # Use power-of-2 for Hadamard compatibility
         seq_length = 64  # Power of 2
 
@@ -312,7 +311,7 @@ class TestLSTTransformer:
             inputs = torch.randn(2, seq_length, hidden_dim)
             output = model(inputs_embeds=inputs)
             assert output.shape == (2, seq_length, hidden_dim)
-            
+
         # Test Hadamard with power-of-2 lengths
         model_hadamard = LSTTransformer(
             hidden_dim=hidden_dim,
@@ -320,7 +319,7 @@ class TestLSTTransformer:
             transform_type="hadamard",
             max_sequence_length=1024,
         )
-        
+
         for seq_length in [16, 32, 64, 128, 256]:
             inputs = torch.randn(2, seq_length, hidden_dim)
             output = model_hadamard(inputs_embeds=inputs)

@@ -111,7 +111,7 @@ import torch.nn as nn
 
 from ..blocks.base import PreNormBlock
 from ..core.registry import register_component
-from ..core.types import KernelType, OutputHeadType, PositionalEncodingType
+from ..core.types import KernelType, PositionalEncodingType
 from ..layers.attention.spectral import PerformerAttention, SpectralAttention
 from .base import BaseModel
 

@@ -6,7 +6,6 @@ including the complete transformer, encoder, and decoder variants.
 
 import pytest
 import torch
-import torch.nn as nn
 
 from spectrans.models.fno_transformer import FNODecoder, FNOEncoder, FNOTransformer
 

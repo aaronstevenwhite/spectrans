@@ -45,3 +45,48 @@
       show_root_heading: false
       members_order: source
       merge_init_into_class: true
+
+## Spectral Attention Models
+
+::: spectrans.models.spectral_attention
+    options:
+      show_source: true
+      show_root_heading: false
+      members_order: source
+      merge_init_into_class: true
+
+## Linear Spectral Transform Models
+
+::: spectrans.models.lst
+    options:
+      show_source: true
+      show_root_heading: false
+      members_order: source
+      merge_init_into_class: true
+
+## FNO Transformer Models
+
+::: spectrans.models.fno_transformer
+    options:
+      show_source: true
+      show_root_heading: false
+      members_order: source
+      merge_init_into_class: true
+
+## Wavelet Transformer Models
+
+::: spectrans.models.wavenet_transformer
+    options:
+      show_source: true
+      show_root_heading: false
+      members_order: source
+      merge_init_into_class: true
+
+## Hybrid Models
+
+::: spectrans.models.hybrid
+    options:
+      show_source: true
+      show_root_heading: false
+      members_order: source
+      merge_init_into_class: true

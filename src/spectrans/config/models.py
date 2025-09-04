@@ -39,7 +39,13 @@ Examples
 
 from pydantic import BaseModel, Field
 
-from spectrans.core.types import KernelType, OutputHeadType, PositionalEncodingType, TransformLSTType
+from spectrans.core.types import (
+    KernelType,
+    OutputHeadType,
+    PositionalEncodingType,
+    TransformLSTType,
+    WaveletType,
+)
 
 
 class ModelConfig(BaseModel):
@@ -149,10 +155,10 @@ class AFNOModelConfig(ModelConfig):
 
 class LSTModelConfig(ModelConfig):
     """Configuration for Linear Spectral Transform models.
-    
+
     LST models use linear spectral transforms (DCT/DST/Hadamard) for sequence mixing,
     achieving O(n log n) complexity through fast transform algorithms.
-    
+
     Parameters
     ----------
     transform_type : TransformLSTType
@@ -160,7 +166,7 @@ class LSTModelConfig(ModelConfig):
     use_conv_bias : bool
         Whether to use bias in spectral convolution, defaults to True.
     """
-    
+
     model_type: str = Field(default="lst", description="Model type identifier")
     transform_type: TransformLSTType = Field(
         default="dct",
@@ -171,10 +177,10 @@ class LSTModelConfig(ModelConfig):
 
 class SpectralAttentionModelConfig(ModelConfig):
     """Configuration for Spectral Attention transformer models.
-    
-    Spectral attention models use Random Fourier Features (RFF) to approximate 
+
+    Spectral attention models use Random Fourier Features (RFF) to approximate
     attention with linear complexity O(n) instead of quadratic O(n²).
-    
+
     Parameters
     ----------
     num_features : int | None
@@ -186,7 +192,7 @@ class SpectralAttentionModelConfig(ModelConfig):
     num_heads : int
         Number of attention heads, defaults to 8.
     """
-    
+
     model_type: str = Field(default="spectral_attention", description="Model type identifier")
     num_features: int | None = Field(default=None, ge=1, description="Number of RFF features")
     kernel_type: KernelType = Field(
@@ -199,10 +205,10 @@ class SpectralAttentionModelConfig(ModelConfig):
 
 class FNOTransformerConfig(ModelConfig):
     """Configuration for Fourier Neural Operator transformer models.
-    
-    FNO models use spectral convolutions in the Fourier domain to learn 
+
+    FNO models use spectral convolutions in the Fourier domain to learn
     mappings between function spaces with O(n log n) complexity.
-    
+
     Parameters
     ----------
     modes : int
@@ -214,9 +220,81 @@ class FNOTransformerConfig(ModelConfig):
     spatial_dim : int | None
         Spatial dimension when using 2D convolutions (sequence = spatial_dim²), optional.
     """
-    
+
     model_type: str = Field(default="fno_transformer", description="Model type identifier")
     modes: int = Field(default=32, ge=1, description="Number of Fourier modes")
     mlp_ratio: float = Field(default=2.0, gt=0.0, description="MLP expansion ratio")
     use_2d: bool = Field(default=False, description="Use 2D spectral convolutions")
     spatial_dim: int | None = Field(default=None, ge=1, description="Spatial dimension for 2D")
+
+
+class WaveletTransformerConfig(ModelConfig):
+    """Configuration for Wavelet Transformer models.
+
+    Wavelet transformers use discrete wavelet transforms (DWT) for sequence mixing,
+    providing multi-resolution analysis with O(n) complexity.
+
+    Parameters
+    ----------
+    wavelet : WaveletType
+        Type of wavelet to use ('db4', 'sym6', 'coif3', etc.), defaults to 'db4'.
+    levels : int
+        Number of decomposition levels (typically 1-5), defaults to 3.
+    mixing_mode : str
+        How to mix wavelet coefficients ('pointwise', 'channel', 'level'), defaults to 'pointwise'.
+    """
+
+    model_type: str = Field(default="wavelet_transformer", description="Model type identifier")
+    wavelet: WaveletType = Field(
+        default="db4",
+        description="Wavelet type (e.g., 'db4', 'sym6', 'coif3')"
+    )
+    levels: int = Field(default=3, ge=1, le=10, description="Number of decomposition levels")
+    mixing_mode: str = Field(
+        default="pointwise",
+        pattern="^(pointwise|channel|level)$",
+        description="Wavelet coefficient mixing strategy"
+    )
+
+
+class HybridModelConfig(ModelConfig):
+    """Configuration for Hybrid Spectral-Spatial Transformer models.
+
+    Hybrid models alternate between different mixing strategies (e.g., spectral
+    and spatial) across layers, combining strengths of multiple approaches.
+
+    Parameters
+    ----------
+    spectral_type : str
+        Type of spectral mixing ('fourier', 'wavelet', 'afno', 'gfnet'), defaults to 'fourier'.
+    spatial_type : str
+        Type of spatial mixing ('attention', 'spectral_attention', 'lst'), defaults to 'attention'.
+    alternation_pattern : str
+        How to alternate layers ('even_spectral', 'alternate', 'custom'), defaults to 'even_spectral'.
+    num_heads : int
+        Number of attention heads for spatial layers, defaults to 8.
+    spectral_config : dict | None
+        Additional configuration for spectral layers, optional.
+    spatial_config : dict | None
+        Additional configuration for spatial layers, optional.
+    """
+
+    model_type: str = Field(default="hybrid", description="Model type identifier")
+    spectral_type: str = Field(
+        default="fourier",
+        pattern="^(fourier|wavelet|afno|gfnet)$",
+        description="Type of spectral mixing"
+    )
+    spatial_type: str = Field(
+        default="attention",
+        pattern="^(attention|spectral_attention|lst)$",
+        description="Type of spatial mixing"
+    )
+    alternation_pattern: str = Field(
+        default="even_spectral",
+        pattern="^(even_spectral|alternate|custom)$",
+        description="Layer alternation pattern"
+    )
+    num_heads: int = Field(default=8, ge=1, description="Number of attention heads")
+    spectral_config: dict | None = Field(default=None, description="Spectral layer config")
+    spatial_config: dict | None = Field(default=None, description="Spatial layer config")
