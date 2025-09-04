@@ -84,14 +84,19 @@ spectrans.layers.mixing.base : Base mixing layer interfaces
 spectrans.layers.mixing.fourier : Fourier-based mixing alternatives
 """
 
+from typing import TYPE_CHECKING
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
 from ...core.registry import register_component
-from ...core.types import ConfigDict, WaveletType
+from ...core.types import WaveletType
 from ...transforms.wavelet import DWT1D, DWT2D
+
+if TYPE_CHECKING:
+    from ...config.layers.mixing import WaveletMixing2DConfig, WaveletMixingConfig
 
 
 @register_component("mixing", "wavelet_mixing")
@@ -464,13 +469,13 @@ class WaveletMixing(nn.Module):
         }
 
     @classmethod
-    def from_config(cls, config: ConfigDict) -> "WaveletMixing":
+    def from_config(cls, config: "WaveletMixingConfig") -> "WaveletMixing":
         """Create WaveletMixing from configuration.
 
         Parameters
         ----------
-        config : ConfigDict
-            Configuration dictionary.
+        config : WaveletMixingConfig
+            Typed and validated configuration.
 
         Returns
         -------
@@ -478,11 +483,11 @@ class WaveletMixing(nn.Module):
             Configured instance.
         """
         return cls(
-            hidden_dim=int(config["hidden_dim"]),
-            wavelet=str(config.get("wavelet", "db4")),  # type: ignore[arg-type]
-            levels=int(config.get("levels", 3)),
-            mixing_mode=str(config.get("mixing_mode", "pointwise")),
-            dropout=float(config.get("dropout", 0.0)),
+            hidden_dim=config.hidden_dim,
+            wavelet=config.wavelet,
+            levels=config.levels,
+            mixing_mode=config.mixing_mode,
+            dropout=config.dropout,
         )
 
 
@@ -809,13 +814,13 @@ class WaveletMixing2D(nn.Module):
         }
 
     @classmethod
-    def from_config(cls, config: ConfigDict) -> "WaveletMixing2D":
+    def from_config(cls, config: "WaveletMixing2DConfig") -> "WaveletMixing2D":
         """Create WaveletMixing2D from configuration.
 
         Parameters
         ----------
-        config : ConfigDict
-            Configuration dictionary.
+        config : WaveletMixing2DConfig
+            Typed and validated configuration.
 
         Returns
         -------
@@ -823,8 +828,8 @@ class WaveletMixing2D(nn.Module):
             Configured instance.
         """
         return cls(
-            channels=int(config["channels"]),
-            wavelet=str(config.get("wavelet", "db4")),  # type: ignore[arg-type]
-            levels=int(config.get("levels", 2)),
-            mixing_mode=str(config.get("mixing_mode", "subband")),
+            channels=config.channels,
+            wavelet=config.wavelet,
+            levels=config.levels,
+            mixing_mode=config.mixing_mode,
         )

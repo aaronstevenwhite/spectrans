@@ -551,7 +551,11 @@ class FourierKernel(nn.Module, SpectralKernel):
         filter_type: Literal["gaussian", "butterworth", "ideal"] = "gaussian",
         cutoff_freq: float = 0.5,
     ):
-        super().__init__(rank, normalize=True)
+        # Use super() to initialize nn.Module (first in MRO)
+        super().__init__()
+        # Manually set attributes that SpectralKernel.__init__ would set
+        self.rank = rank
+        self.normalize = True
 
         self.input_dim = input_dim
         self.filter_type = filter_type

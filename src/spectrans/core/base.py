@@ -105,7 +105,7 @@ class SpectralComponent(nn.Module, ABC):
         Returns
         -------
         torch.Tensor | tuple[torch.Tensor, ...]
-            Output tensor(s). Single tensor for most cases, tuple for attention 
+            Output tensor(s). Single tensor for most cases, tuple for attention
             layers that optionally return attention weights.
         """
         pass

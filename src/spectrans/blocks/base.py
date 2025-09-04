@@ -90,9 +90,9 @@ class TransformerBlock(SpectralComponent):
     use_pre_norm : bool
         Whether pre-normalization is used.
     """
-    
+
     # Explicit type annotations for attributes that can be None
-    ffn: FeedForwardNetwork | None
+    ffn: "FeedForwardNetwork | None"
     norm2: nn.LayerNorm | None
 
     def __init__(

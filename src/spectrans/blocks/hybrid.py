@@ -47,6 +47,7 @@ References
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 
 from ..core.base import SpectralComponent
 from ..core.registry import register_component
@@ -230,8 +231,10 @@ class AlternatingBlock(HybridBlock):
         """
         layer = self.layer1 if self.use_layer1 else self.layer2
         # Get complexity from layer if it has the property, otherwise use default
+        layer_complexity: dict[str, str]
         if hasattr(layer, "complexity"):
-            layer_complexity = layer.complexity
+            # Type: ignore because mypy can't infer that complexity is dict[str, str]
+            layer_complexity = layer.complexity  # type: ignore[assignment]
         else:
             layer_complexity = {"time": "O(n*d)", "space": "O(n*d)"}
         ffn_complexity = self.ffn.complexity
@@ -341,14 +344,14 @@ class AdaptiveBlock(HybridBlock):
             # Apply selected layer for each sample
             mixed = torch.zeros_like(x)
             for i in range(x.shape[0]):
-                idx = gate_idx[i].item()
+                idx = int(gate_idx[i].item())
                 mixed[i] = self.layers[idx](normed[i:i+1])
 
         # Add residual
         h = x + self.dropout(mixed)
 
         # Apply FFN with pre-norm
-        output = h + self.dropout(self.ffn(self.norm2(h)))
+        output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
 
@@ -428,6 +431,10 @@ class MultiscaleBlock(HybridBlock):
         self.num_scales = len(layers)
         self.fusion_type = fusion_type
 
+        # Type annotations for optional attributes
+        self.fusion_weights: nn.Parameter | None
+        self.fusion_proj: nn.Linear | None
+
         # Fusion mechanisms
         if fusion_type == "weighted":
             self.fusion_weights = nn.Parameter(torch.ones(self.num_scales) / self.num_scales)
@@ -464,10 +471,12 @@ class MultiscaleBlock(HybridBlock):
         if self.fusion_type == "add":
             mixed = sum(outputs) / self.num_scales
         elif self.fusion_type == "weighted":
+            assert self.fusion_weights is not None, "fusion_weights should not be None for weighted fusion"
             weights = F.softmax(self.fusion_weights, dim=0)
             mixed = sum(w * out for w, out in zip(weights, outputs, strict=False))
         elif self.fusion_type == "concat":
             mixed = torch.cat(outputs, dim=-1)
+            assert self.fusion_proj is not None, "fusion_proj should not be None for concat fusion"
             mixed = self.fusion_proj(mixed)
         else:
             raise ValueError(f"Unknown fusion type: {self.fusion_type}")
@@ -476,7 +485,7 @@ class MultiscaleBlock(HybridBlock):
         h = x + self.dropout(mixed)
 
         # Apply FFN with pre-norm
-        output = h + self.dropout(self.ffn(self.norm2(h)))
+        output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
 
@@ -579,7 +588,7 @@ class CascadeBlock(HybridBlock):
             h = h + self.dropout(layer(norm(h)))
 
         # Apply FFN with pre-norm
-        output = h + self.dropout(self.ffn(self.norm2(h)))
+        output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
 

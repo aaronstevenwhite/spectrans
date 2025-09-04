@@ -76,6 +76,7 @@ import torch.nn.functional as F
 from ...core.base import AttentionLayer
 from ...core.registry import register_component
 from ...core.types import ComplexityInfo, Tensor
+from ...kernels.base import KernelFunction, RandomFeatureMap
 from ...kernels.rff import GaussianRFFKernel, RFFAttentionKernel
 
 
@@ -121,9 +122,11 @@ class SpectralAttention(AttentionLayer):
         Value projection.
     out_proj : nn.Linear
         Output projection.
-    kernel : RFFAttentionKernel or GaussianRFFKernel
+    kernel : RandomFeatureMap | KernelFunction
         Kernel for attention approximation.
     """
+
+    kernel: RandomFeatureMap  # Type annotation for the kernel attribute
 
     def __init__(
         self,
@@ -173,12 +176,12 @@ class SpectralAttention(AttentionLayer):
         # Normalization
         self.scale = 1.0 / math.sqrt(self.num_features)
 
-    def forward(
+    def forward(  # type: ignore[override]
         self,
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor]:
+    ) -> Tensor | tuple[Tensor, Tensor | None]:
         """Forward pass of spectral attention.
 
         Parameters
@@ -228,7 +231,7 @@ class SpectralAttention(AttentionLayer):
         KV = torch.matmul(K_features.transpose(-2, -1), V)
 
         # Compute QKV (batch, heads, seq_len, head_dim)
-        out = torch.matmul(Q_features, KV)
+        out: Tensor = torch.matmul(Q_features, KV)
 
         # Normalize
         # Compute normalizer: Q_features @ (K_features^T @ 1)
@@ -320,12 +323,12 @@ class PerformerAttention(SpectralAttention):
                 use_orthogonal=True,
             )
 
-    def forward(
+    def forward(  # type: ignore[override]
         self,
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor]:
+    ) -> Tensor | tuple[Tensor, Tensor | None]:
         """Forward pass of Performer attention.
 
         Parameters
@@ -385,7 +388,8 @@ class PerformerAttention(SpectralAttention):
         out = out.transpose(1, 2).contiguous()
         out = out.view(batch_size, seq_len, self.hidden_dim)
 
-        return self.dropout(self.out_proj(out))
+        output: Tensor = self.dropout(self.out_proj(out))
+        return output
 
 
 @register_component("attention", "kernel")
@@ -418,6 +422,8 @@ class KernelAttention(AttentionLayer):
         Rank for approximations.
     """
 
+    kernel: RandomFeatureMap | KernelFunction  # Type annotation to handle different kernel types
+
     def __init__(
         self,
         hidden_dim: int,
@@ -439,7 +445,7 @@ class KernelAttention(AttentionLayer):
         self.v_proj = nn.Linear(hidden_dim, hidden_dim)
         self.out_proj = nn.Linear(hidden_dim, hidden_dim)
 
-        # Initialize kernel
+        # Initialize kernel - using union type to handle different kernel types
         if kernel_type == "gaussian":
             from ...kernels import GaussianRFFKernel
             self.kernel = GaussianRFFKernel(
@@ -466,12 +472,12 @@ class KernelAttention(AttentionLayer):
             )
             self.use_features = True
 
-    def forward(
+    def forward(  # type: ignore[override]
         self,
         x: Tensor,
         mask: Tensor | None = None,
         return_attention: bool = False,
-    ) -> Tensor | tuple[Tensor, Tensor]:
+    ) -> Tensor | tuple[Tensor, Tensor | None]:
         """Forward pass of kernel attention.
 
         Parameters
@@ -500,13 +506,14 @@ class KernelAttention(AttentionLayer):
         V = V.transpose(1, 2)
 
         if self.use_features:
-            # Use feature-based approximation
+            # Use feature-based approximation - kernel should be a callable (RandomFeatureMap)
             if hasattr(self.kernel, 'extract_features'):
-                Q_feat = self.kernel.extract_features(Q)
-                K_feat = self.kernel.extract_features(K)
+                Q_feat = self.kernel.extract_features(Q)  # type: ignore[operator]
+                K_feat = self.kernel.extract_features(K)  # type: ignore[operator]
             else:
-                Q_feat = self.kernel(Q)
-                K_feat = self.kernel(K)
+                # Call the kernel as a function
+                Q_feat = self.kernel(Q)  # type: ignore[operator]
+                K_feat = self.kernel(K)  # type: ignore[operator]
 
             if mask is not None:
                 mask_exp = mask.unsqueeze(1).unsqueeze(-1)
@@ -515,14 +522,14 @@ class KernelAttention(AttentionLayer):
 
             # Linear attention computation
             KV = torch.matmul(K_feat.transpose(-2, -1), V)
-            out = torch.matmul(Q_feat, KV)
+            out: Tensor = torch.matmul(Q_feat, KV)
 
             # Normalize
             K_sum = K_feat.sum(dim=-2, keepdim=True).transpose(-2, -1)
             normalizer = torch.matmul(Q_feat, K_sum) + 1e-6
             out = out / normalizer
 
-            attention_weights = None
+            attention_weights: Tensor | None = None
 
         else:
             # Direct kernel computation (for small sequences)
@@ -531,7 +538,7 @@ class KernelAttention(AttentionLayer):
             K_flat = K.reshape(-1, seq_len, self.head_dim)
 
             # Compute kernel matrix
-            attention_weights = self.kernel.compute(Q_flat, K_flat)
+            attention_weights = self.kernel.compute(Q_flat, K_flat)  # type: ignore[operator]
             attention_weights = attention_weights.view(
                 batch_size, self.num_heads, seq_len, seq_len
             )

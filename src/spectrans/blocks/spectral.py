@@ -418,7 +418,7 @@ class FNOBlock(PreNormBlock):
 
         # Use FourierNeuralOperator for mixing
         if num_layers == 1:
-            mixing_layer = FourierNeuralOperator(
+            mixing_layer: nn.Module = FourierNeuralOperator(
                 hidden_dim=hidden_dim,
                 modes=modes,
                 activation=cast(ActivationType, activation),
@@ -491,7 +491,7 @@ class FNO2DBlock(PreNormBlock):
         # For 2D, we use FourierNeuralOperator with 2D mode specification
         modes_2d = (modes_h, modes_w)
         if num_layers == 1:
-            mixing_layer = FourierNeuralOperator(
+            mixing_layer: nn.Module = FourierNeuralOperator(
                 hidden_dim=hidden_dim,
                 modes=modes_2d,  # Use 2D mode tuple
                 activation=cast(ActivationType, activation),
