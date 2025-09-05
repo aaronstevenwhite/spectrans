@@ -15,20 +15,20 @@ interfaces for easy integration into transformer architectures.
 Available Mixing Layers
 -----------------------
 Fourier-based mixing (parameter-free):
-    - FourierMixing: 2D FFT mixing for both sequence and feature dimensions
-    - FourierMixing1D: 1D FFT mixing along sequence dimension only
-    - RealFourierMixing: Memory-efficient real FFT variant
-    - SeparableFourierMixing: Configurable sequence and/or feature mixing
+- FourierMixing: 2D FFT mixing for both sequence and feature dimensions
+- FourierMixing1D: 1D FFT mixing along sequence dimension only
+- RealFourierMixing: Memory-efficient real FFT variant
+- SeparableFourierMixing: Configurable sequence and/or feature mixing
 
 Global filter mixing (learnable parameters):
-    - GlobalFilterMixing: Learnable complex filters in frequency domain
-    - GlobalFilterMixing2D: 2D variant with filtering in both dimensions
-    - AdaptiveGlobalFilter: Enhanced with adaptive initialization and regularization
+- GlobalFilterMixing: Learnable complex filters in frequency domain
+- GlobalFilterMixing2D: 2D variant with filtering in both dimensions
+- AdaptiveGlobalFilter: Enhanced with adaptive initialization and regularization
 
 Base classes:
-    - MixingLayer: Base class for mixing operations
-    - UnitaryMixingLayer: Base for energy-preserving transforms
-    - FilterMixingLayer: Base for frequency domain filtering
+- MixingLayer: Base class for mixing operations
+- UnitaryMixingLayer: Base for energy-preserving transforms
+- FilterMixingLayer: Base for frequency domain filtering
 
 Examples
 --------
@@ -56,7 +56,6 @@ Advanced adaptive filtering:
 Notes
 -----
 Complexity Comparison:
-
 - Traditional attention: :math:`O(n^2 d)`
 - Fourier mixing: :math:`O(nd \log n)`
 - Global filtering: :math:`O(nd \log n)` + learnable parameters
