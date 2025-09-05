@@ -200,10 +200,6 @@ def mock_mixing_layer_class():
         def forward(self, x):
             return x * 1.5
 
-        @property
-        def complexity(self):
-            return {'time': 'O(n)', 'space': 'O(1)'}
-
     return MockMixingLayer
 
 

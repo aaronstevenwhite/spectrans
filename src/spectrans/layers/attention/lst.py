@@ -86,7 +86,7 @@ import torch.nn as nn
 
 from ...core.base import AttentionLayer
 from ...core.registry import register_component
-from ...core.types import ComplexityInfo, Tensor
+from ...core.types import Tensor
 from ...transforms import DCT, DST, HadamardTransform
 from ...transforms.base import SpectralTransform
 
@@ -311,13 +311,6 @@ class LSTAttention(AttentionLayer):
             return output, None  # type: ignore[return-value]
         return output
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity of LST attention."""
-        return {
-            'time': 'O(nd log n) for sequence length n, hidden dim d',
-            'space': 'O(nd) for transform computation'
-        }
 
 
 @register_component("attention", "dct")
@@ -588,13 +581,6 @@ class MixedSpectralAttention(AttentionLayer):
             return output, None  # type: ignore[return-value]
         return output
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {
-            'time': 'O(nd log n) for mixed transforms',
-            'space': 'O(nd)'
-        }
 
 
 __all__ = [

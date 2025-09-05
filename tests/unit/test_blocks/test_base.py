@@ -80,19 +80,6 @@ class TestFeedForwardNetwork:
         # In eval mode, outputs should be deterministic
         assert torch.allclose(output_eval1, output_eval2)
 
-    def test_complexity_property(self):
-        """Test complexity property."""
-        ffn = FeedForwardNetwork(
-            hidden_dim=64,
-            ffn_hidden_dim=256,
-            activation="gelu",
-        )
-
-        complexity = ffn.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        assert "64" in complexity["time"]  # hidden_dim should appear
-        assert "256" in complexity["time"]  # ffn_hidden_dim should appear
 
 
 class TestTransformerBlock:

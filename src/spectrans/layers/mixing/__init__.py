@@ -26,7 +26,7 @@ Global filter mixing (learnable parameters):
     - AdaptiveGlobalFilter: Enhanced with adaptive initialization and regularization
 
 Base classes:
-    - MixingLayer: Base class with complexity analysis
+    - MixingLayer: Base class for mixing operations
     - UnitaryMixingLayer: Base for energy-preserving transforms
     - FilterMixingLayer: Base for frequency domain filtering
 
@@ -66,7 +66,6 @@ All mixing layers support:
 - Gradient computation for end-to-end training
 - Shape preservation (output shape = input shape)
 - Mathematical property verification (energy, orthogonality)
-- Comprehensive complexity analysis
 
 See Also
 --------

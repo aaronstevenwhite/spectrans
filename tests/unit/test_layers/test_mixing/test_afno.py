@@ -138,28 +138,6 @@ class TestAFNOMixing:
         # Outputs should be identical in eval mode
         assert torch.allclose(output_eval1, output_eval2)
 
-    def test_afno_complexity(self):
-        """Test AFNO complexity computation."""
-        seq_len = 256
-        hidden_dim = 512
-        modes_seq = 64
-        modes_hidden = 128
-
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len,
-            modes_seq=modes_seq,
-            modes_hidden=modes_hidden
-        )
-
-        complexity = layer.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-
-        # Check complexity contains expected terms
-        assert str(modes_seq) in complexity['time']
-        assert str(modes_hidden) in complexity['time']
-        assert 'log' in complexity['time']  # FFT has log complexity
 
 
 class TestAFNOMixingGradients:

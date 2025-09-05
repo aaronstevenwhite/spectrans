@@ -321,35 +321,6 @@ class BaseModel(SpectralComponent, ABC):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the model.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        L = self.num_layers
-
-        # Get complexity from one block (assumes all blocks have same complexity)
-        if self.blocks and hasattr(self.blocks[0], "complexity"):
-            block_complexity = self.blocks[0].complexity
-            # Multiply by number of layers
-            if isinstance(block_complexity, dict):
-                time = f"O({L} * {block_complexity.get('time', 'n * d')[2:]})"
-                space = f"O({L} * {block_complexity.get('space', 'n * d')[2:]})"
-            else:
-                time = f"O({L} * {n} * {d}^2)"
-                space = f"O({L} * {n} * {d})"
-        else:
-            # Default complexity for transformer models
-            time = f"O({L} * {n} * {d}^2)"
-            space = f"O({L} * {n} * {d})"
-
-        return {"time": time, "space": space}
 
     @classmethod
     def from_config(cls, config: "ModelConfig") -> "BaseModel":

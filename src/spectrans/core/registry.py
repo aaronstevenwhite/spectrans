@@ -71,7 +71,7 @@ Component Categories:
 - 'operator': Neural operators (FNO layers)
 
 The registry supports metadata storage for each component, enabling rich
-component descriptions, complexity information, and configuration schemas.
+component descriptions and configuration schemas.
 
 Thread Safety: The registry is not thread-safe. Component registration should
 occur during module initialization, before concurrent access.

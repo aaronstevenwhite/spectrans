@@ -58,11 +58,10 @@ Notes
 -----
 The core architecture follows these design principles:
 
-1. **Abstract Interfaces**: All components implement consistent forward() and complexity methods
+1. **Abstract Interfaces**: All components implement consistent forward() methods
 2. **Type Safety**: Comprehensive type hints with modern Python 3.13 syntax
 3. **Modularity**: Registry system enables runtime component composition
-4. **Mathematical Rigor**: Complexity analysis built into base classes
-5. **Extensibility**: Easy to add new transforms and mixing strategies
+4. **Extensibility**: Easy to add new transforms and mixing strategies
 
 The registry system supports six categories of components:
 - transform: Spectral transforms (FFT, DCT, DWT, Hadamard)
@@ -102,7 +101,6 @@ from .types import (
     BoolTensor,
     CausalMask,
     CheckpointDict,
-    ComplexityInfo,
     ComplexTensor,
     ComponentClass,
     ComponentFactory,
@@ -174,7 +172,6 @@ __all__: list[str] = [
     "BatchSize",
     "BoolTensor",
     "ComplexTensor",
-    "ComplexityInfo",
     # Registry
     "ComponentRegistry",
     "ComponentType",

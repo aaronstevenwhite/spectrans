@@ -630,21 +630,6 @@ class DWT1D(MultiResolutionTransform):
 
         return current
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of 1D DWT.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity.
-        """
-        return {
-            'time': 'O(n)',
-            'space': 'O(n)',
-            'levels': str(self.levels)
-        }
-
 
 @register_component("transform", "dwt2d")
 class DWT2D(MultiResolutionTransform2D):
@@ -888,21 +873,6 @@ class DWT2D(MultiResolutionTransform2D):
             current = self._single_level_2d_reconstruct(current, lh, hl, hh, dim=dim)
 
         return current
-
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of 2D DWT.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity.
-        """
-        return {
-            'time': 'O(mn)',
-            'space': 'O(mn)',
-            'levels': str(self.levels)
-        }
 
 
 __all__ = [

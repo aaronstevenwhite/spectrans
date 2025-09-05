@@ -265,20 +265,6 @@ class GlobalFilterMixing(FilterMixingLayer):
             self.activation_fn(self.filter_imag)
         )
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity with parameter count.
-        """
-        return {
-            'time': 'O(nd log n)',
-            'space': 'O(nd)',
-            'parameters': '2nd'  # Real and imaginary filter parameters
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get spectral properties of global filtering.
@@ -470,20 +456,6 @@ class GlobalFilterMixing2D(FilterMixingLayer):
             self.activation_fn(self.filter_imag)
         )
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            2D filtering complexity.
-        """
-        return {
-            'time': 'O(nd log n + nd log d)',
-            'space': 'O(nd)',
-            'parameters': '2nd'
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get 2D filter properties.
@@ -704,21 +676,6 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
 
         return self.filter_regularization * (real_loss + imag_loss)  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Adaptive filtering complexity.
-        """
-        return {
-            'time': 'O(nd log n)',
-            'space': 'O(nd)',
-            'parameters': '2nd',
-            'regularization': 'L2' if self.filter_regularization > 0 else 'None'
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get adaptive filter properties.

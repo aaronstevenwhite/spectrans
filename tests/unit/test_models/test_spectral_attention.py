@@ -147,33 +147,6 @@ class TestSpectralAttentionTransformer:
         output = encoder(input_ids)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-    def test_spectral_attention_complexity(self):
-        """Test complexity property returns correct information."""
-        model = SpectralAttentionTransformer(
-            hidden_dim=512,
-            num_layers=6,
-            num_heads=8,
-            num_features=256,
-            max_sequence_length=1024,
-        )
-
-        complexity = model.complexity
-        assert "O(n * 256 * 512)" in complexity["time"]
-        assert "O(n * 256)" in complexity["space"]
-        assert "Linear" in complexity["description"]
-
-        # Test with different feature dimensions
-        model = SpectralAttentionTransformer(
-            hidden_dim=768,
-            num_layers=4,
-            num_heads=12,
-            num_features=384,
-            max_sequence_length=2048,
-        )
-
-        complexity = model.complexity
-        assert "O(n * 384 * 768)" in complexity["time"]
-        assert "O(n * 384)" in complexity["space"]
 
     def test_spectral_attention_gradient_flow(self):
         """Test gradient flow through the model."""
@@ -400,20 +373,6 @@ class TestPerformerTransformer:
         logits = model(inputs_embeds=inputs)
         assert logits.shape == (batch_size, 10)
 
-    def test_performer_complexity(self):
-        """Test Performer complexity property."""
-        model = PerformerTransformer(
-            hidden_dim=512,
-            num_layers=6,
-            num_heads=8,
-            num_features=256,
-            max_sequence_length=1024,
-        )
-
-        complexity = model.complexity
-        assert "O(n * 256 * 512)" in complexity["time"]
-        assert "O(n * 256)" in complexity["space"]
-        assert "orthogonal" in complexity["description"].lower()
 
     def test_performer_gradient_flow(self):
         """Test gradient flow through Performer model."""

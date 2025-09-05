@@ -109,10 +109,6 @@ Transform Categories by Mathematical Properties:
 - **Invertible**: Guarantee numerical invertibility with tolerance checking
 - **Adaptive**: Learn transform parameters during training
 
-Complexity Analysis:
-All transform implementations should document their computational complexity
-through the complexity property, enabling informed architectural choices.
-
 See Also
 --------
 spectrans.transforms.fourier : FFT implementations
@@ -514,15 +510,3 @@ class AdaptiveTransform(NeuralSpectralTransform):
         super().__init__()
         self.input_dim = input_dim
         self.learnable = learnable
-
-    @property
-    @abstractmethod
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        pass

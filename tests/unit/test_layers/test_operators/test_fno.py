@@ -290,21 +290,6 @@ class TestFourierNeuralOperator:
             output = fno(x)
             assert output.shape == x.shape
 
-    def test_fno_complexity(self):
-        """Test complexity computation."""
-        # 1D case
-        fno_1d = FourierNeuralOperator(hidden_dim=64, modes=16)
-        complexity_1d = fno_1d.complexity
-        assert 'time' in complexity_1d
-        assert 'space' in complexity_1d
-        assert 'log(n)' in complexity_1d['time']
-
-        # 2D case
-        fno_2d = FourierNeuralOperator(hidden_dim=64, modes=(16, 16))
-        complexity_2d = fno_2d.complexity
-        assert 'time' in complexity_2d
-        assert 'space' in complexity_2d
-        assert 'log(n*m)' in complexity_2d['time']
 
 
 class TestFNOBlock:

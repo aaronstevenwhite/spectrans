@@ -285,27 +285,6 @@ class AFNOModel(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of AFNO model.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        k_n = self.modes_seq
-        k_d = self.modes_hidden
-        L = self.num_layers
-
-        # AFNO has reduced complexity due to mode truncation
-        # FFT: O(nd log(nd)), Mode operations: O(k_n * k_d * d)
-        return {
-            "time": f"O({L} * ({n}*{d}*log({n}*{d}) + {k_n}*{k_d}*{d}))",
-            "space": f"O({L} * {k_n} * {k_d} * {d})",
-        }
 
     @classmethod
     def from_config(cls, config: "AFNOModelConfig") -> "AFNOModel":  # type: ignore[override]

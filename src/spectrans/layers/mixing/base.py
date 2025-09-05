@@ -13,7 +13,7 @@ for sequence modeling tasks.
 Classes
 -------
 MixingLayer
-    Base class for spectral mixing operations with complexity analysis.
+    Base class for spectral mixing operations.
 UnitaryMixingLayer
     Base class for mixing layers that preserve energy (unitary operations).
 FilterMixingLayer
@@ -28,9 +28,6 @@ Implementing a custom spectral mixing layer:
 ...     def forward(self, x):
 ...         # Custom spectral mixing implementation
 ...         return self.apply_spectral_operation(x)
-...     @property
-...     def complexity(self):
-...         return {'time': 'O(nd log d)', 'space': 'O(nd)'}
 
 Creating a unitary mixing layer:
 
@@ -59,8 +56,6 @@ Filter mixing layers operate in frequency domain:
 - **Frequency Selectivity**: Apply learned filters to frequency components
 - **Spectral Locality**: Localized operations in frequency space
 
-The complexity analysis provides theoretical bounds for computational cost,
-enabling architecture comparison and optimization decisions.
 
 See Also
 --------
@@ -83,8 +78,8 @@ class MixingLayer(SpectralComponent):
     Mixing layers perform token mixing operations using various
     spectral transforms instead of traditional attention mechanisms.
     This class provides spectral-specific functionality including
-    complexity analysis, mathematical property verification,
-    and standardized interfaces for spectral transform operations.
+    mathematical property verification and standardized interfaces
+    for spectral transform operations.
 
     Parameters
     ----------
@@ -116,18 +111,6 @@ class MixingLayer(SpectralComponent):
         self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
         self.norm_eps = norm_eps
 
-    @property
-    @abstractmethod
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity analysis.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity in Big O notation.
-            Should include dependency on sequence length (n) and hidden dimension (d).
-        """
-        pass
 
     @abstractmethod
     def get_spectral_properties(self) -> dict[str, Any]:

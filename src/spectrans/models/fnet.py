@@ -239,24 +239,6 @@ class FNet(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of FNet.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        L = self.num_layers
-
-        # FNet has O(n log n) complexity per layer due to FFT
-        return {
-            "time": f"O({L} * {n} * log({n}) * {d})",
-            "space": f"O({L} * {n} * {d})",
-        }
 
     @classmethod
     def from_config(cls, config: "FNetModelConfig") -> "FNet":  # type: ignore[override]

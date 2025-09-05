@@ -451,23 +451,3 @@ class TestKernelProperties:
         assert errors[-1] < 0.3
 
 
-class TestKernelComplexity:
-    """Test computational complexity properties."""
-
-    def test_complexity_info(self):
-        """Test that kernels report complexity information."""
-        kernels = [
-            PolynomialKernel(),
-            CosineKernel(),
-            GaussianRFFKernel(input_dim=64, num_features=128),
-            PolynomialSpectralKernel(rank=16),
-            TruncatedSVDKernel(rank=8),
-        ]
-
-        for kernel in kernels:
-            complexity = kernel.complexity
-            assert isinstance(complexity, dict)
-            assert 'time' in complexity
-            assert 'space' in complexity
-            assert isinstance(complexity['time'], str)
-            assert isinstance(complexity['space'], str)

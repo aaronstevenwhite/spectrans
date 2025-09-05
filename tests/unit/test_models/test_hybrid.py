@@ -258,35 +258,6 @@ class TestHybridTransformer:
         assert model.num_heads == 8
         assert len(model.blocks) == 8
 
-    def test_complexity(self):
-        """Test HybridTransformer complexity calculation."""
-        # Standard attention (quadratic) + Fourier (n log n)
-        model1 = HybridTransformer(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-            spectral_type="fourier",
-            spatial_type="attention",
-        )
-
-        complexity1 = model1.complexity
-        assert "time" in complexity1
-        assert "space" in complexity1
-        assert "512^2" in complexity1["time"]  # Standard attention is O(n^2)
-        assert "log(512)" in complexity1["time"]  # Fourier is O(n log n)
-
-        # Both linear complexity
-        model2 = HybridTransformer(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-            spectral_type="wavelet",
-            spatial_type="spectral_attention",
-        )
-
-        complexity2 = model2.complexity
-        # Both should be linear, no quadratic or log terms
-        assert "^2" not in complexity2["time"]
 
     def test_mixed_configurations(self):
         """Test various mixed configurations."""

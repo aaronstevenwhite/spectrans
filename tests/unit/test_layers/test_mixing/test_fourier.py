@@ -107,16 +107,10 @@ class TestFourierMixing:
         # Outputs should be identical in eval mode
         assert torch.equal(output_eval1, output_eval2)
 
-    def test_fourier_mixing_complexity_properties(self, random_tensor):
-        """Test complexity and spectral properties."""
+    def test_fourier_mixing_spectral_properties(self, random_tensor):
+        """Test spectral properties."""
         batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim=hidden_dim)
-
-        # Check complexity
-        complexity = mixer.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-        assert 'log n' in complexity['time']  # Should have log n complexity
 
         # Check spectral properties
         props = mixer.get_spectral_properties()

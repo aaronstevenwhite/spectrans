@@ -437,27 +437,6 @@ class FourierNeuralOperator(SpectralComponent):
 
         return out
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of FNO.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity strings.
-        """
-        if isinstance(self.modes, int):
-            # 1D case
-            return {
-                'time': 'O(n*d*log(n) + k*d^2)',
-                'space': 'O(k*d^2)'
-            }
-        else:
-            # 2D case
-            return {
-                'time': 'O(n*m*d*log(n*m) + k1*k2*d^2)',
-                'space': 'O(k1*k2*d^2)'
-            }
 
 
 class FNOBlock(SpectralComponent):
@@ -616,13 +595,3 @@ class FNOBlock(SpectralComponent):
 
         return x
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of FNO block.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity strings.
-        """
-        return self.fno.complexity

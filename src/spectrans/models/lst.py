@@ -168,8 +168,6 @@ class LSTTransformer(BaseModel):
     ----------
     blocks : nn.ModuleList
         Stack of LST transformer blocks.
-    complexity : dict[str, str]
-        Computational complexity information.
 
     Examples
     --------
@@ -263,20 +261,6 @@ class LSTTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity is O(n log n) for fast spectral transforms.
-        """
-        return {
-            "time": f"O(n log n * {self.hidden_dim})",
-            "space": f"O(n * {self.hidden_dim})",
-            "description": f"Linear spectral transform ({self.transform_type.upper()})",
-        }
 
     @classmethod
     def from_config(cls, config: "LSTModelConfig") -> "LSTTransformer":  # type: ignore[override]
@@ -420,20 +404,6 @@ class LSTEncoder(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Linear-logarithmic complexity information.
-        """
-        return {
-            "time": f"O(n log n * {self.hidden_dim})",
-            "space": f"O(n * {self.hidden_dim})",
-            "description": f"LST encoder ({self.transform_type.upper()})",
-        }
 
 
 @register_component("model", "lst_decoder")
@@ -603,18 +573,3 @@ class LSTDecoder(BaseModel):
         logits = self.lm_head(hidden_states)
         return logits  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity information for causal decoder.
-        """
-        causal_str = " (causal)" if self.causal else ""
-        return {
-            "time": f"O(n log n * {self.hidden_dim})",
-            "space": f"O(n * {self.hidden_dim})",
-            "description": f"LST decoder ({self.transform_type.upper()}){causal_str}",
-        }

@@ -281,25 +281,6 @@ class WaveletTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the wavelet transformer.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        L = self.num_layers
-        J = self.levels
-
-        # DWT is O(n) per dimension, with J levels and d dimensions
-        return {
-            "time": f"O({L} * {n} * {d} * {J})",
-            "space": f"O({L} * {n} * {d})",
-        }
 
     @classmethod
     def from_config(cls, config: "WaveletTransformerConfig") -> "WaveletTransformer":  # type: ignore[override]

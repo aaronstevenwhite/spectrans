@@ -27,7 +27,6 @@ class TestFNOTransformer:
         assert model.modes == 16
         assert model.max_sequence_length == 512
         assert len(model.blocks) == 4
-        assert hasattr(model, "complexity")
 
     def test_fno_forward_pass(self):
         """Test forward pass through FNO transformer."""
@@ -136,22 +135,6 @@ class TestFNOTransformer:
         assert decoder.output_type == "lm"
         assert hasattr(decoder, "lm_head")
 
-    def test_fno_complexity(self):
-        """Test complexity property of FNO models."""
-        model = FNOTransformer(
-            hidden_dim=256,
-            num_layers=4,
-            modes=16,
-            max_sequence_length=512,
-        )
-
-        complexity = model.complexity
-        assert isinstance(complexity, dict)
-        assert "time" in complexity
-        assert "space" in complexity
-        assert "description" in complexity
-        assert "O(n log n" in complexity["time"]
-        assert "16" in complexity["description"]  # modes should be mentioned
 
     def test_fno_gradient_flow(self):
         """Test gradient flow through FNO transformer."""
@@ -290,19 +273,6 @@ class TestFNOTransformer:
 class TestFNOEncoder:
     """Test suite for FNOEncoder model."""
 
-    def test_encoder_complexity(self):
-        """Test complexity property of FNO encoder."""
-        encoder = FNOEncoder(
-            hidden_dim=256,
-            num_layers=4,
-            modes=16,
-            max_sequence_length=512,
-        )
-
-        complexity = encoder.complexity
-        assert isinstance(complexity, dict)
-        assert "FNO Encoder" in complexity["description"]
-        assert "16" in complexity["description"]
 
     def test_encoder_gradient_flow(self):
         """Test gradient flow through FNO encoder."""
@@ -327,19 +297,6 @@ class TestFNOEncoder:
 class TestFNODecoder:
     """Test suite for FNODecoder model."""
 
-    def test_decoder_complexity(self):
-        """Test complexity property of FNO decoder."""
-        decoder = FNODecoder(
-            vocab_size=1000,
-            hidden_dim=256,
-            num_layers=4,
-            modes=16,
-            max_sequence_length=512,
-        )
-
-        complexity = decoder.complexity
-        assert isinstance(complexity, dict)
-        assert "Causal FNO Decoder" in complexity["description"]
 
     def test_decoder_gradient_flow(self):
         """Test gradient flow through FNO decoder."""

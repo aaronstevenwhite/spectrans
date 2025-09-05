@@ -2,8 +2,7 @@
 
 This module defines the core abstract base classes and interfaces that all spectral
 transformer components must implement. These classes establish consistent APIs for
-forward propagation, complexity analysis, and component composition throughout the
-spectrans library.
+forward propagation and component composition throughout the spectrans library.
 
 The inheritance hierarchy provides both mathematical rigor and software engineering
 best practices, ensuring that all spectral transforms maintain proper interfaces
@@ -12,7 +11,7 @@ while allowing for flexible implementation strategies.
 Classes
 -------
 SpectralComponent
-    Abstract base class requiring forward() and complexity implementations.
+    Abstract base class requiring forward() implementation.
 SpectralTransform
     Interface for spectral transforms with transform/inverse_transform methods.
 MixingLayer
@@ -33,9 +32,6 @@ Implementing a custom spectral component:
 >>> class CustomComponent(SpectralComponent):
 ...     def forward(self, x):
 ...         return x * 2  # Simple scaling
-...     @property
-...     def complexity(self):
-...         return {'time': 'O(n)', 'space': 'O(1)'}
 
 Building a transformer block:
 
@@ -53,7 +49,6 @@ The base classes implement several key design patterns:
    flexible mixing layer implementations
 2. **Strategy Pattern**: Different spectral transforms can be swapped via the same interface
 3. **Composition over Inheritance**: Complex behaviors built by composing simple components
-4. **Complexity Analysis**: All components must report their computational complexity
 
 Mathematical Properties:
 - All spectral components preserve tensor shapes in the sequence dimension
@@ -85,8 +80,7 @@ class SpectralComponent(nn.Module, ABC):
     """Base class for all spectral components.
 
     This abstract base class defines the interface that all spectral
-    transformer components must implement, including forward pass
-    and complexity analysis.
+    transformer components must implement.
     """
 
     @abstractmethod
@@ -107,19 +101,6 @@ class SpectralComponent(nn.Module, ABC):
         torch.Tensor | tuple[torch.Tensor, ...]
             Output tensor(s). Single tensor for most cases, tuple for attention
             layers that optionally return attention weights.
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity keys, may include
-            additional keys like 'levels' for specific component types.
         """
         pass
 
@@ -247,17 +228,6 @@ class TransformerBlock(SpectralComponent):
 
         return x
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity of the block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        return self.mixing_layer.complexity
-
 
 class BaseModel(nn.Module):
     """Base class for spectral transformer models.
@@ -380,30 +350,3 @@ class BaseModel(nn.Module):
             x = self.classifier(x)
 
         return x
-
-    def get_complexity(self) -> dict[str, int | list[dict[str, dict[str, str]]]]:
-        """Get computational complexity of the model.
-
-        Returns
-        -------
-        dict[str, int | list[dict[str, dict[str, str]]]]
-            Dictionary containing complexity information for each layer.
-        """
-        layers: list[dict[str, dict[str, str]]] = []
-
-        for i, block in enumerate(self.blocks):
-            block_complexity = block.complexity
-            if isinstance(block_complexity, dict) and all(isinstance(v, str) for v in block_complexity.values()):
-                # Type check ensures this is dict[str, str]
-                complexity_dict: dict[str, str] = block_complexity
-                layer_complexity = {f'layer_{i}': complexity_dict}
-                layers.append(layer_complexity)
-
-        complexity: dict[str, int | list[dict[str, dict[str, str]]]] = {
-            'num_layers': self.num_layers,
-            'hidden_dim': self.hidden_dim,
-            'max_seq_length': self.max_seq_length,
-            'layers': layers
-        }
-
-        return complexity

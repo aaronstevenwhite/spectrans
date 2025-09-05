@@ -243,25 +243,6 @@ class GFNet(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of GFNet.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        L = self.num_layers
-
-        # GFNet has O(n log n) complexity per layer due to FFT
-        # Additional O(nd) for learnable filters
-        return {
-            "time": f"O({L} * {n} * log({n}) * {d})",
-            "space": f"O({L} * {n} * {d})",
-        }
 
     @classmethod
     def from_config(cls, config: "GFNetModelConfig") -> "GFNet":  # type: ignore[override]

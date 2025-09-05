@@ -392,40 +392,6 @@ class TestGradientFlow:
             assert not torch.isinf(x_copy.grad).any()
 
 
-class TestComplexityProperties:
-    """Test complexity properties of hybrid blocks."""
-
-    def test_alternating_block_complexity(self):
-        """Test AlternatingBlock complexity property."""
-        layer1 = FourierMixing(hidden_dim=64)
-        layer2 = GlobalFilterMixing(hidden_dim=64, sequence_length=128)
-
-        block = AlternatingBlock(
-            layer1=layer1,
-            layer2=layer2,
-            hidden_dim=64,
-        )
-
-        complexity = block.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-
-    def test_multiscale_block_complexity(self):
-        """Test MultiscaleBlock complexity property."""
-        layers = [
-            FourierMixing(hidden_dim=64),
-            GlobalFilterMixing(hidden_dim=64, sequence_length=128),
-        ]
-
-        block = MultiscaleBlock(
-            layers=layers,
-            hidden_dim=64,
-        )
-
-        complexity = block.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        assert str(len(layers)) in complexity["time"]  # Should mention number of scales
 
 
 class TestHybridComposition:

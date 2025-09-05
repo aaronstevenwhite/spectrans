@@ -290,19 +290,6 @@ class TestBaseModel:
             if param.requires_grad:
                 assert param.grad is not None
 
-    def test_complexity_property(self):
-        """Test complexity calculation."""
-        model = ConcreteModel(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-        )
-
-        complexity = model.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        assert isinstance(complexity["time"], str)
-        assert isinstance(complexity["space"], str)
 
     def test_invalid_inputs(self):
         """Test error handling for invalid inputs."""

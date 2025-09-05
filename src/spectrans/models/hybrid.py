@@ -449,39 +449,6 @@ class HybridTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the hybrid transformer.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        d = self.hidden_dim
-        L = self.num_layers
-
-        # Complexity depends on the mix of layer types
-        spectral_layers = L // 2 + (L % 2 if self.alternation_pattern == "even_spectral" else 0)
-        spatial_layers = L - spectral_layers
-
-        # Spectral complexity
-        if self.spectral_type in ["fourier", "gfnet"]:
-            spectral_time = f"{spectral_layers} * {n} * log({n}) * {d}"
-        else:  # wavelet, afno
-            spectral_time = f"{spectral_layers} * {n} * {d}"
-
-        # Spatial complexity
-        if self.spatial_type == "attention":
-            spatial_time = f"{spatial_layers} * {n}^2 * {d}"
-        else:  # spectral_attention, lst
-            spatial_time = f"{spatial_layers} * {n} * {d}"
-
-        return {
-            "time": f"O({spectral_time} + {spatial_time})",
-            "space": f"O({L} * {n} * {d})",
-        }
 
     @classmethod
     def from_config(cls, config: "HybridModelConfig") -> "HybridTransformer":  # type: ignore[override]
@@ -772,31 +739,4 @@ class AlternatingTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the alternating transformer.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n = self.max_sequence_length
-        L = self.num_layers
-
-        # Complexity depends on the mix of layer types
-        time_components = []
-
-        if self.layer1_type == "fourier" or self.layer2_type == "fourier":
-            time_components.append(f"{n} * log({n})")
-        if self.layer1_type == "attention" or self.layer2_type == "attention":
-            time_components.append(f"{n}^2")
-
-        time_complexity = f"O({L} * (" + " + ".join(time_components) + "))"
-        space_complexity = f"O({L} * {n} * {self.hidden_dim})"
-
-        return {
-            "time": time_complexity,
-            "space": space_complexity,
-        }
 

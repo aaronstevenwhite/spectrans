@@ -126,17 +126,10 @@ class TestGlobalFilterMixing:
         reg_loss_none = mixer_no_reg.get_regularization_loss()
         assert reg_loss_none.item() == 0.0
 
-    def test_global_filter_complexity_properties(self, random_tensor):
-        """Test complexity and properties of global filters."""
+    def test_global_filter_properties(self, random_tensor):
+        """Test properties of global filters."""
         batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
-
-        # Check complexity
-        complexity = mixer.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-        assert 'parameters' in complexity
-        assert 'log n' in complexity['time']
 
         # Check properties
         props = mixer.get_spectral_properties()

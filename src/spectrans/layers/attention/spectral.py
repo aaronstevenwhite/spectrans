@@ -75,7 +75,7 @@ import torch.nn.functional as F
 
 from ...core.base import AttentionLayer
 from ...core.registry import register_component
-from ...core.types import ComplexityInfo, Tensor
+from ...core.types import Tensor
 from ...kernels.base import KernelFunction, RandomFeatureMap
 from ...kernels.rff import GaussianRFFKernel, RFFAttentionKernel
 
@@ -252,13 +252,6 @@ class SpectralAttention(AttentionLayer):
             return out, None  # type: ignore[return-value]
         return out
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity of spectral attention."""
-        return {
-            'time': f'O(nrd) for n={self.hidden_dim}, r={self.num_features}',
-            'space': f'O(nr + rd) for r={self.num_features} features'
-        }
 
 
 @register_component("attention", "performer")
@@ -564,19 +557,6 @@ class KernelAttention(AttentionLayer):
             return out, attention_weights  # type: ignore[return-value]
         return out
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        if self.use_features:
-            return {
-                'time': f'O(nrd) for rank r={self.rank}',
-                'space': 'O(nr + rd)'
-            }
-        else:
-            return {
-                'time': 'O(n²d) for direct kernel',
-                'space': 'O(n²)'
-            }
 
 
 __all__ = [

@@ -251,54 +251,6 @@ class TestLSTAttention:
         assert not torch.all(random_tensor.grad == 0)
 
 
-class TestAttentionComplexity:
-    """Test computational complexity properties."""
-
-    def test_spectral_attention_complexity(self):
-        """Test that spectral attention has correct complexity."""
-        attn = SpectralAttention(
-            hidden_dim=512,
-            num_heads=8,
-            num_features=64,
-        )
-
-        complexity = attn.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-        assert 'O(nrd)' in complexity['time']
-
-    def test_lst_attention_complexity(self):
-        """Test that LST attention has correct complexity."""
-        attn = LSTAttention(
-            hidden_dim=512,
-            num_heads=8,
-            transform_type="dct",
-        )
-
-        complexity = attn.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-        assert 'O(nd log n)' in complexity['time']
-
-    def test_kernel_attention_complexity(self):
-        """Test kernel attention complexity."""
-        # Feature-based should be linear
-        attn_features = KernelAttention(
-            hidden_dim=256,
-            num_heads=4,
-            kernel_type="gaussian",
-        )
-        complexity = attn_features.complexity
-        assert 'O(nrd)' in complexity['time']
-
-        # Direct kernel should be quadratic
-        attn_direct = KernelAttention(
-            hidden_dim=256,
-            num_heads=4,
-            kernel_type="polynomial",
-        )
-        complexity = attn_direct.complexity
-        assert 'O(n²d)' in complexity['time'] or 'O(nrd)' in complexity['time']
 
 
 class TestAttentionTraining:

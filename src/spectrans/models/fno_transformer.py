@@ -159,8 +159,6 @@ class FNOTransformer(BaseModel):
     ----------
     blocks : nn.ModuleList
         Stack of FNO transformer blocks.
-    complexity : dict[str, str]
-        Computational complexity information.
 
     Examples
     --------
@@ -242,20 +240,6 @@ class FNOTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity is O(n log n) for FFT operations.
-        """
-        return {
-            "time": f"O(n log n * {self.hidden_dim} * {self.modes})",
-            "space": f"O(n * {self.hidden_dim} + {self.modes} * {self.hidden_dim}²)",
-            "description": f"Fourier Neural Operator with {self.modes} modes",
-        }
 
     @classmethod
     def from_config(cls, config: "FNOTransformerConfig") -> "FNOTransformer":  # type: ignore[override]
@@ -386,20 +370,6 @@ class FNOEncoder(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Linear-logarithmic complexity information.
-        """
-        return {
-            "time": f"O(n log n * {self.hidden_dim} * {self.modes})",
-            "space": f"O(n * {self.hidden_dim} + {self.modes} * {self.hidden_dim}²)",
-            "description": f"FNO Encoder with {self.modes} Fourier modes",
-        }
 
 
 @register_component("model", "fno_decoder")
@@ -545,17 +515,3 @@ class FNODecoder(BaseModel):
         logits = self.lm_head(hidden_states)
         return logits  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity information for causal FNO.
-        """
-        return {
-            "time": f"O(n log n * {self.hidden_dim} * {self.modes})",
-            "space": f"O(n * {self.hidden_dim} + {self.modes} * {self.hidden_dim}²)",
-            "description": f"Causal FNO Decoder with {self.modes} modes",
-        }

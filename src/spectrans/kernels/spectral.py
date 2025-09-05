@@ -73,7 +73,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ..core.registry import register_component
-from ..core.types import ComplexityInfo, Tensor
+from ..core.types import Tensor
 from .base import KernelFunction
 
 
@@ -133,14 +133,6 @@ class SpectralKernel(KernelFunction):
             eigenvalues = eigenvalues / (trace + 1e-8)
 
         return eigenvectors, eigenvalues
-
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {
-            'time': f'O(n²r) for rank r={self.rank}',
-            'space': f'O(nr) for rank r={self.rank}'
-        }
 
 
 @register_component("kernel", "polynomial_spectral")  # type: ignore[arg-type]

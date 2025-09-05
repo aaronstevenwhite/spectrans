@@ -448,25 +448,6 @@ class WaveletMixing(nn.Module):
         result: Tensor = output
         return result
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of WaveletMixing.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary containing time and space complexity expressions.
-
-        Notes
-        -----
-        Time complexity is dominated by DWT operations which are linear in sequence length,
-        plus mixing operations that depend on the chosen mode. Space complexity accounts
-        for coefficient storage and parameter count.
-        """
-        return {
-            "time": "O(ND) + O(DJ * coefficient_ops) where N=seq_len, D=hidden_dim, J=levels",
-            "space": "O(ND + P) where P=parameters (pointwise: O(LD), channel: O(JD²), level: O(D²))"
-        }
 
     @classmethod
     def from_config(cls, config: "WaveletMixingConfig") -> "WaveletMixing":
@@ -794,24 +775,6 @@ class WaveletMixing2D(nn.Module):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of WaveletMixing2D.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary containing time and space complexity expressions.
-
-        Notes
-        -----
-        Time complexity includes 2D DWT operations plus subband mixing costs.
-        Space complexity accounts for 2D coefficient storage across all subbands.
-        """
-        return {
-            "time": "O(CHW * J) + O(mixing_ops) where C=channels, H=height, W=width, J=levels",
-            "space": "O(CHW + subband_storage) for coefficient tensors and mixing parameters"
-        }
 
     @classmethod
     def from_config(cls, config: "WaveletMixing2DConfig") -> "WaveletMixing2D":

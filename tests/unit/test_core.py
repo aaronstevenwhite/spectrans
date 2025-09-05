@@ -54,10 +54,6 @@ class TestSpectralComponent:
             def forward(self, x: torch.Tensor) -> torch.Tensor:
                 return self.layer(x)
 
-            @property
-            def complexity(self) -> dict[str, str]:
-                return {'time': 'O(n*d^2)', 'space': 'O(d^2)'}
-
         # Should instantiate successfully
         component = ConcreteComponent(hidden_dim=128)
         assert isinstance(component, SpectralComponent)
@@ -68,18 +64,12 @@ class TestSpectralComponent:
         output = component(x)
         assert output.shape == x.shape
 
-        # Test complexity property
-        complexity = component.complexity
-        assert 'time' in complexity
-        assert 'space' in complexity
-
     def test_missing_abstract_methods(self):
         """Test that missing abstract methods raise TypeError."""
 
         class IncompleteComponent(SpectralComponent):
-            def forward(self, x: torch.Tensor) -> torch.Tensor:
-                return x
-            # Missing complexity property
+            # Missing forward method
+            pass
 
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
             IncompleteComponent()
@@ -103,9 +93,6 @@ class TestMixingLayer:
             def forward(self, x: torch.Tensor) -> torch.Tensor:
                 return self.transform(x)
 
-            @property
-            def complexity(self) -> dict[str, str]:
-                return {'time': 'O(n*d^2)', 'space': 'O(d^2)'}
 
             def get_spectral_properties(self) -> dict[str, Any]:
                 return {'transform_type': 'linear', 'preserves_energy': False}
@@ -141,9 +128,6 @@ class TestAttentionLayer:
                 attn_output, _ = self.attention(x_t, x_t, x_t)
                 return attn_output.transpose(0, 1)
 
-            @property
-            def complexity(self) -> dict[str, str]:
-                return {'time': 'O(n^2*d)', 'space': 'O(n^2)'}
 
         layer = ConcreteAttention(hidden_dim=256, num_heads=8)
         assert isinstance(layer, AttentionLayer)
@@ -172,9 +156,6 @@ class TestTransformerBlock:
             def forward(self, x):
                 return x
 
-            @property
-            def complexity(self):
-                return {'time': 'O(n)', 'space': 'O(1)'}
 
             def get_spectral_properties(self) -> dict[str, Any]:
                 return {'transform_type': 'identity'}
@@ -209,9 +190,6 @@ class TestTransformerBlock:
             def forward(self, x):
                 return self.linear(x)
 
-            @property
-            def complexity(self):
-                return {'time': 'O(n*d^2)', 'space': 'O(d^2)'}
 
             def get_spectral_properties(self) -> dict[str, Any]:
                 return {'transform_type': 'linear'}
@@ -275,9 +253,6 @@ class TestBaseModel:
                     x = layer(x)
                 return x
 
-            @property
-            def complexity(self) -> dict[str, str]:
-                return {'time': 'O(L*n*d^2)', 'space': 'O(L*d^2)'}
 
         model = ConcreteModel(hidden_dim=128, num_layers=3)
         assert isinstance(model, BaseModel)

@@ -38,7 +38,7 @@ Examples
 --------
 Using annotations in function signatures:
 
->>> from spectrans.core.types import Tensor, TransformType, ComplexityInfo
+>>> from spectrans.core.types import Tensor, TransformType
 >>> def apply_transform(x: Tensor, transform: TransformType) -> Tensor:
 ...     # Implementation with proper hints
 ...     pass
@@ -54,9 +54,9 @@ Working with configuration dictionaries:
 
 Complex tensor operations:
 
->>> from spectrans.core.types import ComplexTensor, ComplexityInfo
->>> def analyze_spectral_component(x: ComplexTensor) -> ComplexityInfo:
-...     return {'time': 'O(n log n)', 'space': 'O(n)'}
+>>> from spectrans.core.types import ComplexTensor
+>>> def process_spectral_component(x: ComplexTensor) -> ComplexTensor:
+...     return x  # Process and return complex tensor
 
 Notes
 -----
@@ -73,7 +73,6 @@ Mathematical Type Categories:
 - **Tensor Types**: Basic tensor operations and complex number support
 - **Shape Types**: Common tensor dimension patterns (2D, 3D, 4D)
 - **Transform Types**: Spectral transform varieties and parameters
-- **Complexity Types**: Computational complexity analysis
 - **Configuration Types**: Structured configuration and parameter passing
 
 The system supports both runtime checking (where appropriate) and
@@ -242,8 +241,6 @@ type ModeTruncation = tuple[int, ...]  # Mode truncation per dimension
 type NumRandomFeatures = int
 type RandomSeed = int | None
 
-# Complexity information
-type ComplexityInfo = dict[str, str]
 
 # Training configuration
 type OptimizerConfig = dict[str, int | float | str | bool]
@@ -380,8 +377,6 @@ __all__: list[str] = [
     "CausalMask",
     "CheckpointDict",
     "ComplexTensor",
-    # Other types
-    "ComplexityInfo",
     "ComponentClass",
     "ComponentFactory",
     "ComponentType",

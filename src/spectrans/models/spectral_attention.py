@@ -162,8 +162,6 @@ class SpectralAttentionTransformer(BaseModel):
     ----------
     blocks : nn.ModuleList
         Stack of spectral attention transformer blocks.
-    complexity : ComplexityInfo
-        Computational complexity information.
 
     Examples
     --------
@@ -246,21 +244,6 @@ class SpectralAttentionTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity is O(n * D * d) where n is sequence length,
-            D is number of random features, and d is hidden dimension.
-        """
-        return {
-            "time": f"O(n * {self.num_features} * {self.hidden_dim})",
-            "space": f"O(n * {self.num_features})",
-            "description": "Linear complexity via RFF approximation",
-        }
 
     @classmethod
     def from_config(cls, config: "SpectralAttentionModelConfig") -> "SpectralAttentionTransformer":  # type: ignore[override]
@@ -399,20 +382,6 @@ class SpectralAttentionEncoder(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Linear complexity information.
-        """
-        return {
-            "time": f"O(n * {self.num_features} * {self.hidden_dim})",
-            "space": f"O(n * {self.num_features})",
-            "description": "Linear encoder via RFF approximation",
-        }
 
 
 @register_component("model", "performer")
@@ -524,17 +493,3 @@ class PerformerTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Get computational complexity information.
-
-        Returns
-        -------
-        dict[str, str]
-            Linear complexity with orthogonal features.
-        """
-        return {
-            "time": f"O(n * {self.num_features} * {self.hidden_dim})",
-            "space": f"O(n * {self.num_features})",
-            "description": "Performer with orthogonal random features",
-        }

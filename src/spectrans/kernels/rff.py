@@ -86,7 +86,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ..core.registry import register_component
-from ..core.types import ComplexityInfo, Tensor
+from ..core.types import Tensor
 from .base import RandomFeatureMap, ShiftInvariantKernel
 
 
@@ -273,14 +273,6 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
                           torch.exp(-0.5 * self.sigma ** 2 * norm_squared))
         return result
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {
-            'time': f'O(nd) for d={self.output_features} features',
-            'space': f'O(nd) for d={self.output_features} features'
-        }
-
 
 @register_component("kernel", "laplacian_rff")
 class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
@@ -403,14 +395,6 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
             density = density * (2 * self.sigma /
                                 (math.pi * (1 + (self.sigma * omega[..., i]) ** 2)))
         return density
-
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {
-            'time': f'O(nd) for d={self.output_features} features',
-            'space': f'O(nd) for d={self.output_features} features'
-        }
 
 
 @register_component("kernel", "orthogonal_rff")
@@ -580,20 +564,6 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
         scale = math.sqrt(2.0 / self.num_features)
         return features * scale
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        if self.use_hadamard:
-            return {
-                'time': f'O(n log d) for d={self.num_features} features',
-                'space': f'O(d) for d={self.num_features} features'
-            }
-        else:
-            return {
-                'time': f'O(nd) for d={self.num_features} features',
-                'space': f'O(nd) for d={self.num_features} features'
-            }
-
 
 @register_component("kernel", "rff_attention")
 class RFFAttentionKernel(RandomFeatureMap):
@@ -704,14 +674,6 @@ class RFFAttentionKernel(RandomFeatureMap):
             scale = 1.0 / math.sqrt(self.num_features)
 
         return features * scale
-
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {
-            'time': f'O(nd) for d={self.num_features} features',
-            'space': f'O(d) for d={self.num_features} features'
-        }
 
 
 __all__ = [

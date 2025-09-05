@@ -115,17 +115,6 @@ class HybridBlock(SpectralComponent):
         # Dropout
         self.dropout = nn.Dropout(dropout)
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the hybrid block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        # To be overridden by subclasses
-        return {"time": "O(n*d)", "space": "O(n*d)"}
 
 
 @register_component("block", "alternating")
@@ -220,29 +209,6 @@ class AlternatingBlock(HybridBlock):
         """
         self.use_layer1 = use_layer1
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the alternating block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        layer = self.layer1 if self.use_layer1 else self.layer2
-        # Get complexity from layer if it has the property, otherwise use default
-        layer_complexity: dict[str, str]
-        if hasattr(layer, "complexity"):
-            # Type: ignore because mypy can't infer that complexity is dict[str, str]
-            layer_complexity = layer.complexity  # type: ignore[assignment]
-        else:
-            layer_complexity = {"time": "O(n*d)", "space": "O(n*d)"}
-        ffn_complexity = self.ffn.complexity
-
-        return {
-            "time": f"max({layer_complexity['time']}, {ffn_complexity['time']})",
-            "space": f"max({layer_complexity['space']}, {ffn_complexity['space']})",
-        }
 
 
 @register_component("block", "adaptive")
@@ -355,23 +321,6 @@ class AdaptiveBlock(HybridBlock):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the adaptive block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        # Worst case: all layers are computed (soft gating)
-        max_complexity_time = "O(num_layers * n * d)"
-        max_complexity_space = "O(n * d)"
-
-        return {
-            "time": max_complexity_time,
-            "space": max_complexity_space,
-        }
 
 
 @register_component("block", "multiscale")
@@ -489,20 +438,6 @@ class MultiscaleBlock(HybridBlock):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the multiscale block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        # All layers are computed in parallel
-        return {
-            "time": f"O({self.num_scales} * n * d)",
-            "space": f"O({self.num_scales} * n * d)",
-        }
 
 
 @register_component("block", "cascade")
@@ -592,18 +527,3 @@ class CascadeBlock(HybridBlock):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the cascade block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        # Sequential processing
-        num_layers = len(self.layers)
-        return {
-            "time": f"O({num_layers} * n * d)",
-            "space": "O(n * d)",
-        }

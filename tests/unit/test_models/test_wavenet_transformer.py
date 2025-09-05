@@ -120,21 +120,6 @@ class TestWaveletTransformer:
         output = decoder(input_ids=input_ids)
         assert output.shape == (batch_size, seq_length, vocab_size)
 
-    def test_wavelet_complexity(self):
-        """Test WaveletTransformer complexity calculation."""
-        model = WaveletTransformer(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-            wavelet="db4",
-            levels=3,
-        )
-
-        complexity = model.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        # Wavelet should have O(n) complexity per dimension
-        assert "512 * 256 * 3" in complexity["time"]  # n * d * J
 
     def test_different_wavelets(self):
         """Test WaveletTransformer with different wavelet families."""

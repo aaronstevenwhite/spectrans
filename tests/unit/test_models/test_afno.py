@@ -93,22 +93,6 @@ class TestAFNO:
         output = encoder(inputs_embeds=inputs)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-    def test_afno_complexity(self):
-        """Test AFNO complexity calculation."""
-        model = AFNOModel(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=1024,
-            modes_seq=128,
-            modes_hidden=64,
-        )
-
-        complexity = model.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        # AFNO should have mode-dependent complexity
-        assert "128" in complexity["time"]  # modes_seq
-        assert "64" in complexity["space"]  # modes_hidden
 
     def test_afno_gradient_flow(self):
         """Test gradient flow through AFNO."""

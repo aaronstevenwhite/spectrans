@@ -160,39 +160,6 @@ class TransformerBlock(SpectralComponent):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the transformer block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n, d = "n", "d"  # sequence length and hidden dimension
-
-        # Get mixing layer complexity
-        if hasattr(self.mixing_layer, "complexity"):
-            layer_complexity = self.mixing_layer.complexity
-            # Ensure we have a proper dict with string keys
-            if isinstance(layer_complexity, dict):
-                mixing_complexity = layer_complexity
-            else:
-                mixing_complexity = {"time": f"O({n}*{d})", "space": f"O({n}*{d})"}
-        else:
-            mixing_complexity = {"time": f"O({n}*{d})", "space": f"O({n}*{d})"}
-
-        # FFN complexity
-        if self.ffn is not None:
-            ffn_complexity = self.ffn.complexity
-            # Combine complexities (take max)
-            time = f"max({mixing_complexity['time']}, {ffn_complexity['time']})"
-            space = f"max({mixing_complexity['space']}, {ffn_complexity['space']})"
-        else:
-            time = mixing_complexity["time"]
-            space = mixing_complexity["space"]
-
-        return {"time": time, "space": space}
 
 
 class FeedForwardNetwork(nn.Module):
@@ -274,20 +241,6 @@ class FeedForwardNetwork(nn.Module):
         x = self.fc2(x)
         return x
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the FFN.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        n, d, h = "n", self.hidden_dim, self.ffn_hidden_dim
-        return {
-            "time": f"O({n} * {d} * {h})",
-            "space": f"O({d} * {h})",
-        }
 
 
 @register_component("block", "pre_norm")
@@ -467,28 +420,3 @@ class ParallelBlock(SpectralComponent):
 
         return output
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of the parallel block.
-
-        Returns
-        -------
-        dict[str, str]
-            Dictionary with 'time' and 'space' complexity.
-        """
-        # Similar to sequential but potentially more efficient
-        if hasattr(self.mixing_layer, "complexity"):
-            layer_complexity = self.mixing_layer.complexity
-            # Ensure we have a proper dict with string keys
-            if isinstance(layer_complexity, dict):
-                mixing_complexity = layer_complexity
-            else:
-                mixing_complexity = {"time": "O(n*d)", "space": "O(n*d)"}
-        else:
-            mixing_complexity = {"time": "O(n*d)", "space": "O(n*d)"}
-        ffn_complexity = self.ffn.complexity
-
-        return {
-            "time": f"max({mixing_complexity['time']}, {ffn_complexity['time']})",
-            "space": f"max({mixing_complexity['space']}, {ffn_complexity['space']})",
-        }

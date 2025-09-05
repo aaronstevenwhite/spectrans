@@ -283,22 +283,6 @@ class AFNOMixing(MixingLayer):
 
         return output  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Computational complexity of AFNO mixing.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity strings.
-        """
-        k_n = self.modes_seq
-        k_d = self.modes_hidden
-
-        return {
-            'time': f'O({k_n}*{k_d}*d + n*d*log(n*d))',
-            'space': f'O({k_n}*{k_d} + n*d)'
-        }
 
     def get_spectral_properties(self) -> dict[str, bool]:
         """Get mathematical properties of AFNO operation.

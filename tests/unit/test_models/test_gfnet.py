@@ -81,19 +81,6 @@ class TestGFNet:
         output = encoder(inputs_embeds=inputs)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-    def test_gfnet_complexity(self):
-        """Test GFNet complexity calculation."""
-        model = GFNet(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-        )
-
-        complexity = model.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        # GFNet should have O(n log n) complexity
-        assert "log" in complexity["time"]
 
     def test_gfnet_gradient_flow(self):
         """Test gradient flow through GFNet."""

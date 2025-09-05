@@ -173,19 +173,6 @@ class FourierMixing(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity in Big O notation.
-        """
-        return {
-            'time': 'O(nd log n + nd log d)',
-            'space': 'O(nd)'
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of Fourier mixing.
@@ -303,19 +290,6 @@ class FourierMixing1D(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity in Big O notation.
-        """
-        return {
-            'time': 'O(nd log n)',
-            'space': 'O(nd)'
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of 1D Fourier mixing.
@@ -422,25 +396,6 @@ class RealFourierMixing(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Time and space complexity, with efficiency gains noted.
-        """
-        if self.use_real_fft:
-            return {
-                'time': 'O(nd log n + nd log d) [~2x faster for real inputs]',
-                'space': 'O(nd) [~2x less memory for real inputs]'
-            }
-        else:
-            return {
-                'time': 'O(nd log n + nd log d)',
-                'space': 'O(nd)'
-            }
 
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of real Fourier mixing.
@@ -544,27 +499,6 @@ class SeparableFourierMixing(UnitaryMixingLayer):
 
         return x
 
-    @property
-    def complexity(self) -> dict[str, str]:
-        """Return computational complexity.
-
-        Returns
-        -------
-        dict[str, str]
-            Complexity depends on which dimensions are mixed.
-        """
-        time_components = []
-        if self.mix_sequence:
-            time_components.append("nd log n")
-        if self.mix_features:
-            time_components.append("nd log d")
-
-        time_complexity = "O(" + " + ".join(time_components) + ")"
-
-        return {
-            'time': time_complexity,
-            'space': 'O(nd)'
-        }
 
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get properties of separable mixing.

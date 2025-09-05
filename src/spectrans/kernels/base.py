@@ -27,9 +27,6 @@ Implementing a custom kernel:
 >>> class LinearKernel(KernelFunction):
 ...     def compute(self, x, y):
 ...         return torch.matmul(x, y.transpose(-2, -1))
-...     @property
-...     def complexity(self):
-...         return {'time': 'O(n²d)', 'space': 'O(n²)'}
 
 Using a random feature map:
 
@@ -83,7 +80,7 @@ from typing import Literal
 import torch
 import torch.nn as nn
 
-from ..core.types import ComplexityInfo, Tensor
+from ..core.types import Tensor
 
 
 class KernelFunction(ABC):
@@ -114,17 +111,6 @@ class KernelFunction(ABC):
         """
         pass
 
-    @property
-    @abstractmethod
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity of kernel evaluation.
-
-        Returns
-        -------
-        ComplexityInfo
-            Dictionary with 'time' and 'space' complexity strings.
-        """
-        pass
 
     def gram_matrix(self, x: Tensor) -> Tensor:
         r"""Compute Gram matrix :math:`K_{ij} = k(x_i, x_j)`.
@@ -244,19 +230,6 @@ class RandomFeatureMap(nn.Module, ABC):
         phi_y = self.forward(y)  # (..., m, D)
         return torch.matmul(phi_x, phi_y.transpose(-2, -1))
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity of feature mapping.
-
-        Returns
-        -------
-        ComplexityInfo
-            Dictionary with complexity information.
-        """
-        return {
-            'time': f'O(nd) where n=sequence, d={self.num_features}',
-            'space': f'O(nd) for d={self.num_features} features'
-        }
 
 
 class ShiftInvariantKernel(KernelFunction):
@@ -391,11 +364,6 @@ class PolynomialKernel(KernelFunction):
         inner_product = torch.matmul(x, y.transpose(-2, -1))
         return (self.alpha * inner_product + self.coef0) ** self.degree
 
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {'time': 'O(nmd)', 'space': 'O(nm)'}
-
 
 class CosineKernel(KernelFunction):
     r"""Cosine similarity kernel :math:`k(x, y) = \frac{\langle x, y \rangle}{\|x\| \|y\|}`.
@@ -436,11 +404,6 @@ class CosineKernel(KernelFunction):
         y_normalized = y / (y_norm + self.eps)
 
         return torch.matmul(x_normalized, y_normalized.transpose(-2, -1))
-
-    @property
-    def complexity(self) -> ComplexityInfo:
-        """Computational complexity."""
-        return {'time': 'O(nmd)', 'space': 'O(nm)'}
 
 
 # Kernel type literal for configuration

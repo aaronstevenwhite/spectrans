@@ -176,31 +176,6 @@ class TestLSTTransformer:
         )
         assert decoder_non_causal.causal is False
 
-    def test_lst_complexity(self):
-        """Test complexity property returns correct information."""
-        model = LSTTransformer(
-            hidden_dim=512,
-            num_layers=6,
-            transform_type="dct",
-            max_sequence_length=1024,
-        )
-
-        complexity = model.complexity
-        assert "O(n log n * 512)" in complexity["time"]
-        assert "O(n * 512)" in complexity["space"]
-        assert "DCT" in complexity["description"]
-
-        # Test with different transform
-        model = LSTTransformer(
-            hidden_dim=768,
-            num_layers=4,
-            transform_type="hadamard",
-            max_sequence_length=2048,
-        )
-
-        complexity = model.complexity
-        assert "O(n log n * 768)" in complexity["time"]
-        assert "HADAMARD" in complexity["description"]
 
     def test_lst_gradient_flow(self):
         """Test gradient flow through the model."""
@@ -374,20 +349,6 @@ class TestLSTTransformer:
 class TestLSTEncoder:
     """Test LSTEncoder model."""
 
-    def test_encoder_complexity(self):
-        """Test encoder complexity property."""
-        encoder = LSTEncoder(
-            hidden_dim=512,
-            num_layers=6,
-            transform_type="dst",
-            max_sequence_length=1024,
-        )
-
-        complexity = encoder.complexity
-        assert "O(n log n * 512)" in complexity["time"]
-        assert "O(n * 512)" in complexity["space"]
-        assert "DST" in complexity["description"]
-        assert "encoder" in complexity["description"].lower()
 
     def test_encoder_gradient_flow(self):
         """Test gradient flow through encoder."""
@@ -418,22 +379,6 @@ class TestLSTEncoder:
 class TestLSTDecoder:
     """Test LSTDecoder model."""
 
-    def test_decoder_complexity(self):
-        """Test decoder complexity property."""
-        decoder = LSTDecoder(
-            vocab_size=1000,
-            hidden_dim=512,
-            num_layers=6,
-            transform_type="dst",
-            causal=True,
-            max_sequence_length=2048,
-        )
-
-        complexity = decoder.complexity
-        assert "O(n log n * 512)" in complexity["time"]
-        assert "O(n * 512)" in complexity["space"]
-        assert "DST" in complexity["description"]
-        assert "causal" in complexity["description"].lower()
 
     def test_decoder_gradient_flow(self):
         """Test gradient flow through decoder."""

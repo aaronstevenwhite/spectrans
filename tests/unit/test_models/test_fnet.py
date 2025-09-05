@@ -81,19 +81,6 @@ class TestFNet:
         output = encoder(inputs_embeds=inputs)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-    def test_fnet_complexity(self):
-        """Test FNet complexity calculation."""
-        model = FNet(
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512,
-        )
-
-        complexity = model.complexity
-        assert "time" in complexity
-        assert "space" in complexity
-        # FNet should have O(n log n) complexity
-        assert "log" in complexity["time"]
 
     def test_fnet_gradient_flow(self):
         """Test gradient flow through FNet."""
