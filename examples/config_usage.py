@@ -33,8 +33,6 @@ from spectrans.config.models import (
     GFNetModelConfig,
     WaveletTransformerConfig,
 )
-# Import models to ensure they're registered
-from spectrans.models import AFNOModel, FNet, GFNet, WaveletTransformer  # noqa: F401
 
 
 def load_predefined_configs():

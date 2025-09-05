@@ -36,14 +36,3 @@ layers:
     intermediate_dim: 2048
     activation: "mish"
     dropout: 0.1
-
-# Training configuration
-training:
-  batch_size: 64
-  learning_rate: 2e-4
-  weight_decay: 0.03
-  warmup_steps: 6000
-  max_steps: 120000
-  save_steps: 2500
-  eval_steps: 1000
-  gradient_accumulation_steps: 1

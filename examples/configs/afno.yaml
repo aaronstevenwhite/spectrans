@@ -40,14 +40,3 @@ layers:
     intermediate_dim: 3072
     activation: "gelu"
     dropout: 0.1
-
-# Training configuration
-training:
-  batch_size: 16  # Smaller batch size due to higher memory usage
-  learning_rate: 1e-4
-  weight_decay: 0.01
-  warmup_steps: 8000
-  max_steps: 200000
-  save_steps: 2000
-  eval_steps: 1000
-  gradient_accumulation_steps: 2

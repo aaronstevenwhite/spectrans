@@ -37,14 +37,3 @@ layers:
     intermediate_dim: 2048
     activation: "swish"
     dropout: 0.1
-
-# Training configuration
-training:
-  batch_size: 32
-  learning_rate: 3e-4
-  weight_decay: 0.02
-  warmup_steps: 4000
-  max_steps: 150000
-  save_steps: 3000
-  eval_steps: 1500
-  gradient_accumulation_steps: 1

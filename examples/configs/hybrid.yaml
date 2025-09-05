@@ -50,16 +50,3 @@ layers:
     intermediate_dim: 3072
     activation: "gelu"
     dropout: 0.1
-
-# Training configuration
-training:
-  batch_size: 16
-  learning_rate: 5e-5
-  weight_decay: 0.01
-  warmup_steps: 12000
-  max_steps: 400000
-  save_steps: 4000
-  eval_steps: 2000
-  gradient_accumulation_steps: 2
-  max_grad_norm: 1.0
-  scheduler_type: "cosine"

@@ -113,6 +113,8 @@ class ConfigBuilder:
 
     def __init__(self, strict_validation: bool = True):
         self.strict_validation = strict_validation
+        # Import models to trigger registration
+        self._ensure_models_registered()
         self._model_config_classes = {
             "fnet": FNetModelConfig,
             "gfnet": GFNetModelConfig,
@@ -133,6 +135,23 @@ class ConfigBuilder:
             "spectral_attention": SpectralAttentionConfig,
             "lst_attention": LSTAttentionConfig,
         }
+
+    def _ensure_models_registered(self) -> None:
+        """Import all models to ensure they are registered."""
+        try:
+            # Import all model modules to trigger their @register_component decorators
+            from ..models import (  # noqa: F401
+                AFNOModel,
+                FNet,
+                FNOTransformer,
+                GFNet,
+                HybridTransformer,
+                LSTTransformer,
+                SpectralAttentionModel,
+                WaveletTransformer,
+            )
+        except ImportError as e:
+            logger.warning(f"Some models could not be imported for registration: {e}")
 
     def load_yaml(self, config_path: str | Path) -> dict[str, Any]:
         """Load and parse YAML configuration file.

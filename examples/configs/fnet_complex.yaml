@@ -34,16 +34,6 @@ layers:
     activation: "gelu"
     dropout: 0.1
 
-# Training configuration (optional)
-training:
-  batch_size: 32
-  learning_rate: 1e-4
-  weight_decay: 0.01
-  warmup_steps: 10000
-  max_steps: 100000
-  save_steps: 1000
-  eval_steps: 500
-
 # Note: When keep_complex=true, the model operates with complex numbers
 # throughout the network, which preserves phase information from the FFT.
 # This may improve model expressiveness but requires complex-aware operations
