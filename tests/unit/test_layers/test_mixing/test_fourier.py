@@ -251,3 +251,176 @@ class TestFourierMixingEdgeCases:
         input_float32 = torch.randn(batch_size, seq_len, hidden_dim, dtype=torch.float32)
         output32 = mixer(input_float32)
         assert output32.dtype == torch.float32
+
+
+class TestFourierMixingComplexMode:
+    """Test FourierMixing with keep_complex parameter."""
+
+    def test_default_real_mode(self):
+        """Test that default behavior takes real part only."""
+        layer = FourierMixing(hidden_dim=64)
+        x = torch.randn(2, 32, 64)
+        
+        output = layer(x)
+        
+        # Output should be real-valued
+        assert output.dtype in [torch.float32, torch.float64]
+        assert not torch.is_complex(output)
+        assert output.shape == x.shape
+
+    def test_complex_mode(self):
+        """Test that keep_complex=True preserves complex values."""
+        layer = FourierMixing(hidden_dim=64, keep_complex=True)
+        x = torch.randn(2, 32, 64)
+        
+        output = layer(x)
+        
+        # Output should be complex-valued
+        assert torch.is_complex(output)
+        assert output.shape == x.shape
+
+    def test_different_outputs_real_vs_complex(self):
+        """Test that real and complex modes produce different outputs."""
+        torch.manual_seed(42)
+        
+        # Create two layers with same initialization
+        layer_real = FourierMixing(hidden_dim=64, keep_complex=False)
+        layer_complex = FourierMixing(hidden_dim=64, keep_complex=True)
+        
+        x = torch.randn(2, 32, 64)
+        
+        output_real = layer_real(x)
+        output_complex = layer_complex(x)
+        
+        # Real output should match real part of complex output
+        torch.testing.assert_close(
+            output_real, 
+            output_complex.real,
+            rtol=1e-5, 
+            atol=1e-6
+        )
+        
+        # Complex output should have non-zero imaginary part
+        assert not torch.allclose(output_complex.imag, torch.zeros_like(output_complex.imag))
+
+    def test_gradient_flow_complex_mode(self):
+        """Test gradient flow through complex mode."""
+        layer = FourierMixing(hidden_dim=32, keep_complex=True)
+        x = torch.randn(2, 16, 32, requires_grad=True)
+        
+        output = layer(x)
+        # Need to take real part for loss (scalar must be real)
+        loss = output.real.sum() + output.imag.sum()
+        loss.backward()
+        
+        assert x.grad is not None
+        assert torch.isfinite(x.grad).all()
+
+    def test_fourier_1d_complex_mode(self):
+        """Test FourierMixing1D with keep_complex parameter."""
+        # Test default (real mode)
+        layer_real = FourierMixing1D(hidden_dim=64, keep_complex=False)
+        x = torch.randn(2, 32, 64)
+        output_real = layer_real(x)
+        assert not torch.is_complex(output_real)
+        
+        # Test complex mode
+        layer_complex = FourierMixing1D(hidden_dim=64, keep_complex=True)
+        output_complex = layer_complex(x)
+        assert torch.is_complex(output_complex)
+
+    def test_from_config_with_keep_complex(self):
+        """Test creating layer from config with keep_complex."""
+        from spectrans.config.layers.mixing import FourierMixingConfig
+        
+        # Test default (False)
+        config_default = FourierMixingConfig(hidden_dim=64)
+        layer_default = FourierMixing.from_config(config_default)
+        assert layer_default.keep_complex is False
+        
+        # Test explicit True
+        config_complex = FourierMixingConfig(hidden_dim=64, keep_complex=True)
+        layer_complex = FourierMixing.from_config(config_complex)
+        assert layer_complex.keep_complex is True
+        
+        # Verify behavior
+        x = torch.randn(2, 32, 64)
+        output_default = layer_default(x)
+        output_complex = layer_complex(x)
+        
+        assert not torch.is_complex(output_default)
+        assert torch.is_complex(output_complex)
+
+    @pytest.mark.parametrize("keep_complex", [True, False])
+    @pytest.mark.parametrize("seq_len", [16, 32, 64])
+    def test_various_sequence_lengths(self, keep_complex, seq_len):
+        """Test with various sequence lengths and complex modes."""
+        layer = FourierMixing(hidden_dim=64, keep_complex=keep_complex)
+        x = torch.randn(2, seq_len, 64)
+        
+        output = layer(x)
+        
+        assert output.shape == x.shape
+        if keep_complex:
+            assert torch.is_complex(output)
+        else:
+            assert not torch.is_complex(output)
+
+    def test_energy_preservation_comparison(self):
+        """Test that complex mode preserves energy better than real mode."""
+        torch.manual_seed(42)
+        
+        layer_real = FourierMixing(hidden_dim=64, keep_complex=False, dropout=0.0)
+        layer_complex = FourierMixing(hidden_dim=64, keep_complex=True, dropout=0.0)
+        
+        # Set to eval mode to disable dropout
+        layer_real.eval()
+        layer_complex.eval()
+        
+        x = torch.randn(2, 32, 64)
+        
+        # Compute input energy
+        input_energy = torch.norm(x, p=2) ** 2
+        
+        # Real mode output
+        output_real = layer_real(x)
+        energy_real = torch.norm(output_real, p=2) ** 2
+        
+        # Complex mode output  
+        output_complex = layer_complex(x)
+        # For complex tensors, norm computes magnitude
+        energy_complex = torch.norm(output_complex, p=2) ** 2
+        
+        # Both should approximately preserve energy (orthonormal FFT)
+        # But complex mode should be closer to preserving it
+        rel_error_real = torch.abs(energy_real - input_energy) / input_energy
+        rel_error_complex = torch.abs(energy_complex - input_energy) / input_energy
+        
+        # Complex mode should preserve energy better
+        # (though both might not preserve it perfectly due to real part extraction)
+        assert rel_error_complex <= rel_error_real + 0.1  # Allow some tolerance
+
+    def test_phase_information_preservation(self):
+        """Test that complex mode preserves phase information."""
+        layer_complex = FourierMixing(hidden_dim=64, keep_complex=True, dropout=0.0)
+        layer_complex.eval()
+        
+        # Create input with known frequency components
+        t = torch.linspace(0, 1, 32).unsqueeze(0).unsqueeze(2)
+        freq1 = torch.sin(2 * torch.pi * 4 * t)  # 4 Hz
+        freq2 = torch.cos(2 * torch.pi * 8 * t)  # 8 Hz with phase shift
+        x = torch.cat([freq1, freq2], dim=0).expand(2, 32, 64)
+        
+        output = layer_complex(x)
+        
+        # Complex output should contain phase information
+        assert torch.is_complex(output)
+        
+        # Check that imaginary part is non-trivial
+        imag_norm = torch.norm(output.imag)
+        assert imag_norm > 1e-3  # Should have meaningful imaginary component
+        
+        # Phase should vary across the output
+        phase = torch.angle(output)
+        phase_std = phase.std()
+        assert phase_std > 0.1  # Phase should have variation

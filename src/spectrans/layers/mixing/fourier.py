@@ -103,7 +103,8 @@ class FourierMixing(UnitaryMixingLayer):
 
     The operation performs:
     1. 2D FFT across sequence and feature dimensions
-    2. Real part extraction for final output
+    2. Optional real part extraction for final output (original FNet behavior)
+       or keep complex values for full information preservation
 
     Parameters
     ----------
@@ -117,11 +118,16 @@ class FourierMixing(UnitaryMixingLayer):
         Tolerance for energy preservation verification.
     fft_norm : str, default="ortho"
         Normalization mode for FFT operations ("forward", "backward", "ortho").
+    keep_complex : bool, default=False
+        If True, keeps complex values from FFT. If False (default),
+        takes only the real part as in original FNet.
 
     Attributes
     ----------
     fft2d : FFT2D
         2D Fourier transform module.
+    keep_complex : bool
+        Whether to keep complex values or extract real part.
     """
 
     def __init__(
@@ -131,8 +137,10 @@ class FourierMixing(UnitaryMixingLayer):
         norm_eps: float = 1e-5,
         energy_tolerance: float = 1e-4,
         fft_norm: FFTNorm = "ortho",
+        keep_complex: bool = False,
     ):
         super().__init__(hidden_dim, dropout, norm_eps, energy_tolerance)
+        self.keep_complex = keep_complex
         # Store transform as non-module attribute to avoid PyTorch module registration
         self.fft2d: FFT2D  # Type annotation for mypy
         object.__setattr__(self, 'fft2d', FFT2D(norm=fft_norm))
@@ -148,13 +156,17 @@ class FourierMixing(UnitaryMixingLayer):
         Returns
         -------
         torch.Tensor
-            Mixed tensor of same shape, with real values only.
+            Mixed tensor of same shape. Complex if keep_complex=True,
+            real values only if keep_complex=False (default).
         """
         # Apply 2D FFT along last two dimensions (sequence and feature)
         x_freq = self.fft2d.transform(x, dim=(-2, -1))
-
-        # Take real part as in original FNet
-        x_mixed = torch.real(x_freq)
+        if self.keep_complex:
+            # Keep full complex values for information preservation
+            x_mixed = x_freq
+        else:
+            # Take real part as in original FNet (default behavior)
+            x_mixed = torch.real(x_freq)
 
         # Apply dropout
         x_mixed = self.dropout(x_mixed)
@@ -212,6 +224,7 @@ class FourierMixing(UnitaryMixingLayer):
             norm_eps=config.norm_eps,
             energy_tolerance=config.energy_tolerance,
             fft_norm=config.fft_norm,
+            keep_complex=config.keep_complex,
         )
 
 
@@ -234,11 +247,16 @@ class FourierMixing1D(UnitaryMixingLayer):
         Tolerance for energy preservation verification.
     fft_norm : str, default="ortho"
         Normalization mode for FFT operations.
+    keep_complex : bool, default=False
+        If True, keeps complex values from FFT. If False (default),
+        takes only the real part.
 
     Attributes
     ----------
     fft1d : FFT1D
         1D Fourier transform module.
+    keep_complex : bool
+        Whether to keep complex values or extract real part.
     """
 
     def __init__(
@@ -248,8 +266,10 @@ class FourierMixing1D(UnitaryMixingLayer):
         norm_eps: float = 1e-5,
         energy_tolerance: float = 1e-4,
         fft_norm: FFTNorm = "ortho",
+        keep_complex: bool = False,
     ):
         super().__init__(hidden_dim, dropout, norm_eps, energy_tolerance)
+        self.keep_complex = keep_complex
         # Store transform as non-module attribute to avoid PyTorch module registration
         self.fft1d: FFT1D  # Type annotation for mypy
         object.__setattr__(self, 'fft1d', FFT1D(norm=fft_norm))
@@ -266,12 +286,17 @@ class FourierMixing1D(UnitaryMixingLayer):
         -------
         torch.Tensor
             Mixed tensor with Fourier transform applied along sequence dimension.
+            Complex if keep_complex=True, real values only if keep_complex=False.
         """
         # Apply 1D FFT along sequence dimension only
-        x_freq = self.fft1d.transform(x, dim=1)  # sequence dimension
+        x_freq = self.fft1d.transform(x, dim=1)  # type: ignore[operator] # sequence dimension
 
-        # Take real part
-        x_mixed = torch.real(x_freq)
+        if self.keep_complex:
+            # Keep full complex values
+            x_mixed = x_freq
+        else:
+            # Take real part (default behavior)
+            x_mixed = torch.real(x_freq)
 
         # Apply dropout
         x_mixed = self.dropout(x_mixed)

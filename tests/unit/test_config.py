@@ -318,7 +318,7 @@ class TestConvenienceFunctions:
     def test_build_model_from_config(self):
         """Test build_model_from_config convenience function."""
         from spectrans.core.registry import registry
-        
+
         config = {
             "model": {
                 "model_type": "fnet",

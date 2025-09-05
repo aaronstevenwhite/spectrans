@@ -117,12 +117,18 @@ class GlobalFilterMixing(FilterMixingLayer):
     Implements the core GFNet mixing operation with learnable complex
     filters applied in the frequency domain along the sequence dimension.
 
+    The layer uses interpolation to adapt filters to different sequence lengths,
+    allowing it to process variable-length inputs while preserving learned
+    frequency patterns. This makes the layer resolution-independent and more
+    flexible than fixed-size filtering.
+
     Parameters
     ----------
     hidden_dim : int
         Hidden dimension of input tensors.
     sequence_length : int
-        Expected sequence length for filter parameter initialization.
+        Base sequence length for filter parameter initialization. The filters
+        will be interpolated to match actual input sequence lengths.
     activation : ActivationType, default="sigmoid"
         Activation function applied to filter parameters ("sigmoid", "tanh", "identity").
     dropout : float, default=0.0
@@ -202,10 +208,34 @@ class GlobalFilterMixing(FilterMixingLayer):
         # Transform to frequency domain
         x_freq = self.fft1d.transform(x, dim=1)  # Along sequence dimension
 
+        # Get actual sequence length
+        seq_len = x_freq.shape[1]
+
+        # Adapt filter to actual sequence length using interpolation
+        if seq_len != self.sequence_length:
+            # Use interpolation to adapt filters to the actual sequence length
+            # This preserves the learned frequency patterns at different resolutions
+            filter_real = nn.functional.interpolate(
+                self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                size=seq_len,
+                mode='linear',
+                align_corners=False
+            ).squeeze(0).T  # (seq_len, hidden_dim)
+
+            filter_imag = nn.functional.interpolate(
+                self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                size=seq_len,
+                mode='linear',
+                align_corners=False
+            ).squeeze(0).T  # (seq_len, hidden_dim)
+        else:
+            filter_real = self.filter_real
+            filter_imag = self.filter_imag
+
         # Create complex filter
         filter_complex = make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(filter_real),
+            self.activation_fn(filter_imag)
         )
 
         # Apply filter in frequency domain (element-wise multiplication)
@@ -383,10 +413,34 @@ class GlobalFilterMixing2D(FilterMixingLayer):
         # Transform to 2D frequency domain
         x_freq = self.fft2d.transform(x, dim=(-2, -1))
 
+        # Get actual dimensions
+        seq_len = x_freq.shape[-2]
+        hidden = x_freq.shape[-1]
+
+        # Adapt filter to actual dimensions using bilinear interpolation
+        if seq_len != self.sequence_length or hidden != self.hidden_dim:
+            # Reshape for 2D interpolation
+            filter_real = nn.functional.interpolate(
+                self.filter_real.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
+                size=(seq_len, hidden),
+                mode='bilinear',
+                align_corners=False
+            ).squeeze(0).squeeze(0)  # (seq_len, hidden)
+
+            filter_imag = nn.functional.interpolate(
+                self.filter_imag.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
+                size=(seq_len, hidden),
+                mode='bilinear',
+                align_corners=False
+            ).squeeze(0).squeeze(0)  # (seq_len, hidden)
+        else:
+            filter_real = self.filter_real
+            filter_imag = self.filter_imag
+
         # Create complex filter
         filter_complex = make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(filter_real),
+            self.activation_fn(filter_imag)
         )
 
         # Apply 2D filter
@@ -574,10 +628,33 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
         # Transform to frequency domain
         x_freq = self.fft1d.transform(x, dim=1)
 
+        # Get actual sequence length
+        seq_len = x_freq.shape[1]
+
+        # Adapt filter to actual sequence length using interpolation
+        if seq_len != self.sequence_length:
+            # Use interpolation to adapt filters to the actual sequence length
+            filter_real = nn.functional.interpolate(
+                self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                size=seq_len,
+                mode='linear',
+                align_corners=False
+            ).squeeze(0).T  # (seq_len, hidden_dim)
+
+            filter_imag = nn.functional.interpolate(
+                self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                size=seq_len,
+                mode='linear',
+                align_corners=False
+            ).squeeze(0).T  # (seq_len, hidden_dim)
+        else:
+            filter_real = self.filter_real
+            filter_imag = self.filter_imag
+
         # Create complex filter with activation
         filter_complex = make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(filter_real),
+            self.activation_fn(filter_imag)
         )
 
         # Apply spectral dropout to filter (not input)
