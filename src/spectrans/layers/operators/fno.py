@@ -1,4 +1,4 @@
-"""Fourier Neural Operator (FNO) implementation for spectral transformers.
+r"""Fourier Neural Operator (FNO) implementation for spectral transformers.
 
 This module provides the Fourier Neural Operator, which learns mappings between
 infinite-dimensional function spaces by parameterizing integral kernels in the
@@ -47,13 +47,17 @@ FNO block with residual connection:
 
 Notes
 -----
-The FNO learns the kernel K in the integral operator:
-    (K*v)(x) = ∫ k(x,y)v(y)dy
+The FNO learns the kernel :math:`K` in the integral operator:
 
-By parameterizing k in the Fourier domain as R_θ, the convolution becomes:
-    F[(K*v)] = R_θ · F[v]
+.. math::
+    (K*v)(x) = \int k(x,y)v(y)dy
 
-This allows efficient computation via FFT and learnable complex weights R_θ
+By parameterizing :math:`k` in the Fourier domain as :math:`R_{\theta}`, the convolution becomes:
+
+.. math::
+    \mathcal{F}[(K*v)] = R_{\theta} \cdot \mathcal{F}[v]
+
+This allows efficient computation via FFT and learnable complex weights :math:`R_{\theta}`
 that are truncated to retain only the lowest frequency modes.
 
 References
@@ -76,7 +80,7 @@ from spectrans.core.types import ActivationType, NormType
 
 
 class SpectralConv1d(nn.Module):
-    """1D Spectral convolution layer.
+    r"""1D Spectral convolution layer.
 
     Performs convolution in the Fourier domain by element-wise multiplication
     with learnable complex-valued weights on truncated modes.
@@ -124,7 +128,7 @@ class SpectralConv1d(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply spectral convolution.
+        r"""Apply spectral convolution.
 
         Parameters
         ----------
@@ -170,7 +174,7 @@ class SpectralConv1d(nn.Module):
 
 
 class SpectralConv2d(nn.Module):
-    """2D Spectral convolution layer.
+    r"""2D Spectral convolution layer.
 
     Performs 2D convolution in the Fourier domain for image-like data.
 
@@ -219,7 +223,7 @@ class SpectralConv2d(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply 2D spectral convolution.
+        r"""Apply 2D spectral convolution.
 
         Parameters
         ----------
@@ -259,7 +263,7 @@ class SpectralConv2d(nn.Module):
 
 
 class FourierNeuralOperator(SpectralComponent):
-    """Fourier Neural Operator layer for learning operators in function spaces.
+    r"""Fourier Neural Operator layer for learning operators in function spaces.
 
     This layer combines spectral convolution with pointwise linear transformations
     to learn mappings between function spaces efficiently.
@@ -373,14 +377,14 @@ class FourierNeuralOperator(SpectralComponent):
         self._init_weights()
 
     def _init_weights(self) -> None:
-        """Initialize weights."""
+        r"""Initialize weights."""
         if self.linear is not None:
             nn.init.xavier_uniform_(self.linear.weight)
             if self.linear.bias is not None:
                 nn.init.zeros_(self.linear.bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply Fourier Neural Operator.
+        r"""Apply Fourier Neural Operator.
 
         Parameters
         ----------
@@ -440,7 +444,7 @@ class FourierNeuralOperator(SpectralComponent):
 
 
 class FNOBlock(SpectralComponent):
-    """Complete FNO block with spectral convolution and feedforward network.
+    r"""Complete FNO block with spectral convolution and feedforward network.
 
     This block combines the FNO layer with layer normalization, residual
     connections, and an optional feedforward network for a complete
@@ -553,7 +557,7 @@ class FNOBlock(SpectralComponent):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Apply FNO block.
+        r"""Apply FNO block.
 
         Parameters
         ----------
