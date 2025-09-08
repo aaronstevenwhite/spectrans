@@ -3,7 +3,7 @@ r"""FNet: Mixing Tokens with Fourier Transforms.
 This module implements the FNet architecture, which replaces the self-attention
 mechanism in transformers with Fourier transform-based token mixing. FNet
 achieves competitive performance on many NLP tasks while maintaining
-:math:`O(n \log n)` computational complexity compared to :math:`O(n^2)` for
+$O(n \log n)$ computational complexity compared to $O(n^2)$ for
 standard attention mechanisms.
 
 The architecture uses 2D Discrete Fourier Transforms (DFT) to mix tokens,
@@ -56,51 +56,57 @@ Notes
 Mathematical Foundation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Given input tensor :math:`\mathbf{X} \in \mathbb{R}^{n \times d}` where :math:`n`
-is sequence length and :math:`d` is hidden dimension, FNet applies the following
-operations in each layer :math:`l`:
+Given input tensor $\mathbf{X} \in \mathbb{R}^{n \times d}$ where $n$
+is sequence length and $d$ is hidden dimension, FNet applies the following
+operations in each layer $l$:
 
 **Fourier Mixing Operation:**
 
 The core mixing operation is defined as:
 
-.. math::
-    \text{FourierMix}(\mathbf{X}) = \Re\left(\mathcal{F}_d^{-1}\left(\mathcal{F}_n(\mathbf{X})\right)\right)
+$$
+\text{FourierMix}(\mathbf{X}) = \Re\left(\mathcal{F}_d^{-1}\left(\mathcal{F}_n(\mathbf{X})\right)\right)
+$$
 
 where:
 
-- :math:`\mathcal{F}_n` denotes 1D DFT along the sequence dimension
-- :math:`\mathcal{F}_d^{-1}` denotes inverse 1D DFT along the feature dimension
-- :math:`\Re(\cdot)` takes the real part of complex values
+- $\mathcal{F}_n$ denotes 1D DFT along the sequence dimension
+- $\mathcal{F}_d^{-1}$ denotes inverse 1D DFT along the feature dimension
+- $\Re(\cdot)$ takes the real part of complex values
 
 **Complete Layer Operations:**
 
-For each FNet layer :math:`l`, the computation proceeds as:
+For each FNet layer $l$, the computation proceeds as:
 
-.. math::
-    \mathbf{H}_l = \text{LayerNorm}(\mathbf{X}_l + \text{FourierMix}(\mathbf{X}_l))
+$$
+\mathbf{H}_l = \text{LayerNorm}(\mathbf{X}_l + \text{FourierMix}(\mathbf{X}_l))
+$$
 
-.. math::
-    \mathbf{X}_{l+1} = \text{LayerNorm}(\mathbf{H}_l + \text{FFN}(\mathbf{H}_l))
+$$
+\mathbf{X}_{l+1} = \text{LayerNorm}(\mathbf{H}_l + \text{FFN}(\mathbf{H}_l))
+$$
 
 where the feedforward network (FFN) is:
 
-.. math::
-    \text{FFN}(\mathbf{x}) = \mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2
+$$
+\text{FFN}(\mathbf{x}) = \mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1) + \mathbf{b}_2
+$$
 
-with :math:`\mathbf{W}_1 \in \mathbb{R}^{4d \times d}`, :math:`\mathbf{b}_1 \in \mathbb{R}^{4d}`,
-:math:`\mathbf{W}_2 \in \mathbb{R}^{d \times 4d}`, :math:`\mathbf{b}_2 \in \mathbb{R}^d`.
+with $\mathbf{W}_1 \in \mathbb{R}^{4d \times d}$, $\mathbf{b}_1 \in \mathbb{R}^{4d}$,
+$\mathbf{W}_2 \in \mathbb{R}^{d \times 4d}$, $\mathbf{b}_2 \in \mathbb{R}^d$.
 
 **Complexity Analysis:**
 
-- Time Complexity: :math:`O(L \cdot n \log n \cdot d)` where :math:`L` is the number of layers
-- Space Complexity: :math:`O(L \cdot n \cdot d)`
+- Time Complexity: $O(L \cdot n \log n \cdot d)$ where $L$ is the number of layers
+- Space Complexity: $O(L \cdot n \cdot d)$
 - No learned parameters in the mixing operation (only in FFN and embeddings)
 
 References
 ----------
-.. [1] Lee-Thorp et al., "FNet: Mixing Tokens with Fourier Transforms",
-       NAACL 2022.
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
 
 See Also
 --------

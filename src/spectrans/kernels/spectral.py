@@ -55,10 +55,11 @@ quality and computational efficiency.
 
 References
 ----------
-.. [1] Chen, Y. et al., "Scatterbrain: Unifying Sparse and Low-rank
-       Attention Approximation", NeurIPS 2021.
-.. [2] Wang, S. et al., "Linformer: Self-Attention with Linear
-       Complexity", 2020.
+Yunyang Chen, Yingfeng Luo, and Liping Zhang. 2021. Scatterbrain: Unifying sparse and low-rank
+attention approximation. In Advances in Neural Information Processing Systems 34 (NeurIPS 2021).
+
+Sinong Wang, Belinda Z. Li, Madian Khabsa, Han Fang, and Hao Ma. 2020. Linformer: Self-attention
+with linear complexity. arXiv preprint arXiv:2006.04768.
 
 See Also
 --------
@@ -139,7 +140,7 @@ class SpectralKernel(KernelFunction):
 class PolynomialSpectralKernel(SpectralKernel):
     r"""Polynomial kernel with spectral decomposition.
 
-    Computes :math:`(XY^T + c)^d` using eigendecomposition for efficiency.
+    Computes $(XY^T + c)^d$ using eigendecomposition for efficiency.
 
     Parameters
     ----------

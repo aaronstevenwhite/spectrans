@@ -1,4 +1,4 @@
-"""Kernel functions for spectral transformers.
+r"""Kernel functions for spectral transformers.
 
 This module provides kernel functions and feature maps used in spectral
 attention mechanisms and other kernel-based methods. It includes both
@@ -8,36 +8,47 @@ feature maps.
 The kernels support efficient approximations of attention mechanisms
 with linear complexity, enabling scalable transformer architectures.
 
+Modules
+-------
+base
+    Base classes and interfaces for kernel functions.
+rff
+    Random Fourier Features implementations.
+spectral
+    Spectral kernel functions and decompositions.
+
 Classes
 -------
+CosineKernel
+    Cosine similarity kernel.
+FourierKernel
+    Kernel defined in Fourier domain.
+GaussianRFFKernel
+    Gaussian kernel with RFF approximation.
 KernelFunction
     Abstract base class for kernel functions.
+KernelType
+    Type literal for kernel selection.
+LaplacianRFFKernel
+    Laplacian kernel with RFF approximation.
+LearnableSpectralKernel
+    Spectral kernel with learnable parameters.
+OrthogonalRandomFeatures
+    Orthogonal variant of random features.
+PolynomialKernel
+    Polynomial kernel implementation.
+PolynomialSpectralKernel
+    Polynomial kernel with spectral decomposition.
+RFFAttentionKernel
+    RFF designed for attention mechanisms.
 RandomFeatureMap
     Abstract base class for random feature approximations.
 ShiftInvariantKernel
     Base class for shift-invariant kernels.
-PolynomialKernel
-    Polynomial kernel implementation.
-CosineKernel
-    Cosine similarity kernel.
-GaussianRFFKernel
-    Gaussian kernel with RFF approximation.
-LaplacianRFFKernel
-    Laplacian kernel with RFF approximation.
-OrthogonalRandomFeatures
-    Orthogonal variant of random features.
-RFFAttentionKernel
-    RFF designed for attention mechanisms.
 SpectralKernel
     Base class for spectral kernels.
-PolynomialSpectralKernel
-    Polynomial kernel with spectral decomposition.
 TruncatedSVDKernel
     Kernel approximation via truncated SVD.
-LearnableSpectralKernel
-    Spectral kernel with learnable parameters.
-FourierKernel
-    Kernel defined in Fourier domain.
 
 Examples
 --------
@@ -56,9 +67,37 @@ Using learnable spectral kernel:
 >>> K = kernel.compute(x, x)
 >>> assert K.shape == (32, 100, 100)
 
+Notes
+-----
+Kernel approximation enables linear complexity attention mechanisms through:
+
+1. **Random Fourier Features**: Based on Bochner's theorem, approximates
+   shift-invariant kernels via $k(x, y) \approx \varphi(x)^T \varphi(y)$
+
+2. **Spectral Decomposition**: Leverages eigendecomposition for efficient
+   kernel computation via low-rank approximations
+
+3. **Orthogonal Features**: Improves approximation quality through
+   orthogonalized random projections
+
+The approximation quality improves with $O(1/\sqrt{D})$ where $D$ is the
+number of random features.
+
+References
+----------
+Ali Rahimi and Benjamin Recht. 2007. Random features for large-scale kernel machines.
+In Advances in Neural Information Processing Systems 20 (NeurIPS 2007), pages 1177-1184.
+
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane,
+Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger,
+Lucy Colwell, and Adrian Weller. 2021. Rethinking attention with performers. In Proceedings
+of the International Conference on Learning Representations (ICLR).
+
 See Also
 --------
-spectrans.layers.attention : Attention layers using these kernels.
+[`spectrans.layers.attention`][] : Attention layers using these kernels.
+[`spectrans.kernels.base`][] : Base kernel interfaces.
+[`spectrans.kernels.rff`][] : Random Fourier Features implementations.
 """
 
 from .base import (
@@ -83,14 +122,11 @@ from .spectral import (
     TruncatedSVDKernel,
 )
 
+# Public API - alphabetically sorted
 __all__ = [
-    # Basic kernels
     "CosineKernel",
-    # Spectral kernels
     "FourierKernel",
-    # RFF kernels
     "GaussianRFFKernel",
-    # Base interfaces
     "KernelFunction",
     "KernelType",
     "LaplacianRFFKernel",

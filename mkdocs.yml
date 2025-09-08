@@ -45,7 +45,7 @@ plugins:
             docstring_style: numpy
             docstring_section_style: table
             show_source: true
-            show_root_heading: false
+            show_root_heading: true
             show_category_heading: true
             show_if_no_docstring: false
             merge_init_into_class: true
@@ -89,12 +89,69 @@ nav:
   - Home: index.md
   - API Reference:
       - Overview: api/index.md
-      - Transforms: api/transforms.md
-      - Kernels: api/kernels.md
-      - Layers: api/layers.md
-      - Blocks: api/blocks.md
-      - Models: api/models.md
-      - Utils: api/utils.md
+      - Core:
+          - Overview: api/core/index.md
+          - Base Classes: api/core/base.md
+          - Type Definitions: api/core/types.md
+          - Registry: api/core/registry.md
+      - Transforms:
+          - Overview: api/transforms/index.md
+          - Base: api/transforms/base.md
+          - Cosine: api/transforms/cosine.md
+          - Fourier: api/transforms/fourier.md
+          - Hadamard: api/transforms/hadamard.md
+          - Wavelet: api/transforms/wavelet.md
+      - Kernels:
+          - Overview: api/kernels/index.md
+          - Base: api/kernels/base.md
+          - RFF: api/kernels/rff.md
+          - Spectral: api/kernels/spectral.md
+      - Layers:
+          - Overview: api/layers/index.md
+          - Mixing:
+              - Overview: api/layers/mixing/index.md
+              - Base: api/layers/mixing/base.md
+              - AFNO: api/layers/mixing/afno.md
+              - Fourier: api/layers/mixing/fourier.md
+              - Global Filter: api/layers/mixing/global_filter.md
+              - Wavelet: api/layers/mixing/wavelet.md
+          - Attention:
+              - Overview: api/layers/attention/index.md
+              - LST: api/layers/attention/lst.md
+              - Spectral: api/layers/attention/spectral.md
+          - Operators:
+              - Overview: api/layers/operators/index.md
+              - FNO: api/layers/operators/fno.md
+      - Blocks:
+          - Overview: api/blocks/index.md
+          - Base: api/blocks/base.md
+          - Hybrid: api/blocks/hybrid.md
+          - Spectral: api/blocks/spectral.md
+      - Models:
+          - Overview: api/models/index.md
+          - Base: api/models/base.md
+          - AFNO: api/models/afno.md
+          - FNet: api/models/fnet.md
+          - FNO Transformer: api/models/fno_transformer.md
+          - GFNet: api/models/gfnet.md
+          - Hybrid: api/models/hybrid.md
+          - LST: api/models/lst.md
+          - Spectral Attention: api/models/spectral_attention.md
+          - Wavelet Transformer: api/models/wavenet_transformer.md
+      - Utils:
+          - Overview: api/utils/index.md
+          - Complex: api/utils/complex.md
+          - Initialization: api/utils/initialization.md
+          - Padding: api/utils/padding.md
+      - Configuration:
+          - Overview: api/config/index.md
+          - Core: api/config/core.md
+          - Builder: api/config/builder.md
+          - Models: api/config/models.md
+          - Layers:
+              - Overview: api/config/layers/index.md
+              - Attention: api/config/layers/attention.md
+              - Mixing: api/config/layers/mixing.md
 
 extra:
   social:
@@ -102,6 +159,3 @@ extra:
       link: https://github.com/aaronstevenwhite/spectrans
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/spectrans/
-  version:
-    provider: mike
-    default: stable

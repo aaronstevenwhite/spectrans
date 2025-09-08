@@ -9,31 +9,43 @@ The core module establishes the mathematical foundations and software architectu
 allows for flexible experimentation with different spectral transform combinations while
 maintaining type safety and performance.
 
+Modules
+-------
+base
+    Base classes and interfaces for all spectral components.
+registry
+    Component registration and discovery system.
+types
+    Type definitions and aliases for the library.
+
 Classes
 -------
-SpectralComponent
-    Abstract base class for all spectral neural network components.
-SpectralTransform
-    Interface for spectral transform operations (FFT, DCT, DWT, etc.).
 AttentionLayer
     Base class for spectral attention mechanisms.
-TransformerBlock
-    Base class for complete transformer blocks with residual connections.
 BaseModel
-    Base class for full spectral transformer models.
+    Base class for spectral transformer models.
 ComponentRegistry
     Registry system for dynamic component discovery and instantiation.
+SpectralComponent
+    Abstract base class for all spectral neural network components.
+TransformerBlock
+    Base class for transformer blocks with residual connections.
 
 Functions
 ---------
-register_component(category, name)
-    Decorator to register components in the global registry.
-create_component(category, name, **kwargs)
+create_component
     Factory function to create registered component instances.
-get_component(category, name)
+get_component
     Retrieve component class from registry.
-list_components(category)
+list_components
     List all registered components in a category.
+register_component
+    Decorator to register components in the global registry.
+
+Attributes
+----------
+registry : ComponentRegistry
+    Global component registry instance.
 
 Examples
 --------
@@ -59,7 +71,7 @@ Notes
 The core architecture follows these design principles:
 
 1. **Abstract Interfaces**: All components implement consistent forward() methods
-2. **Type Safety**: Comprehensive type hints with modern Python 3.13 syntax
+2. **Type Safety**: Type hints with Python 3.13 syntax
 3. **Modularity**: Registry system enables runtime component composition
 4. **Extensibility**: Easy to add new transforms and mixing strategies
 
@@ -67,15 +79,15 @@ The registry system supports six categories of components:
 - transform: Spectral transforms (FFT, DCT, DWT, Hadamard)
 - mixing: Token mixing layers (FourierMixing, GlobalFilter, etc.)
 - attention: Spectral attention mechanisms
-- block: Complete transformer blocks
-- model: Full model implementations
+- block: Transformer blocks
+- model: Model implementations
 - kernel: Kernel functions for attention approximation
 
 See Also
 --------
-spectrans.core.base : Base class definitions and interfaces
-spectrans.core.types : Type aliases and definitions
-spectrans.core.registry : Component registration system
+[`spectrans.core.base`][] : Base class definitions and interfaces.
+[`spectrans.core.types`][] : Type aliases and definitions.
+[`spectrans.core.registry`][] : Component registration system.
 """
 
 from .base import (
@@ -117,6 +129,7 @@ from .types import (
     InitializationType,
     IntermediateDim,
     KernelFunction,
+    KernelType,
     LearnableFilter,
     LocalRank,
     LongTensor,
@@ -157,6 +170,7 @@ from .types import (
     StateDict,
     Tensor,
     TrainingConfig,
+    TransformLSTType,
     TransformType,
     VocabSize,
     WaveletType,
@@ -164,37 +178,84 @@ from .types import (
     WorldSize,
 )
 
-__all__: list[str] = [
+# Public API - alphabetically sorted
+__all__ = [
     "ActivationType",
     "AttentionLayer",
     "AttentionMask",
     "BaseModel",
+    "BatchDict",
     "BatchSize",
+    "BatchTuple",
     "BoolTensor",
+    "CausalMask",
+    "CheckpointDict",
     "ComplexTensor",
-    # Registry
+    "ComponentClass",
+    "ComponentFactory",
     "ComponentRegistry",
     "ComponentType",
     "ConfigDict",
     "Device",
+    "FeatureMapFunction",
+    "FFTNorm",
+    "FourierModes",
+    "GradientClipNorm",
+    "GradientClipValue",
+    "HeadDim",
     "HiddenDim",
+    "InitializationType",
+    "IntermediateDim",
+    "KernelFunction",
+    "KernelType",
+    "LearnableFilter",
+    "LocalRank",
     "LongTensor",
+    "LossFunction",
+    "LossOutput",
+    "MetricFunction",
+    "MixedPrecisionDType",
+    "ModeIndices",
+    "ModelOutput",
     "ModelType",
+    "ModeSelection",
+    "ModeTruncation",
+    "ModuleType",
     "NormType",
+    "NumClasses",
     "NumHeads",
     "NumLayers",
+    "NumRandomFeatures",
+    "OptimizerConfig",
+    "OptionalModule",
     "OptionalTensor",
+    "OutputHeadType",
+    "PaddingSize",
+    "PaddingType",
     "ParamsDict",
+    "PoolingType",
+    "PositionalEncodingType",
+    "RandomSeed",
+    "Rank",
+    "RegistryDict",
+    "SchedulerConfig",
+    "SchedulerFunction",
     "SequenceLength",
-    # Base classes
+    "Shape2D",
+    "Shape3D",
+    "Shape4D",
     "SpectralComponent",
-    "SpectralTransform",
+    "SpectralFilter",
     "StateDict",
-    # Type exports (selected most commonly used)
     "Tensor",
+    "TrainingConfig",
+    "TransformLSTType",
     "TransformType",
     "TransformerBlock",
+    "VocabSize",
     "WaveletType",
+    "WindowFunction",
+    "WorldSize",
     "create_component",
     "get_component",
     "list_components",

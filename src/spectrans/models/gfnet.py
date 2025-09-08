@@ -2,7 +2,7 @@ r"""Global Filter Networks (GFNet) for efficient spectral transformers.
 
 This module implements the Global Filter Network architecture, which uses learnable
 complex-valued filters in the frequency domain for token mixing. GFNet provides
-a learnable alternative to FNet while maintaining :math:`O(n \log n)` complexity.
+a learnable alternative to FNet while maintaining $O(n \log n)$ complexity.
 
 The architecture applies learnable filters in the Fourier domain, enabling
 the model to selectively emphasize or suppress different frequency components
@@ -58,58 +58,63 @@ Notes
 Mathematical Foundation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Given input tensor :math:`\mathbf{X} \in \mathbb{R}^{n \times d}` where :math:`n`
-is sequence length and :math:`d` is hidden dimension, GFNet applies learnable
+Given input tensor $\mathbf{X} \in \mathbb{R}^{n \times d}$ where $n$
+is sequence length and $d$ is hidden dimension, GFNet applies learnable
 complex filters in the frequency domain.
 
 **Global Filter Operation:**
 
 The core filtering operation is defined as:
 
-.. math::
-    \text{GF}(\mathbf{X}) = \mathcal{F}^{-1}(\mathbf{H} \odot \mathcal{F}(\mathbf{X}))
+$$
+\text{GF}(\mathbf{X}) = \mathcal{F}^{-1}(\mathbf{H} \odot \mathcal{F}(\mathbf{X}))
+$$
 
 where:
 
-- :math:`\mathbf{H} \in \mathbb{C}^{n \times d}` is a learnable complex-valued filter
-- :math:`\odot` denotes element-wise (Hadamard) multiplication
-- :math:`\mathcal{F}` and :math:`\mathcal{F}^{-1}` are FFT and IFFT along sequence dimension
+- $\mathbf{H} \in \mathbb{C}^{n \times d}$ is a learnable complex-valued filter
+- $\odot$ denotes element-wise (Hadamard) multiplication
+- $\mathcal{F}$ and $\mathcal{F}^{-1}$ are FFT and IFFT along sequence dimension
 
 **Filter Parameterization:**
 
-The learnable filter :math:`\mathbf{H}` is parameterized as:
+The learnable filter $\mathbf{H}$ is parameterized as:
 
-.. math::
-    \mathbf{H} = \sigma(\mathbf{W}_r + i\mathbf{W}_i)
+$$
+\mathbf{H} = \sigma(\mathbf{W}_r + i\mathbf{W}_i)
+$$
 
 where:
 
-- :math:`\mathbf{W}_r, \mathbf{W}_i \in \mathbb{R}^{n \times d}` are real-valued learnable parameters
-- :math:`\sigma` is an activation function (typically sigmoid or tanh)
-- :math:`i` is the imaginary unit
+- $\mathbf{W}_r, \mathbf{W}_i \in \mathbb{R}^{n \times d}$ are real-valued learnable parameters
+- $\sigma$ is an activation function (typically sigmoid or tanh)
+- $i$ is the imaginary unit
 
 **Complete Layer Operations:**
 
-For each GFNet layer :math:`l`, the computation proceeds as:
+For each GFNet layer $l$, the computation proceeds as:
 
-.. math::
-    \mathbf{Z}_l = \mathbf{X}_l + \text{GF}(\text{LayerNorm}(\mathbf{X}_l))
+$$
+\mathbf{Z}_l = \mathbf{X}_l + \text{GF}(\text{LayerNorm}(\mathbf{X}_l))
+$$
 
-.. math::
-    \mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
+\mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
 
 where FFN follows the same structure as in FNet.
 
 **Complexity Analysis:**
 
-- Time Complexity: :math:`O(L \cdot n \log n \cdot d)` where :math:`L` is the number of layers
-- Space Complexity: :math:`O(L \cdot n \cdot d)`
-- Learnable Parameters: :math:`O(2nd)` for the complex filter per layer
+- Time Complexity: $O(L \cdot n \log n \cdot d)$ where $L$ is the number of layers
+- Space Complexity: $O(L \cdot n \cdot d)$
+- Learnable Parameters: $O(2nd)$ for the complex filter per layer
 
 References
 ----------
-.. [1] Rao et al., "Global Filter Networks for Image Classification",
-       NeurIPS 2021.
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
 
 See Also
 --------

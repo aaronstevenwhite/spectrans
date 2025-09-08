@@ -12,7 +12,7 @@ enabling efficient computation of attention mechanisms with linear complexity.
 Classes
 -------
 KernelFunction
-    Abstract base class for kernel functions :math:`k(x, y)`.
+    Abstract base class for kernel functions $k(x, y)$.
 RandomFeatureMap
     Abstract base class for random feature approximations.
 ShiftInvariantKernel
@@ -45,28 +45,34 @@ Kernel Approximation Theory:
 
 For shift-invariant kernels, Bochner's theorem states that:
 
-.. math::
-    k(x - y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
+$$
+k(x - y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
+$$
 
 This enables Random Fourier Features approximation:
 
-.. math::
-    k(x, y) \approx \varphi(x)^T \varphi(y)
+$$
+k(x, y) \approx \varphi(x)^T \varphi(y)
+$$
 
 Where:
 
-.. math::
-    \varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+$$
+\varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+$$
 
-The approximation quality improves with :math:`O(1/\sqrt{D})` where :math:`D` is the number
+The approximation quality improves with $O(1/\sqrt{D})$ where $D$ is the number
 of random features.
 
 References
 ----------
-.. [1] Rahimi, A. & Recht, B., "Random Features for Large-Scale Kernel
-       Machines", NeurIPS 2007.
-.. [2] Choromanski, K. et al., "Rethinking Attention with Performers",
-       ICLR 2021.
+Ali Rahimi and Benjamin Recht. 2007. Random features for large-scale kernel machines.
+In Advances in Neural Information Processing Systems 20 (NeurIPS 2007), pages 1177-1184.
+
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane,
+Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger,
+Lucy Colwell, and Adrian Weller. 2021. Rethinking attention with performers. In Proceedings
+of the International Conference on Learning Representations (ICLR).
 
 See Also
 --------
@@ -86,8 +92,8 @@ from ..core.types import Tensor
 class KernelFunction(ABC):
     r"""Abstract base class for kernel functions.
 
-    A kernel function :math:`k(x, y)` defines a similarity measure between
-    inputs :math:`x` and :math:`y`, satisfying positive semi-definiteness properties.
+    A kernel function $k(x, y)$ defines a similarity measure between
+    inputs $x$ and $y$, satisfying positive semi-definiteness properties.
     This interface supports both explicit kernel evaluation and
     feature map representations.
     """
@@ -106,14 +112,14 @@ class KernelFunction(ABC):
         Returns
         -------
         Tensor
-            Kernel matrix of shape (..., n, m) where element :math:`(i,j)`
-            contains :math:`k(x_i, y_j)`.
+            Kernel matrix of shape (..., n, m) where element $(i,j)$
+            contains $k(x_i, y_j)$.
         """
         pass
 
 
     def gram_matrix(self, x: Tensor) -> Tensor:
-        r"""Compute Gram matrix :math:`K_{ij} = k(x_i, x_j)`.
+        r"""Compute Gram matrix $K_{ij} = k(x_i, x_j)$.
 
         Parameters
         ----------
@@ -235,8 +241,8 @@ class RandomFeatureMap(nn.Module, ABC):
 class ShiftInvariantKernel(KernelFunction):
     r"""Base class for shift-invariant (stationary) kernels.
 
-    Shift-invariant kernels depend only on the difference :math:`x - y`,
-    i.e., :math:`k(x, y) = k(x - y, 0) = \kappa(x - y)` for some function :math:`\kappa`.
+    Shift-invariant kernels depend only on the difference $x - y$,
+    i.e., $k(x, y) = k(x - y, 0) = \kappa(x - y)$ for some function $\kappa$.
 
     These kernels admit Random Fourier Features approximation
     via Bochner's theorem.
@@ -262,12 +268,12 @@ class ShiftInvariantKernel(KernelFunction):
         Parameters
         ----------
         diff : Tensor
-            Difference vectors :math:`x - y` of shape (..., d).
+            Difference vectors $x - y$ of shape (..., d).
 
         Returns
         -------
         Tensor
-            Kernel values :math:`\kappa(\text{diff})` of shape (...).
+            Kernel values $\kappa(\text{diff})$ of shape (...).
         """
         pass
 
@@ -315,7 +321,7 @@ class ShiftInvariantKernel(KernelFunction):
 
 
 class PolynomialKernel(KernelFunction):
-    r"""Polynomial kernel :math:`k(x, y) = (\alpha \langle x, y \rangle + c)^d`.
+    r"""Polynomial kernel $k(x, y) = (\alpha \langle x, y \rangle + c)^d$.
 
     Parameters
     ----------
@@ -366,7 +372,7 @@ class PolynomialKernel(KernelFunction):
 
 
 class CosineKernel(KernelFunction):
-    r"""Cosine similarity kernel :math:`k(x, y) = \frac{\langle x, y \rangle}{\|x\| \|y\|}`.
+    r"""Cosine similarity kernel $k(x, y) = \frac{\langle x, y \rangle}{\|x\| \|y\|}$.
 
     Parameters
     ----------

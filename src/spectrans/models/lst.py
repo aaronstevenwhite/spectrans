@@ -2,7 +2,7 @@ r"""Linear Spectral Transform (LST) models using efficient transforms.
 
 This module implements transformer models that use linear spectral transforms
 (DCT, DST, Hadamard) for sequence mixing instead of attention mechanisms. These
-models achieve :math:`O(n \log n)` complexity through Fast Fourier-like algorithms,
+models achieve $O(n \log n)$ complexity through Fast Fourier-like algorithms,
 providing an efficient alternative to quadratic attention.
 
 The LST mechanism applies learned transformations in the spectral domain,
@@ -65,45 +65,56 @@ Mathematical Foundation:
 
 The LST mechanism replaces attention with spectral domain operations:
 
-.. math::
-    \text{LST}(X) = \mathcal{T}^{-1}(\mathbf{W} \odot \mathcal{T}(X))
+$$
+\text{LST}(X) = \mathcal{T}^{-1}(\mathbf{W} \odot \mathcal{T}(X))
+$$
 
 Where:
-- :math:`\mathcal{T}` is the forward spectral transform (DCT/DST/Hadamard)
-- :math:`\mathcal{T}^{-1}` is the inverse transform
-- :math:`\mathbf{W}` is a learned spectral weighting matrix
-- :math:`\odot` denotes element-wise multiplication
+- $\mathcal{T}$ is the forward spectral transform (DCT/DST/Hadamard)
+- $\mathcal{T}^{-1}$ is the inverse transform
+- $\mathbf{W}$ is a learned spectral weighting matrix
+- $\odot$ denotes element-wise multiplication
 
-The transforms have efficient :math:`O(n \log n)` implementations:
+The transforms have efficient $O(n \log n)$ implementations:
 
 1. **DCT (Discrete Cosine Transform)**:
 
-   .. math::
-       X_k = \sum_{n=0}^{N-1} x_n \cos\left(\frac{\pi k(2n+1)}{2N}\right)
+   $$
+   X_k = \sum_{n=0}^{N-1} x_n \cos\left(\frac{\pi k(2n+1)}{2N}\right)
+   $$
 
 2. **DST (Discrete Sine Transform)**:
 
-   .. math::
-       X_k = \sum_{n=0}^{N-1} x_n \sin\left(\frac{\pi (k+1)(n+1)}{N+1}\right)
+   $$
+   X_k = \sum_{n=0}^{N-1} x_n \sin\left(\frac{\pi (k+1)(n+1)}{N+1}\right)
+   $$
 
 3. **Hadamard Transform**:
 
-   .. math::
-       H_N = H_2 \otimes H_{N/2} = \begin{bmatrix}
-       H_{N/2} & H_{N/2} \\
-       H_{N/2} & -H_{N/2}
-       \end{bmatrix}
+   $$
+   H_N = H_2 \otimes H_{\frac{N}{2}} = \begin{bmatrix}
+   H_{\frac{N}{2}} & H_{\frac{N}{2}} \\
+   H_{\frac{N}{2}} & -H_{\frac{N}{2}}
+   \end{bmatrix}
+   $$
 
 The spectral weights enable frequency-selective filtering, allowing the model
 to learn which frequency components are important for the task.
 
 References
 ----------
-.. [1] Lee-Thorp, J. et al., "FNet: Mixing Tokens with Fourier Transforms",
-       ICLR 2022.
-.. [2] Tay, Y. et al., "Long Range Arena: A Benchmark for Efficient
-       Transformers", NeurIPS 2021.
-.. [3] Ahmed, N. et al., "Discrete Cosine Transform", IEEE Trans. Computers,
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yi Tay, Mostafa Dehghani, Samira Abnar, Yikang Shen, Dara Bahri, Philip Pham,
+Jinfeng Rao, Liu Yang, Sebastian Ruder, and Donald Metzler. 2021. Long range
+arena: A benchmark for efficient transformers. In Advances in Neural Information
+Processing Systems 34 (NeurIPS 2021).
+
+Nasir Ahmed, T. Natarajan, and Kamisetty R. Rao. 1974. Discrete cosine transform.
+IEEE Transactions on Computers, C-23(1):90-93.
        1974.
 
 See Also

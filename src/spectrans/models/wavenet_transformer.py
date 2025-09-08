@@ -62,60 +62,71 @@ Notes
 -----
 Mathematical Foundation:
 
-The discrete wavelet transform decomposes a signal :math:`\mathbf{x} \in \mathbb{R}^n`
-into a multi-scale representation. For :math:`J` decomposition levels, the DWT produces:
+The discrete wavelet transform decomposes a signal $\mathbf{x} \in \mathbb{R}^n$
+into a multi-scale representation. For $J$ decomposition levels, the DWT produces:
 
-.. math::
-    \text{DWT}_J(\mathbf{x}) = \{\mathbf{c}_{A_J}, \{\mathbf{c}_{D_j}\}_{j=1}^J\}
+$$
+\text{DWT}_J(\mathbf{x}) = \{\mathbf{c}_{A_J}, \{\mathbf{c}_{D_j}\}_{j=1}^J\}
+$$
 
-where :math:`\mathbf{c}_{A_J} \in \mathbb{R}^{n/2^J}` are approximation coefficients
-at the coarsest level and :math:`\mathbf{c}_{D_j} \in \mathbb{R}^{n/2^j}` are detail
-coefficients at level :math:`j`.
+where $\mathbf{c}_{A_J} \in \mathbb{R}^{\frac{n}{2^J}}$ are approximation coefficients
+at the coarsest level and $\mathbf{c}_{D_j} \in \mathbb{R}^{\frac{n}{2^j}}$ are detail
+coefficients at level $j$.
 
 The decomposition employs convolution with filter banks:
 
-.. math::
-    \mathbf{c}_{A_{j+1}}[k] = \sum_m h[m-2k] \mathbf{c}_{A_j}[m]
+$$
+\mathbf{c}_{A_{j+1}}[k] = \sum_m h[m-2k] \mathbf{c}_{A_j}[m]
+$$
 
-.. math::
-    \mathbf{c}_{D_{j+1}}[k] = \sum_m g[m-2k] \mathbf{c}_{A_j}[m]
+$$
+\mathbf{c}_{D_{j+1}}[k] = \sum_m g[m-2k] \mathbf{c}_{A_j}[m]
+$$
 
-where :math:`h` and :math:`g` are the low-pass and high-pass analysis filters.
+where $h$ and $g$ are the low-pass and high-pass analysis filters.
 Perfect reconstruction is guaranteed by the synthesis filters satisfying:
 
-.. math::
-    \mathbf{x} = \sum_{k} \mathbf{c}_{A_J}[k] \phi_{J,k}(t) + \sum_{j=1}^J \sum_k \mathbf{c}_{D_j}[k] \psi_{j,k}(t)
+$$
+\mathbf{x} = \sum_{k} \mathbf{c}_{A_J}[k] \phi_{J,k}(t) + \sum_{j=1}^J \sum_k \mathbf{c}_{D_j}[k] \psi_{j,k}(t)
+$$
 
-where :math:`\phi_{J,k}` and :math:`\psi_{j,k}` are scaling and wavelet functions.
+where $\phi_{J,k}$ and $\psi_{j,k}$ are scaling and wavelet functions.
 
 Transformer Block Structure:
 
 Each wavelet transformer block applies the DWT mixing with residual connections:
 
-.. math::
-    \mathbf{Z}_l = \mathbf{X}_l + \text{WaveletMix}(\text{LayerNorm}(\mathbf{X}_l))
+$$
+\mathbf{Z}_l = \mathbf{X}_l + \text{WaveletMix}(\text{LayerNorm}(\mathbf{X}_l))
+$$
 
-.. math::
-    \mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
+\mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
 
 where the wavelet mixing operation processes each channel of the hidden representation
 independently through the DWT/IDWT pipeline.
 
 Complexity Analysis:
 
-For a sequence of length :math:`n` with hidden dimension :math:`d` and :math:`L` layers:
-- Time complexity: :math:`O(L \cdot n \cdot d \cdot J)` where :math:`J` is decomposition levels
-- Space complexity: :math:`O(L \cdot n \cdot d)`
-- Single DWT operation: :math:`O(n)` per channel due to fast convolution algorithms
+For a sequence of length $n$ with hidden dimension $d$ and $L$ layers:
+- Time complexity: $O(L \cdot n \cdot d \cdot J)$ where $J$ is decomposition levels
+- Space complexity: $O(L \cdot n \cdot d)$
+- Single DWT operation: $O(n)$ per channel due to fast convolution algorithms
 
 The linear complexity per channel makes wavelet mixing more efficient than quadratic
 attention mechanisms for long sequences.
 
 References
 ----------
-.. [1] Mallat, S., "A Wavelet Tour of Signal Processing", Academic Press, 1999.
-.. [2] Daubechies, I., "Ten Lectures on Wavelets", SIAM, 1992.
-.. [3] Vetterli, M. & Kovacevic, J., "Wavelets and Subband Coding", Prentice Hall, 1995.
+Stéphane Mallat. 1999. A Wavelet Tour of Signal Processing, 2nd edition.
+Academic Press, San Diego.
+
+Ingrid Daubechies. 1992. Ten Lectures on Wavelets. CBMS-NSF Regional Conference
+Series in Applied Mathematics, Vol. 61. SIAM, Philadelphia.
+
+Martin Vetterli and Jelena Kovačević. 1995. Wavelets and Subband Coding.
+Prentice Hall, Englewood Cliffs.
 
 See Also
 --------
@@ -142,7 +153,7 @@ class WaveletTransformer(BaseModel):
     r"""Wavelet transformer with DWT-based sequence mixing.
 
     This model replaces attention mechanisms with discrete wavelet transforms,
-    providing multi-resolution analysis of sequences with :math:`O(n)` complexity per channel.
+    providing multi-resolution analysis of sequences with $O(n)$ complexity per channel.
     The DWT decomposes input sequences into approximation and detail coefficients at
     multiple scales, naturally capturing both local transients and global structure.
 

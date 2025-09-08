@@ -1,4 +1,4 @@
-"""PyWavelets-compatible Discrete Wavelet Transform implementations.
+r"""PyWavelets-compatible Discrete Wavelet Transform implementations.
 
 This module provides mathematically correct DWT implementations that exactly
 match PyWavelets behavior while maintaining full gradient support for PyTorch.
@@ -44,20 +44,90 @@ Basic 1D wavelet transform:
 >>> ll, detail_bands = dwt2d.decompose(image)
 >>> reconstructed = dwt2d.reconstruct((ll, detail_bands))
 
+Multi-level decomposition with energy analysis:
+
+>>> dwt = DWT1D(wavelet='db4', levels=3)
+>>> x = torch.randn(1, 512)
+>>> cA, cD_list = dwt.decompose(x)
+>>> # Verify Parseval's theorem for orthogonal wavelets
+>>> energy_input = torch.sum(x ** 2)
+>>> energy_coeffs = torch.sum(cA ** 2) + sum(torch.sum(cD ** 2) for cD in cD_list)
+>>> print(f"Energy ratio: {energy_coeffs / energy_input:.6f}")  # Should be ≈ 1.0
+
 Notes
 -----
-This implementation achieves perfect PyWavelets compatibility through:
-- Exact replication of C convolution algorithm
-- Proper boundary handling (symmetric padding)
-- Correct filter application without extra reversal
-- Precise IDWT reconstruction using transpose convolution
+Mathematical Foundations:
+The Discrete Wavelet Transform (DWT) decomposes a signal into approximation
+and detail coefficients through iterative filtering and downsampling.
 
-All operations maintain gradient flow for end-to-end training.
+For a signal $x[n]$ of length $N$, the single-level DWT produces:
+
+$$
+c_A[k] = \sum_{n} h[n-2k] \cdot x[n]
+$$
+
+$$
+c_D[k] = \sum_{n} g[n-2k] \cdot x[n]
+$$
+
+Where $h[n]$ and $g[n]$ are the low-pass and high-pass analysis 
+filters. The reconstruction is achieved through:
+
+$$
+x[n] = \sum_{k} h'[n-2k] \cdot c_A[k] + \sum_{k} g'[n-2k] \cdot c_D[k]
+$$
+
+Multi-Resolution Analysis:
+The $J$-level DWT recursively applies the transform to approximation
+coefficients, creating a dyadic decomposition where each level $j$ has
+length $N/2^j$ and frequency band $[0, \pi/2^j]$ for approximations.
+
+Perfect Reconstruction:
+For orthogonal wavelets: $h'[n] = h[-n]$ and $g'[n] = g[-n]$.
+The transform preserves energy: $\|x\|^2 = \|c_A\|^2 + \sum_{j} \|c_{D_j}\|^2$
+
+Implementation Details:
+- Convolution starts at index $(\text{step} - 1) = 1$ for stride 2
+- Symmetric mode reflects without edge repeat: ``[d,c,b,a | a,b,c,d | d,c,b,a]``
+- Uses ``conv1d`` with flipped filters for correlation
+- IDWT uses ``conv_transpose1d`` with stride 2 for implicit upsampling
+- Output lengths follow PyWavelets formulas
+
+Algorithm Complexity:
+- Forward/Inverse DWT: $O(N)$ for $N$-length signal
+- Memory: $O(N)$ for coefficients
+- More efficient than FFT for sparse signals
+
+Gradient Support:
+All operations use native PyTorch operations ensuring full autograd support.
+
+Numerical Precision:
+- Filters use ``float64`` for extraction, ``float32`` for computation
+- Perfect reconstruction to $\sim 10^{-7}$ for ``float32``
+
+Supported Wavelets:
+Daubechies (``db1``-``db38``), Symlets (``sym2``-``sym20``), 
+Coiflets (``coif1``-``coif17``), Biorthogonal (``bior``/``rbio``), 
+Discrete Meyer (``dmey``), Haar (``haar``)
+
+References
+----------
+Stéphane Mallat. 2009. A Wavelet Tour of Signal Processing: The Sparse Way, 
+3rd edition. Academic Press, Boston.
+
+Ingrid Daubechies. 1992. Ten Lectures on Wavelets. SIAM, Philadelphia.
+
+Gilbert Strang and Truong Nguyen. 1996. Wavelets and Filter Banks. 
+Wellesley-Cambridge Press, Wellesley.
+
+PyWavelets Development Team. 2024. PyWavelets: Wavelet transforms in Python.
+https://pywavelets.readthedocs.io/
 
 See Also
 --------
 spectrans.transforms.base : Base transform interfaces
 spectrans.layers.mixing.wavelet : Wavelet mixing layers
+spectrans.transforms.fourier : Fourier transform implementations
 """
 
 import pywt

@@ -49,8 +49,9 @@ making AFNO efficient for long sequences.
 
 References
 ----------
-.. [1] Guibas, J., et al., "Adaptive Fourier Neural Operators: Efficient Token
-       Mixers for Transformers", ICLR 2022.
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and Bryan Catanzaro.
+2022. Adaptive Fourier neural operators: Efficient token mixers for transformers. In
+Proceedings of the International Conference on Learning Representations (ICLR).
 
 See Also
 --------

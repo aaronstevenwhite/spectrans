@@ -1,48 +1,68 @@
-"""Spectral transform implementations for neural networks.
+r"""Spectral transform implementations for neural networks.
 
-This module provides comprehensive implementations of spectral transforms used in
-spectral transformer architectures. The transforms are mathematically rigorous,
-numerically stable, and optimized for PyTorch tensors with proper gradient support.
+This module provides implementations of spectral transforms used in
+spectral transformer architectures. All transforms implement consistent interfaces 
+through the base classes, enabling easy substitution and experimentation with different 
+spectral methods. The transforms support both real and complex inputs, batch processing, 
+and multi-dimensional operations where applicable.
 
-All transforms implement consistent interfaces through the base classes, enabling
-easy substitution and experimentation with different spectral methods. The transforms
-support both real and complex inputs, batch processing, and multi-dimensional operations
-where applicable.
+Modules
+-------
+base
+    Base classes and interfaces for spectral transforms.
+cosine
+    Discrete Cosine and Sine Transform implementations.
+fourier
+    Fast Fourier Transform implementations.
+hadamard
+    Hadamard and related orthogonal transforms.
+wavelet
+    Discrete Wavelet Transform implementations.
 
 Classes
 -------
-SpectralTransform
-    Base class for simple 1D spectral transforms.
-SpectralTransform2D
-    Base class for 2D spectral transforms.
-MultiResolutionTransform
-    Base class for multi-resolution decompositions.
-OrthogonalTransform
-    Base class for orthogonal transforms (DCT, DST, Hadamard).
-UnitaryTransform
-    Base class for unitary transforms (FFT).
+AdaptiveTransform
+    Transform with learnable parameters for adaptation.
+DCT
+    Discrete Cosine Transform implementation.
+DCT2D
+    2D Discrete Cosine Transform for image-like data.
+DST
+    Discrete Sine Transform implementation.
+DWT1D
+    1D Discrete Wavelet Transform.
+DWT2D
+    2D Discrete Wavelet Transform.
 FFT1D
     1D Fast Fourier Transform with real/complex support.
 FFT2D
     2D Fast Fourier Transform for AFNO-style operations.
-RFFT, RFFT2D
-    Real-input Fast Fourier Transforms.
-DCT, DCT2D
-    Discrete Cosine Transform implementations.
-DST
-    Discrete Sine Transform implementation.
+HadamardTransform
+    Fast Hadamard Transform implementation.
+HadamardTransform2D
+    2D Hadamard Transform implementation.
 MDCT
     Modified Discrete Cosine Transform for audio processing.
-HadamardTransform, HadamardTransform2D
-    Fast Hadamard Transform implementations.
+MultiResolutionTransform
+    Base class for multi-resolution decompositions.
+NeuralSpectralTransform
+    Transform with neural network components.
+OrthogonalTransform
+    Base class for orthogonal transforms (DCT, DST, Hadamard).
+RFFT
+    Real-input Fast Fourier Transform.
+RFFT2D
+    2D Real-input Fast Fourier Transform.
 SequencyHadamardTransform
     Sequency-ordered Hadamard transform.
 SlantTransform
     Slant transform implementation.
-DWT1D, DWT2D
-    Discrete Wavelet Transform implementations.
 SpectralPooling
     Spectral pooling operation in frequency domain.
+SpectralTransform
+    Base class for simple 1D spectral transforms.
+UnitaryTransform
+    Base class for unitary transforms (FFT).
 
 Examples
 --------
@@ -83,13 +103,13 @@ Mathematical Properties:
 The transforms maintain important mathematical properties:
 
 1. **Orthogonal Transforms** (DCT, DST, Hadamard):
-   - Preserve inner products: ⟨x, y⟩ = ⟨T(x), T(y)⟩
-   - Perfect reconstruction: T^(-1)(T(x)) = x
+   - Preserve inner products: $\langle x, y \rangle = \langle T(x), T(y) \rangle$
+   - Perfect reconstruction: $T^{-1}(T(x)) = x$
    - Energy conservation (Parseval's theorem)
 
 2. **Unitary Transforms** (FFT):
    - Complex inner product preservation
-   - Norm conservation: ||T(x)||₂ = ||x||₂
+   - Norm conservation: $||T(x)||_2 = ||x||_2$
    - Hermitian symmetry for real inputs
 
 3. **Multi-Resolution Transforms** (DWT):
@@ -106,16 +126,16 @@ Implementation Details:
 - Memory-efficient implementations with in-place operations where possible
 
 Performance Characteristics:
-- FFT: O(n log n) time complexity
-- DCT/DST: O(n log n) via FFT-based algorithms
-- Hadamard: O(n log n) fast transform algorithms
-- DWT: O(n) time complexity with compact support wavelets
+- FFT: $O(n \log n)$ time complexity
+- DCT/DST: $O(n \log n)$ via FFT-based algorithms
+- Hadamard: $O(n \log n)$ fast transform algorithms
+- DWT: $O(n)$ time complexity with compact support wavelets
 
 See Also
 --------
-spectrans.transforms.base : Base classes and interfaces
-spectrans.utils.complex : Complex tensor operations
-spectrans.core.registry : Component registration for transforms
+[`spectrans.transforms.base`][] : Base classes and interfaces.
+[`spectrans.utils.complex`][] : Complex tensor operations.
+[`spectrans.core.registry`][] : Component registration for transforms.
 """
 
 from .base import (
@@ -136,31 +156,26 @@ from .hadamard import (
 )
 from .wavelet import DWT1D, DWT2D
 
-__all__: list[str] = [
-    # Cosine transforms
+__all__ = [
+    "AdaptiveTransform",
     "DCT",
     "DCT2D",
     "DST",
-    # Wavelet transforms
     "DWT1D",
     "DWT2D",
-    # Fourier transforms
     "FFT1D",
     "FFT2D",
-    "MDCT",
-    "RFFT",
-    "RFFT2D",
-    "AdaptiveTransform",
-    # Hadamard transforms
     "HadamardTransform",
     "HadamardTransform2D",
+    "MDCT",
     "MultiResolutionTransform",
     "NeuralSpectralTransform",
     "OrthogonalTransform",
+    "RFFT",
+    "RFFT2D",
     "SequencyHadamardTransform",
     "SlantTransform",
     "SpectralPooling",
-    # Base classes
     "SpectralTransform",
     "UnitaryTransform",
 ]

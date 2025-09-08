@@ -59,15 +59,15 @@ Mathematical Properties:
 
 All Fourier transforms maintain unitarity:
 
-- Energy conservation: :math:`\|F(x)\|^2 = \|x\|^2`
-- Parseval's theorem: :math:`\langle x, y \rangle = \langle F(x), F(y) \rangle`
-- Perfect reconstruction: :math:`F^{-1}(F(x)) = x`
+- Energy conservation: $\|F(x)\|^2 = \|x\|^2$
+- Parseval's theorem: $\langle x, y \rangle = \langle F(x), F(y) \rangle$
+- Perfect reconstruction: $F^{-1}(F(x)) = x$
 
 Normalization Modes:
 
-- 'forward': No scaling on forward transform, :math:`1/n` scaling on inverse
-- 'backward': :math:`1/n` scaling on forward transform, no scaling on inverse
-- 'ortho': :math:`1/\sqrt{n}` scaling on both directions (unitary)
+- 'forward': No scaling on forward transform, $\frac{1}{n}$ scaling on inverse
+- 'backward': $\frac{1}{n}$ scaling on forward transform, no scaling on inverse
+- 'ortho': $\frac{1}{\sqrt{n}}$ scaling on both directions (unitary)
 
 The 'ortho' mode is recommended for neural networks as it preserves numerical
 stability and maintains consistent scaling throughout the network.
@@ -84,6 +84,17 @@ providing significant speedup over CPU implementations.
 Gradient Support:
 All transforms support automatic differentiation through PyTorch's autograd system,
 enabling end-to-end training of spectral neural networks.
+
+References
+----------
+James W. Cooley and John W. Tukey. 1965. An algorithm for the machine calculation
+of complex Fourier series. Mathematics of Computation, 19(90):297-301.
+
+Michael T. Heideman, Don H. Johnson, and C. Sidney Burrus. 1984. Gauss and the
+history of the fast Fourier transform. IEEE ASSP Magazine, 1(4):14-21.
+
+Steven G. Johnson and Matteo Frigo. 2007. A modified split-radix FFT with fewer
+arithmetic operations. IEEE Transactions on Signal Processing, 55(1):111-119.
 
 See Also
 --------

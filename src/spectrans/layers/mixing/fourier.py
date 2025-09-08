@@ -74,6 +74,13 @@ Limitations:
 - May struggle with tasks requiring precise positional reasoning
 - Real part extraction can lose information
 
+References
+----------
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
 See Also
 --------
 spectrans.layers.mixing.base : Base classes for mixing operations

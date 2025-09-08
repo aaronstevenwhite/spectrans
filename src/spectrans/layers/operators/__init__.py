@@ -10,6 +10,11 @@ computation of global dependencies while maintaining resolution-invariant proper
 The key advantage is the ability to discretize functions at different resolutions
 during training and evaluation without retraining.
 
+Modules
+-------
+fno
+    Fourier Neural Operator implementations.
+
 Classes
 -------
 FourierNeuralOperator
@@ -19,7 +24,7 @@ SpectralConv1d
 SpectralConv2d
     2D spectral convolution for spatial data processing.
 FNOBlock
-    Complete FNO block with normalization and feedforward components.
+    FNO block with normalization and feedforward components.
 
 Examples
 --------
@@ -38,7 +43,7 @@ Spectral convolution for 2D problems:
 >>> spatial_data = torch.randn(32, 3, 256, 256)
 >>> features = conv2d(spatial_data)
 
-Complete FNO block with residual connections:
+FNO block with residual connections:
 
 >>> from spectrans.layers.operators import FNOBlock
 >>> block = FNOBlock(hidden_dim=64, modes=16, mlp_ratio=2.0)
@@ -49,49 +54,59 @@ Notes
 Mathematical Foundation:
 
 The Fourier Neural Operator learns to approximate the solution operator
-:math:`\mathcal{G}: \mathcal{A} \rightarrow \mathcal{U}` that maps from input function
-space :math:`\mathcal{A}` to output function space :math:`\mathcal{U}`.
+$\mathcal{G}: \mathcal{A} \rightarrow \mathcal{U}$ that maps from input function
+space $\mathcal{A}$ to output function space $\mathcal{U}$.
 
-For input function :math:`v: \Omega \rightarrow \mathbb{R}^{d_v}`, the FNO layer computes:
+For input function $v: \Omega \rightarrow \mathbb{R}^{d_v}$, the FNO layer computes:
 
-.. math::
-    v_{l+1}(x) = \sigma\left(\mathbf{W} v_l(x) + \mathcal{K}_l(v_l)(x) + \mathbf{b}\right)
+$$
+v_{l+1}(x) = \sigma\left(\mathbf{W} v_l(x) + \mathcal{K}_l(v_l)(x) + \mathbf{b}\right)
+$$
 
-The kernel operator :math:`\mathcal{K}_l` is parameterized in Fourier space:
+The kernel operator $\mathcal{K}_l$ is parameterized in Fourier space:
 
-.. math::
-    \mathcal{F}[\mathcal{K}_l(v)](k) = \mathbf{R}_l(k) \cdot \mathcal{F}[v](k)
+$$
+\mathcal{F}[\mathcal{K}_l(v)](k) = \mathbf{R}_l(k) \cdot \mathcal{F}[v](k)
+$$
 
-where :math:`\mathbf{R}_l(k) \in \mathbb{C}^{d \times d}` are learnable complex weights
-and :math:`\mathcal{F}` denotes the Fourier transform.
+where $\mathbf{R}_l(k) \in \mathbb{C}^{d \times d}$ are learnable complex weights
+and $\mathcal{F}$ denotes the Fourier transform.
 
 Spectral convolution applies this kernel efficiently:
 
-1. Transform input to Fourier domain: :math:`\hat{v} = \mathcal{F}[v]`
-2. Apply learned kernel: :math:`\hat{u} = \mathbf{R} \cdot \hat{v}`
-3. Transform back to spatial domain: :math:`u = \mathcal{F}^{-1}[\hat{u}]`
+1. Transform input to Fourier domain: $\hat{v} = \mathcal{F}[v]$
+2. Apply learned kernel: $\hat{u} = \mathbf{R} \cdot \hat{v}$
+3. Transform back to spatial domain: $u = \mathcal{F}^{-1}[\hat{u}]$
 
 Computational Properties:
 
-- Time complexity: :math:`O(N d \log N + k d^2)` where :math:`k` is number of retained modes
-- Space complexity: :math:`O(k d^2)` for learnable parameters
+- Time complexity: $O(N d \log N + k d^2)$ where $k$ is number of retained modes
+- Space complexity: $O(k d^2)$ for learnable parameters
 - Resolution invariance: Same weights work for different discretizations
 
 The mode truncation (keeping only low-frequency modes) is crucial for:
 
-- Computational efficiency: Reduces from :math:`O(N^2)` to :math:`O(N \log N)`
+- Computational efficiency: Reduces from $O(N^2)$ to $O(N \log N)$
 - Generalization: High-frequency noise is filtered out
 - Stability: Avoids overfitting to discretization artifacts
 
+References
+----------
+Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik Bhattacharya,
+Andrew Stuart, and Anima Anandkumar. 2021. Fourier neural operator for parametric partial
+differential equations. In Proceedings of the International Conference on Learning
+Representations (ICLR).
+
 See Also
 --------
-spectrans.transforms.fourier : Underlying FFT implementations
-spectrans.layers.mixing.afno : AFNO layers using similar principles
-spectrans.utils.complex : Complex tensor operations
+[`spectrans.transforms.fourier`][] : Underlying FFT implementations
+[`spectrans.layers.mixing.afno`][] : AFNO layers using similar principles
+[`spectrans.utils.complex`][] : Complex tensor operations
 """
 
 from .fno import FNOBlock, FourierNeuralOperator, SpectralConv1d, SpectralConv2d
 
+# Public API - alphabetically sorted
 __all__ = [
     "FNOBlock",
     "FourierNeuralOperator",

@@ -2,7 +2,7 @@ r"""Spectral attention mechanisms using kernel approximations.
 
 This module implements efficient attention mechanisms based on spectral methods
 and kernel approximations, particularly Random Fourier Features (RFF). These
-methods achieve linear complexity :math:`O(n)` instead of the quadratic :math:`O(n^2)` complexity
+methods achieve linear complexity $O(n)$ instead of the quadratic $O(n^2)$ complexity
 of standard attention.
 
 The implementations follow the Performer architecture and related work on
@@ -43,22 +43,28 @@ Notes
 -----
 The spectral attention approximates standard attention as:
 
-.. math::
-    \text{Attention}(Q, K, V) \approx \varphi(Q) (\varphi(K)^T V) / \text{normalization}
+$$
+\text{Attention}(Q, K, V) \approx \varphi(Q) (\varphi(K)^T V) / \text{normalization}
+$$
 
-Where :math:`\varphi` is a feature map (e.g., RFF) that linearizes the computation:
+Where $\varphi$ is a feature map (e.g., RFF) that linearizes the computation:
 
-- Standard attention: :math:`O(n^2d)` time, :math:`O(n^2)` space
-- Spectral attention: :math:`O(nrd)` time, :math:`O(nr)` space for :math:`r` features
+- Standard attention: $O(n^2d)$ time, $O(n^2)$ space
+- Spectral attention: $O(nrd)$ time, $O(nr)$ space for $r$ features
 
 The approximation quality improves with more random features, with
-error decreasing as :math:`O(1/\sqrt{r})`.
+error decreasing as $O(1/\sqrt{r})$.
 
 References
 ----------
-.. [1] Choromanski, K. et al., "Rethinking Attention with Performers",
-       ICLR 2021.
-.. [2] Peng, H. et al., "Random Feature Attention", ICLR 2021.
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane,
+Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger,
+Lucy Colwell, and Adrian Weller. 2021. Rethinking attention with performers. In Proceedings
+of the International Conference on Learning Representations (ICLR).
+
+Hao Peng, Nikolaos Pappas, Dani Yogatama, Roy Schwartz, Noah A. Smith, and Lingpeng Kong.
+2021. Random feature attention. In Proceedings of the International Conference on Learning
+Representations (ICLR).
 
 See Also
 --------
@@ -271,8 +277,6 @@ class PerformerAttention(SpectralAttention):
         Number of random features.
     generalized : bool, default=False
         Whether to use generalized attention (without softmax).
-    nb_features : int | None, default=None
-        Deprecated alias for num_features.
     dropout : float, default=0.0
         Dropout probability.
 
@@ -288,13 +292,8 @@ class PerformerAttention(SpectralAttention):
         num_heads: int = 8,
         num_features: int | None = None,
         generalized: bool = False,
-        nb_features: int | None = None,  # Backward compatibility
         dropout: float = 0.0,
     ):
-        # Handle backward compatibility
-        if nb_features is not None:
-            num_features = nb_features
-
         super().__init__(
             hidden_dim=hidden_dim,
             num_heads=num_heads,

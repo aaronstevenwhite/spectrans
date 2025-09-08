@@ -56,29 +56,31 @@ Mathematical Formulations:
 
 **DCT Type-II** (most common):
 
-.. math::
-    \text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} x[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)
+$$
+\text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} x[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)
+$$
 
-Where :math:`\alpha_k = \sqrt{1/N}` if :math:`k=0`, :math:`\alpha_k = \sqrt{2/N}` if :math:`k>0` (for orthonormal normalization)
+Where $\alpha_k = \sqrt{\frac{1}{N}}$ if $k=0$, $\alpha_k = \sqrt{\frac{2}{N}}$ if $k>0$ (for orthonormal normalization)
 
 **DST Type-I**:
 
-.. math::
-    \text{DST}[k] = \sum_{n=1}^{N-1} x[n] \sin\left(\frac{\pi n k}{N}\right)
+$$
+\text{DST}[k] = \sum_{n=1}^{N-1} x[n] \sin\left(\frac{\pi n k}{N}\right)
+$$
 
 **Orthogonality Properties**:
 
-- DCT and DST matrices are orthogonal: :math:`\mathbf{T}^T \mathbf{T} = \mathbf{I}`
-- Perfect reconstruction: :math:`x = \text{DCT}^{-1}(\text{DCT}(x))`
-- Energy conservation: :math:`\|\text{DCT}(x)\|^2 = \|x\|^2` (with proper normalization)
+- DCT and DST matrices are orthogonal: $\mathbf{T}^T \mathbf{T} = \mathbf{I}$
+- Perfect reconstruction: $x = \text{DCT}^{-1}(\text{DCT}(x))$
+- Energy conservation: $\|\text{DCT}(x)\|^2 = \|x\|^2$ (with proper normalization)
 
 **Computational Complexity**:
 
-- DCT/DST: :math:`O(N \log N)` via FFT-based algorithms
-- Direct computation: :math:`O(N^2)` but rarely used due to inefficiency
+- DCT/DST: $O(N \log N)$ via FFT-based algorithms
+- Direct computation: $O(N^2)$ but rarely used due to inefficiency
 
 Implementation Details:
-- Uses FFT-based algorithms for :math:`O(N \log N)` complexity
+- Uses FFT-based algorithms for $O(N \log N)$ complexity
 - Supports both normalized and unnormalized variants
 - Proper handling of boundary conditions for different transform types
 - Gradient-compatible for neural network training
@@ -94,6 +96,17 @@ Performance Characteristics:
 - GPU accelerated: utilizes optimized CUDA kernels
 - Numerically stable: proper scaling and normalization
 - Batch processing: efficient handling of multiple signals
+
+References
+----------
+Nasir Ahmed, T. Natarajan, and K. R. Rao. 1974. Discrete cosine transform.
+IEEE Transactions on Computers, C-23(1):90-93.
+
+K. R. Rao and P. Yip. 1990. Discrete Cosine Transform: Algorithms, Advantages,
+Applications. Academic Press, Boston.
+
+William B. Pennebaker and Joan L. Mitchell. 1993. JPEG: Still Image Data 
+Compression Standard. Van Nostrand Reinhold, New York.
 
 See Also
 --------

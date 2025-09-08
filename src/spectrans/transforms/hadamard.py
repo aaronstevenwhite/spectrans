@@ -59,24 +59,26 @@ Mathematical Properties:
 
 **Walsh-Hadamard Transform**:
 
-The Hadamard matrix :math:`H_n` for size :math:`n=2^k` is defined recursively:
+The Hadamard matrix $H_n$ for size $n=2^k$ is defined recursively:
 
-.. math::
-    H_1 = [1], \quad H_2 = \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
+$$
+H_1 = [1], \quad H_2 = \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
+$$
 
-.. math::
-    H_{2n} = \begin{bmatrix} H_n & H_n \\ H_n & -H_n \end{bmatrix}
+$$
+H_{2n} = \begin{bmatrix} H_n & H_n \\ H_n & -H_n \end{bmatrix}
+$$
 
 **Orthogonality**:
 
-- :math:`H_n \cdot H_n^T = n \cdot I` (unnormalized)
-- :math:`H_n \cdot H_n^T = I` (normalized by :math:`1/\sqrt{n}`)
-- Perfect reconstruction: :math:`H^{-1} = H^T / n`
+- $H_n \cdot H_n^T = n \cdot I$ (unnormalized)
+- $H_n \cdot H_n^T = I$ (normalized by $\frac{1}{\sqrt{n}}$)
+- Perfect reconstruction: $H^{-1} = H^T / n$
 
 **Computational Advantages**:
 
 - Only requires +1 and -1 multiplications
-- Fast :math:`O(n \log n)` algorithm similar to FFT
+- Fast $O(n \log n)$ algorithm similar to FFT
 - Memory efficient: can be computed in-place
 - Highly parallel: suitable for vector operations
 
@@ -102,14 +104,14 @@ Applications in Spectral Transformers:
 Implementation Details:
 
 - **Fast Algorithm**: Uses recursive butterfly structure similar to FFT
-- **Power-of-2 Constraint**: Input size must be :math:`2^k` for fast algorithm
+- **Power-of-2 Constraint**: Input size must be $2^k$ for fast algorithm
 - **Bit-Reversal**: Efficient implementation uses bit-reversed indexing
 - **Normalization**: Supports both normalized and unnormalized variants
 - **Gradient Support**: Full autodiff compatibility for neural networks
 
 Performance Characteristics:
-- Time Complexity: :math:`O(n \log n)` for fast algorithm
-- Space Complexity: :math:`O(1)` additional memory (in-place computation)
+- Time Complexity: $O(n \log n)$ for fast algorithm
+- Space Complexity: $O(1)$ additional memory (in-place computation)
 - Operations: Only additions and subtractions (no multiplications)
 - Memory Bandwidth: Optimal cache usage due to regular access patterns
 
@@ -117,6 +119,17 @@ Limitations:
 - Input size must be power of 2 for fast algorithm
 - Less frequency selectivity compared to Fourier transforms
 - Binary nature may not suit all signal types
+
+References
+----------
+Jacques Hadamard. 1893. Résolution d'une question relative aux déterminants. 
+Bulletin des Sciences Mathématiques, 17:240-246.
+
+Joseph L. Walsh. 1923. A closed set of normal orthogonal functions. 
+American Journal of Mathematics, 45(1):5-24.
+
+K. R. Rao and P. Yip. 1990. Discrete Cosine Transform: Algorithms, Advantages, 
+Applications. Academic Press, Boston.
 
 See Also
 --------

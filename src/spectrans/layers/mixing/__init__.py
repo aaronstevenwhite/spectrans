@@ -1,34 +1,54 @@
-r"""Mixing layer implementations.
+r"""Spectral mixing layer implementations for efficient token mixing.
 
-This module implements spectral mixing layers that serve as alternatives to attention
+This module provides spectral mixing layers that serve as alternatives to attention
 mechanisms. These layers operate in frequency domains using transforms like FFT,
 maintaining linear or log-linear computational complexity for token mixing operations.
 
-The mixing layers implement different mathematical approaches:
-- Fourier mixing: Parameter-free frequency domain mixing (FNet style)
-- Global filtering: Learnable complex filters in frequency domain (GFNet style)
-- Advanced variants: Adaptive initialization, regularization, and multi-dimensional mixing
+The mixing layers implement different mathematical approaches including parameter-free
+Fourier mixing (FNet style), learnable complex filters in frequency domain (GFNet style),
+and variants with adaptive initialization and multi-dimensional operations.
 
-All mixing layers inherit from the base classes in .base and maintain consistent
-interfaces for easy integration into transformer architectures.
+Modules
+-------
+afno
+    Adaptive Fourier Neural Operator mixing implementations.
+base
+    Base classes and interfaces for mixing layers.
+fourier
+    Fourier transform-based mixing layers.
+global_filter
+    Global filter networks with learnable parameters.
+wavelet
+    Wavelet transform-based mixing layers.
 
-Available Mixing Layers
------------------------
-Fourier-based mixing (parameter-free):
-- FourierMixing: 2D FFT mixing for both sequence and feature dimensions
-- FourierMixing1D: 1D FFT mixing along sequence dimension only
-- RealFourierMixing: Memory-efficient real FFT variant
-- SeparableFourierMixing: Configurable sequence and/or feature mixing
-
-Global filter mixing (learnable parameters):
-- GlobalFilterMixing: Learnable complex filters in frequency domain
-- GlobalFilterMixing2D: 2D variant with filtering in both dimensions
-- AdaptiveGlobalFilter: Enhanced with adaptive initialization and regularization
-
-Base classes:
-- MixingLayer: Base class for mixing operations
-- UnitaryMixingLayer: Base for energy-preserving transforms
-- FilterMixingLayer: Base for frequency domain filtering
+Classes
+-------
+AFNOMixing
+    Adaptive Fourier Neural Operator with mode truncation.
+AdaptiveGlobalFilter
+    Enhanced global filter with adaptive initialization.
+FilterMixingLayer
+    Base class for learnable frequency domain filters.
+FourierMixing
+    2D FFT mixing for both sequence and feature dimensions.
+FourierMixing1D
+    1D FFT mixing along sequence dimension only.
+GlobalFilterMixing
+    Learnable complex filters in frequency domain.
+GlobalFilterMixing2D
+    2D variant with filtering in both dimensions.
+MixingLayer
+    Base class for spectral mixing operations.
+RealFourierMixing
+    Memory-efficient real FFT variant.
+SeparableFourierMixing
+    Configurable sequence and/or feature mixing.
+UnitaryMixingLayer
+    Base class for energy-preserving mixing transforms.
+WaveletMixing
+    1D wavelet mixing using discrete wavelet transform.
+WaveletMixing2D
+    2D wavelet mixing for spatial data processing.
 
 Examples
 --------
@@ -44,7 +64,7 @@ Global filter with learnable parameters:
 >>> filter_mixer = GlobalFilterMixing(hidden_dim=768, sequence_length=512)
 >>> filtered_output = filter_mixer(input_tensor)
 
-Advanced adaptive filtering:
+Adaptive filtering:
 
 >>> from spectrans.layers.mixing import AdaptiveGlobalFilter
 >>> adaptive_mixer = AdaptiveGlobalFilter(
@@ -55,10 +75,10 @@ Advanced adaptive filtering:
 
 Notes
 -----
-Complexity Comparison:
-- Traditional attention: :math:`O(n^2 d)`
-- Fourier mixing: :math:`O(nd \log n)`
-- Global filtering: :math:`O(nd \log n)` + learnable parameters
+**Complexity Comparison:**
+- Traditional attention: $O(n^2 d)$
+- Fourier mixing: $O(nd \log n)$
+- Global filtering: $O(nd \log n)$ + learnable parameters
 
 All mixing layers support:
 - Batch processing with consistent behavior
@@ -66,11 +86,27 @@ All mixing layers support:
 - Shape preservation (output shape = input shape)
 - Mathematical property verification (energy, orthogonality)
 
+References
+----------
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
+
 See Also
 --------
-spectrans.layers.mixing.base : Base classes and interfaces
-spectrans.transforms : Underlying spectral transform implementations
-spectrans.blocks : Transformer blocks that use these mixing layers
+[`spectrans.layers.mixing.base`][] : Base classes and interfaces.
+[`spectrans.transforms`][] : Underlying spectral transform implementations.
+[`spectrans.blocks`][] : Transformer blocks that use these mixing layers.
 """
 
 from .afno import AFNOMixing
@@ -92,22 +128,19 @@ from .global_filter import (
 )
 from .wavelet import WaveletMixing, WaveletMixing2D
 
-__all__: list[str] = [
+# Public API - alphabetically sorted
+__all__ = [
     "AFNOMixing",
     "AdaptiveGlobalFilter",
     "FilterMixingLayer",
-    # Fourier mixing layers
     "FourierMixing",
     "FourierMixing1D",
-    # Global filter mixing layers
     "GlobalFilterMixing",
     "GlobalFilterMixing2D",
-    # Base classes
     "MixingLayer",
     "RealFourierMixing",
     "SeparableFourierMixing",
     "UnitaryMixingLayer",
-    # Wavelet mixing layers
     "WaveletMixing",
     "WaveletMixing2D",
 ]

@@ -39,7 +39,7 @@ from ..core import BaseLayerConfig, FilterLayerConfig, UnitaryLayerConfig
 class WaveletMixingConfig(BaseLayerConfig):
     """Configuration model for WaveletMixing layer.
 
-    Parameters
+    Attributes
     ----------
     wavelet : WaveletType
         Wavelet family name, defaults to "db4".
@@ -68,7 +68,7 @@ class WaveletMixingConfig(BaseLayerConfig):
 class WaveletMixing2DConfig(BaseModel):
     """Configuration model for WaveletMixing2D layer.
 
-    Parameters
+    Attributes
     ----------
     channels : int
         Number of input channels, must be positive.
@@ -100,7 +100,7 @@ class WaveletMixing2DConfig(BaseModel):
 class FourierMixingConfig(UnitaryLayerConfig):
     """Configuration for standard Fourier mixing layers.
     
-    Parameters
+    Attributes
     ----------
     keep_complex : bool
         If True, keeps complex values from FFT. If False (default),
@@ -116,7 +116,7 @@ class FourierMixingConfig(UnitaryLayerConfig):
 class GlobalFilterMixingConfig(FilterLayerConfig):
     """Configuration for global filter mixing layers.
 
-    Parameters
+    Attributes
     ----------
     activation : ActivationType
         Activation function for filters, defaults to "sigmoid".
@@ -131,7 +131,7 @@ class GlobalFilterMixingConfig(FilterLayerConfig):
 class AFNOMixingConfig(BaseLayerConfig):
     """Configuration for Adaptive Fourier Neural Operator mixing layers.
 
-    Parameters
+    Attributes
     ----------
     max_sequence_length : int
         Maximum sequence length for mode truncation, must be positive.

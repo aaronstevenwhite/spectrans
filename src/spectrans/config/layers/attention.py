@@ -43,7 +43,7 @@ from ..core import AttentionLayerConfig
 class SpectralAttentionConfig(AttentionLayerConfig):
     """Configuration for Spectral Attention with Random Fourier Features.
 
-    Parameters
+    Attributes
     ----------
     num_features : int | None
         Number of random Fourier features, defaults to None (uses head_dim).
@@ -67,7 +67,7 @@ class SpectralAttentionConfig(AttentionLayerConfig):
 class LSTAttentionConfig(AttentionLayerConfig):
     """Configuration for Linear Spectral Transform Attention.
 
-    Parameters
+    Attributes
     ----------
     transform_type : TransformLSTType
         Type of spectral transform ('dct', 'dst', 'hadamard', 'mixed'), defaults to 'dct'.
@@ -88,7 +88,7 @@ class LSTAttentionConfig(AttentionLayerConfig):
 class DCTAttentionConfig(AttentionLayerConfig):
     """Configuration for DCT-based attention layer.
 
-    Parameters
+    Attributes
     ----------
     dct_type : int
         Type of DCT transform (typically 2), defaults to 2.
@@ -103,7 +103,7 @@ class DCTAttentionConfig(AttentionLayerConfig):
 class HadamardAttentionConfig(AttentionLayerConfig):
     """Configuration for Hadamard-based attention layer.
 
-    Parameters
+    Attributes
     ----------
     scale_by_sqrt : bool
         Whether to scale by sqrt(n), defaults to True.
@@ -118,7 +118,7 @@ class HadamardAttentionConfig(AttentionLayerConfig):
 class MixedTransformAttentionConfig(AttentionLayerConfig):
     """Configuration for mixed transform attention layer.
 
-    Parameters
+    Attributes
     ----------
     use_fft : bool
         Whether to use FFT transforms, defaults to True.
@@ -136,7 +136,7 @@ class MixedTransformAttentionConfig(AttentionLayerConfig):
 class SpectralKernelAttentionConfig(AttentionLayerConfig):
     """Configuration for spectral kernel attention.
 
-    Parameters
+    Attributes
     ----------
     kernel_type : SpectralKernelType
         Type of spectral kernel ('gaussian', 'polynomial', 'spectral'), defaults to 'gaussian'.

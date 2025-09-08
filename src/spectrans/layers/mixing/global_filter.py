@@ -87,6 +87,12 @@ Design Considerations:
 - Regularization helps prevent overfitting to specific frequencies
 - Activation choice impacts gradient flow and expressiveness
 
+References
+----------
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
+
 See Also
 --------
 spectrans.layers.mixing.base : Base classes for mixing layers

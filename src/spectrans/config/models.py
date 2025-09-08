@@ -51,7 +51,7 @@ from spectrans.core.types import (
 class ModelConfig(BaseModel):
     """Base configuration for all spectrans models.
 
-    Parameters
+    Attributes
     ----------
     model_type : str
         Type identifier for the model.
@@ -101,7 +101,7 @@ class FNetModelConfig(ModelConfig):
 
     FNet models use Fourier mixing layers instead of attention.
 
-    Parameters
+    Attributes
     ----------
     use_real_fft : bool
         Whether to use real FFT for efficiency, defaults to True.
@@ -116,7 +116,7 @@ class GFNetModelConfig(ModelConfig):
 
     GFNet models use learnable global filters in the frequency domain.
 
-    Parameters
+    Attributes
     ----------
     filter_activation : str
         Activation function for filters ('sigmoid' or 'tanh'), defaults to 'sigmoid'.
@@ -131,7 +131,7 @@ class AFNOModelConfig(ModelConfig):
 
     AFNO models use adaptive Fourier mode truncation for efficient token mixing.
 
-    Parameters
+    Attributes
     ----------
     n_modes : int | None
         Number of Fourier modes to retain in sequence dimension, optional.
@@ -159,7 +159,7 @@ class LSTModelConfig(ModelConfig):
     LST models use linear spectral transforms (DCT/DST/Hadamard) for sequence mixing,
     achieving O(n log n) complexity through fast transform algorithms.
 
-    Parameters
+    Attributes
     ----------
     transform_type : TransformLSTType
         Type of spectral transform to use, defaults to "dct".
@@ -181,7 +181,7 @@ class SpectralAttentionModelConfig(ModelConfig):
     Spectral attention models use Random Fourier Features (RFF) to approximate
     attention with linear complexity O(n) instead of quadratic O(n²).
 
-    Parameters
+    Attributes
     ----------
     num_features : int | None
         Number of random Fourier features, defaults to None (uses hidden_dim).
@@ -209,7 +209,7 @@ class FNOTransformerConfig(ModelConfig):
     FNO models use spectral convolutions in the Fourier domain to learn
     mappings between function spaces with O(n log n) complexity.
 
-    Parameters
+    Attributes
     ----------
     modes : int
         Number of Fourier modes to retain (frequency truncation), defaults to 32.
@@ -234,7 +234,7 @@ class WaveletTransformerConfig(ModelConfig):
     Wavelet transformers use discrete wavelet transforms (DWT) for sequence mixing,
     providing multi-resolution analysis with O(n) complexity.
 
-    Parameters
+    Attributes
     ----------
     wavelet : WaveletType
         Type of wavelet to use ('db4', 'sym6', 'coif3', etc.), defaults to 'db4'.
@@ -263,7 +263,7 @@ class HybridModelConfig(ModelConfig):
     Hybrid models alternate between different mixing strategies (e.g., spectral
     and spatial) across layers, combining strengths of multiple approaches.
 
-    Parameters
+    Attributes
     ----------
     spectral_type : str
         Type of spectral mixing ('fourier', 'wavelet', 'afno', 'gfnet'), defaults to 'fourier'.

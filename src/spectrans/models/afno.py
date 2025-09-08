@@ -65,8 +65,8 @@ Notes
 Mathematical Foundation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Given input tensor :math:`\mathbf{X} \in \mathbb{R}^{n \times d}` where :math:`n`
-is sequence length and :math:`d` is hidden dimension, AFNO applies mode-truncated
+Given input tensor $\mathbf{X} \in \mathbb{R}^{n \times d}$ where $n$
+is sequence length and $d$ is hidden dimension, AFNO applies mode-truncated
 Fourier operations with learnable transformations.
 
 **Adaptive Fourier Operation:**
@@ -75,66 +75,75 @@ The core AFNO operation consists of four steps:
 
 1. **2D Fourier Transform:**
 
-   .. math::
-       \mathbf{X}_{\text{freq}} = \mathcal{F}_{2D}(\mathbf{X})
+   $$
+   \mathbf{X}_{\text{freq}} = \mathcal{F}_{2D}(\mathbf{X})
+   $$
 
-   where :math:`\mathbf{X}_{\text{freq}} \in \mathbb{C}^{n \times d}` is the frequency representation.
+   where $\mathbf{X}_{\text{freq}} \in \mathbb{C}^{n \times d}$ is the frequency representation.
 
 2. **Mode Truncation:**
 
-   .. math::
-       \mathbf{X}_{\text{trunc}} = \mathbf{X}_{\text{freq}}[0:k_n, 0:k_d]
+   $$
+   \mathbf{X}_{\text{trunc}} = \mathbf{X}_{\text{freq}}[0:k_n, 0:k_d]
+   $$
 
-   where :math:`k_n \ll n` and :math:`k_d \ll d` are the number of retained modes,
-   resulting in :math:`\mathbf{X}_{\text{trunc}} \in \mathbb{C}^{k_n \times k_d}`.
+   where $k_n \ll n$ and $k_d \ll d$ are the number of retained modes,
+   resulting in $\mathbf{X}_{\text{trunc}} \in \mathbb{C}^{k_n \times k_d}$.
 
 3. **Frequency Domain MLP:**
 
-   .. math::
-       \mathbf{Y}_{\text{freq}} = \text{MLP}(\mathbf{X}_{\text{trunc}}) \odot \mathbf{X}_{\text{trunc}}
+   $$
+   \mathbf{Y}_{\text{freq}} = \text{MLP}(\mathbf{X}_{\text{trunc}}) \odot \mathbf{X}_{\text{trunc}}
+   $$
 
-   where :math:`\odot` denotes element-wise (Hadamard) multiplication and the MLP
-   operates on complex values with expansion ratio :math:`r`:
+   where $\odot$ denotes element-wise (Hadamard) multiplication and the MLP
+   operates on complex values with expansion ratio $r$:
 
-   .. math::
-       \text{MLP}(\mathbf{z}) = \mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{z} + \mathbf{b}_1) + \mathbf{b}_2
+   $$
+   \text{MLP}(\mathbf{z}) = \mathbf{W}_2 \cdot \text{GELU}(\mathbf{W}_1 \mathbf{z} + \mathbf{b}_1) + \mathbf{b}_2
+   $$
 
-   with :math:`\mathbf{W}_1 \in \mathbb{C}^{rk_d \times k_d}`, :math:`\mathbf{W}_2 \in \mathbb{C}^{k_d \times rk_d}`.
+   with $\mathbf{W}_1 \in \mathbb{C}^{rk_d \times k_d}$, $\mathbf{W}_2 \in \mathbb{C}^{k_d \times rk_d}$.
 
 4. **Zero-padding and Inverse Transform:**
 
-   .. math::
-       \mathbf{Y} = \Re\left(\mathcal{F}_{2D}^{-1}(\text{pad}(\mathbf{Y}_{\text{freq}}))\right)
+   $$
+   \mathbf{Y} = \Re\left(\mathcal{F}_{2D}^{-1}(\text{pad}(\mathbf{Y}_{\text{freq}}))\right)
+   $$
 
-   where :math:`\text{pad}` zero-pads to original dimensions :math:`n \times d` and
-   :math:`\Re(\cdot)` takes the real part.
+   where $\text{pad}$ zero-pads to original dimensions $n \times d$ and
+   $\Re(\cdot)$ takes the real part.
 
 **Complete Layer Operations:**
 
-For each AFNO layer :math:`l`, the computation proceeds as:
+For each AFNO layer $l$, the computation proceeds as:
 
-.. math::
-    \mathbf{Z}_l = \mathbf{X}_l + \text{AFNO}(\text{LayerNorm}(\mathbf{X}_l))
+$$
+\mathbf{Z}_l = \mathbf{X}_l + \text{AFNO}(\text{LayerNorm}(\mathbf{X}_l))
+$$
 
-.. math::
-    \mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
+\mathbf{X}_{l+1} = \mathbf{Z}_l + \text{FFN}(\text{LayerNorm}(\mathbf{Z}_l))
+$$
 
 where FFN follows the same structure as in standard transformers.
 
 **Complexity Analysis:**
 
-- Time Complexity: :math:`O(L \cdot (nd \log(nd) + k_n k_d d))` where :math:`L` is the number of layers
-- Space Complexity: :math:`O(L \cdot k_n \cdot k_d \cdot d)`
-- Memory reduction from :math:`O(nd)` to :math:`O(k_n k_d)` per layer through mode truncation
+- Time Complexity: $O(L \cdot (nd \log(nd) + k_n k_d d))$ where $L$ is the number of layers
+- Space Complexity: $O(L \cdot k_n \cdot k_d \cdot d)$
+- Memory reduction from $O(nd)$ to $O(k_n k_d)$ per layer through mode truncation
 
 The mode truncation significantly reduces memory usage, with typical settings using
-:math:`k_n = n/4` and :math:`k_d = d/2` achieving 8x memory reduction while maintaining
+$k_n = \frac{n}{4}$ and $k_d = \frac{d}{2}$ achieving 8x memory reduction while maintaining
 performance.
 
 References
 ----------
-.. [1] Guibas et al., "Adaptive Fourier Neural Operators: Efficient Token Mixers
-       for Transformers", ICLR 2022.
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
 
 See Also
 --------

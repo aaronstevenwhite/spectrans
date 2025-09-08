@@ -1,12 +1,21 @@
-"""Utility functions for spectral transformer implementations.
+r"""Utility functions for spectral transformer implementations.
 
-This module provides essential utility functions for spectral neural networks,
-including specialized complex number operations, advanced initialization schemes
+This module provides utility functions for spectral neural networks,
+including specialized complex number operations, initialization schemes
 for spectral parameters, and padding utilities for signal processing operations.
 
 These utilities are designed to support the mathematical rigor and numerical
 stability required for spectral transformer architectures while providing
 convenient abstractions for common operations.
+
+Modules
+-------
+complex
+    Complex tensor operations and utilities.
+initialization
+    Parameter initialization schemes for spectral networks.
+padding
+    Padding utilities for signal processing.
 
 Functions
 ---------
@@ -92,7 +101,7 @@ Padding for spectral operations:
 
 Notes
 -----
-Design Philosophy:
+**Design Philosophy:**
 
 The utility functions follow these principles:
 
@@ -102,7 +111,7 @@ The utility functions follow these principles:
 2. **Numerical Stability**: Implementations prioritize numerical stability
    over raw performance where trade-offs exist
 
-3. **Type Safety**: Comprehensive type checking and clear error messages
+3. **Type Safety**: Type checking and clear error messages
    for incorrect usage patterns
 
 4. **Gradient Compatibility**: All operations support automatic differentiation
@@ -111,38 +120,42 @@ The utility functions follow these principles:
 5. **Broadcasting Support**: Operations follow PyTorch broadcasting conventions
    for flexible tensor manipulation
 
-Complex Number Operations:
+**Complex Number Operations:**
+
 The complex utilities provide a consistent interface for complex tensor operations
 with proper error handling and mathematical safety. While many wrap existing
 PyTorch functions, they add domain-specific validation and optimization for
 spectral neural networks.
 
-Initialization Schemes:
+**Initialization Schemes:**
+
 Spectral neural networks often require specialized parameter initialization due to:
 - Different scaling properties of spectral transforms
 - Complex-valued parameters requiring magnitude/phase initialization
 - Orthogonality constraints for certain spectral methods
 - Frequency-domain parameter interpretation
 
-Padding Utilities:
+**Padding Utilities:**
+
 Signal processing operations often require specific padding strategies:
 - Power-of-2 lengths for efficient FFT computation
 - Circular padding for periodic signal assumptions
 - Reflection padding for boundary effect minimization
 - Zero padding with proper unpadding for shape restoration
 
-Performance Considerations:
+**Performance Considerations:**
+
 - All utilities are optimized for batch operations
 - GPU acceleration through native PyTorch operations
 - Memory efficiency with in-place operations where safe
-- Vectorized implementations for optimal throughput
+- Vectorized implementations for throughput
 
 See Also
 --------
-spectrans.utils.complex : Complex tensor operations
-spectrans.utils.initialization : Parameter initialization schemes
-spectrans.utils.padding : Padding utilities for signal processing
-spectrans.transforms : Spectral transforms using these utilities
+[`spectrans.utils.complex`][] : Complex tensor operations
+[`spectrans.utils.initialization`][] : Parameter initialization schemes
+[`spectrans.utils.padding`][] : Padding utilities for signal processing
+[`spectrans.transforms`][] : Spectral transforms using these utilities
 """
 
 from .complex import (
@@ -189,9 +202,7 @@ from .padding import (
 )
 
 __all__ = [
-    # Padding and general utilities
     "circular_pad",
-    # Complex operations
     "complex_conjugate",
     "complex_divide",
     "complex_dropout",

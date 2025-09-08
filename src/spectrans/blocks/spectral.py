@@ -42,9 +42,19 @@ Each spectral block is optimized for specific use cases:
 
 References
 ----------
-.. [1] Lee-Thorp et al., "FNet: Mixing Tokens with Fourier Transforms", 2022.
-.. [2] Rao et al., "Global Filter Networks for Image Classification", 2021.
-.. [3] Guibas et al., "Adaptive Fourier Neural Operators", 2022.
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022
+Conference of the North American Chapter of the Association for Computational
+Linguistics: Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
 """
 
 from typing import cast

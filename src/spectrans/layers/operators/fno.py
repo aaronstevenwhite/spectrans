@@ -47,24 +47,31 @@ FNO block with residual connection:
 
 Notes
 -----
-The FNO learns the kernel :math:`K` in the integral operator:
+The FNO learns the kernel $K$ in the integral operator:
 
-.. math::
-    (K*v)(x) = \int k(x,y)v(y)dy
+$$
+(K*v)(x) = \int k(x,y)v(y)dy
+$$
 
-By parameterizing :math:`k` in the Fourier domain as :math:`R_{\theta}`, the convolution becomes:
+By parameterizing $k$ in the Fourier domain as $R_{\theta}$, the convolution becomes:
 
-.. math::
-    \mathcal{F}[(K*v)] = R_{\theta} \cdot \mathcal{F}[v]
+$$
+\mathcal{F}[(K*v)] = R_{\theta} \cdot \mathcal{F}[v]
+$$
 
-This allows efficient computation via FFT and learnable complex weights :math:`R_{\theta}`
+This allows efficient computation via FFT and learnable complex weights $R_{\theta}$
 that are truncated to retain only the lowest frequency modes.
 
 References
 ----------
-.. [1] Li, Z., et al., "Fourier Neural Operator for Parametric Partial
-       Differential Equations", ICLR 2021.
-.. [2] Guibas, J., et al., "Adaptive Fourier Neural Operators", ICLR 2022.
+Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik Bhattacharya,
+Andrew Stuart, and Anima Anandkumar. 2021. Fourier neural operator for parametric partial
+differential equations. In Proceedings of the International Conference on Learning
+Representations (ICLR).
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and Bryan Catanzaro.
+2022. Adaptive Fourier neural operators: Efficient token mixers for transformers. In
+Proceedings of the International Conference on Learning Representations (ICLR).
 
 See Also
 --------

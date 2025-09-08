@@ -2,7 +2,7 @@ r"""Fourier Neural Operator (FNO) transformer models.
 
 This module implements transformer models based on the Fourier Neural Operator,
 which learns mappings between function spaces by parameterizing integral kernels
-in the Fourier domain. These models achieve :math:`O(n \log n)` complexity through
+in the Fourier domain. These models achieve $O(n \log n)$ complexity through
 FFT operations and are particularly effective for learning solution operators.
 
 The FNO mechanism learns integral operators by parameterizing convolution kernels
@@ -66,35 +66,44 @@ Mathematical Foundation:
 
 The FNO learns operators between function spaces through integral transforms:
 
-.. math::
-    (K \ast v)(x) = \int k(x, y) v(y) dy
+$$
+(K \ast v)(x) = \int k(x, y) v(y) dy
+$$
 
 In the Fourier domain, convolution becomes multiplication:
 
-.. math::
-    \mathcal{F}[K \ast v] = R_{\theta} \cdot \mathcal{F}[v]
+$$
+\mathcal{F}[K \ast v] = R_{\theta} \cdot \mathcal{F}[v]
+$$
 
-Where :math:`R_{\theta}` are learnable complex weights truncated to the lowest
-:math:`k` frequency modes:
+Where $R_{\theta}$ are learnable complex weights truncated to the lowest
+$k$ frequency modes:
 
-.. math::
-    R_{\theta} \in \mathbb{C}^{k \times d_{in} \times d_{out}}
+$$
+R_{\theta} \in \mathbb{C}^{k \times d_{in} \times d_{out}}
+$$
 
 The spectral convolution is computed as:
 
-1. **Forward FFT**: :math:`\hat{v} = \mathcal{F}[v]`
-2. **Mode truncation**: Keep only lowest :math:`k` modes
-3. **Complex multiplication**: :math:`\hat{u}_k = R_{\theta,k} \cdot \hat{v}_k`
-4. **Inverse FFT**: :math:`u = \mathcal{F}^{-1}[\hat{u}]`
+1. **Forward FFT**: $\hat{v} = \mathcal{F}[v]$
+2. **Mode truncation**: Keep only lowest $k$ modes
+3. **Complex multiplication**: $\hat{u}_k = R_{\theta,k} \cdot \hat{v}_k$
+4. **Inverse FFT**: $u = \mathcal{F}^{-1}[\hat{u}]$
 
-This achieves :math:`O(n \log n)` complexity while learning global dependencies
+This achieves $O(n \log n)$ complexity while learning global dependencies
 through the spectral parameterization.
 
 References
 ----------
-.. [1] Li, Z., et al., "Fourier Neural Operator for Parametric Partial
-       Differential Equations", ICLR 2021.
-.. [2] Guibas, J., et al., "Adaptive Fourier Neural Operators", ICLR 2022.
+Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik
+Bhattacharya, Andrew Stuart, and Anima Anandkumar. 2021. Fourier neural
+operator for parametric partial differential equations. In Proceedings of
+the International Conference on Learning Representations (ICLR).
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
 
 See Also
 --------

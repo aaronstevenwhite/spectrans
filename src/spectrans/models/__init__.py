@@ -1,14 +1,35 @@
-r"""Complete spectral transformer model implementations.
+r"""Spectral transformer model implementations.
 
-This module provides full transformer model implementations that replace
+This module provides transformer model implementations that replace
 traditional attention mechanisms with various spectral mixing approaches.
 Each model is optimized for different use cases while maintaining the core
 transformer architecture with residual connections, layer normalization,
 and feedforward networks.
 
-The models implement state-of-the-art spectral transformers including FNet,
+The models implement spectral transformers including FNet,
 Global Filter Networks, AFNO, spectral attention variants, and hybrid
 architectures that combine spectral and spatial processing.
+
+Modules
+-------
+afno
+    Adaptive Fourier Neural Operator models.
+base
+    Base classes for models and components.
+fnet
+    FNet models using Fourier mixing.
+fno_transformer
+    Fourier Neural Operator transformer models.
+gfnet
+    Global Filter Network models.
+hybrid
+    Hybrid models combining spectral and attention.
+lst
+    Linear Spectral Transform models.
+spectral_attention
+    Models using spectral attention mechanisms.
+wavenet_transformer
+    Wavelet-based transformer models.
 
 Classes
 -------
@@ -29,7 +50,7 @@ RegressionHead
 SequenceHead
     Generic sequence-to-sequence head for various tasks.
 FNet
-    Complete FNet model with Fourier mixing layers.
+    FNet model with Fourier mixing layers.
 FNetEncoder
     FNet encoder stack for encoder-only architectures.
 GFNet
@@ -39,11 +60,11 @@ GFNetEncoder
 AFNOEncoder
     Adaptive Fourier Neural Operator encoder.
 AFNOModel
-    Complete AFNO model for various tasks.
+    AFNO model for various tasks.
 SpectralAttentionEncoder
     Encoder using spectral attention with random Fourier features.
 SpectralAttentionTransformer
-    Complete spectral attention transformer model.
+    Spectral attention transformer model.
 PerformerTransformer
     Performer-style transformer with linear attention approximation.
 LSTEncoder
@@ -51,19 +72,19 @@ LSTEncoder
 LSTDecoder
     Linear Spectral Transform decoder implementation.
 LSTTransformer
-    Complete LST transformer with encoder-decoder architecture.
+    LST transformer with encoder-decoder architecture.
 FNOEncoder
     Fourier Neural Operator encoder for function space learning.
 FNODecoder
     FNO decoder for continuous function approximation.
 FNOTransformer
-    Complete FNO transformer for operator learning.
+    FNO transformer for operator learning.
 WaveletEncoder
     Wavelet transform encoder with multiresolution analysis.
 WaveletDecoder
     Wavelet decoder for signal reconstruction.
 WaveletTransformer
-    Complete wavelet transformer model.
+    Wavelet transformer model.
 HybridEncoder
     Encoder combining spectral and spatial attention layers.
 HybridTransformer
@@ -162,7 +183,7 @@ Wavelet transformer for multiresolution analysis:
 >>> outputs = model(input_ids)
 >>> print(outputs.shape)  # torch.Size([2, 512, 512])
 
-Advanced positional encodings:
+Positional encodings with RoPE and ALiBi:
 
 >>> from spectrans.models import FNet, RotaryPositionalEncoding, ALiBiPositionalBias
 >>> 
@@ -187,7 +208,7 @@ Notes
 All models in this module follow the same architectural principles:
 
 1. **Spectral Processing**: Replace quadratic attention with efficient spectral
-   transforms that scale as :math:`O(n \log n)` or :math:`O(n)`.
+   transforms that scale as $O(n \log n)$ or $O(n)$.
 
 2. **Residual Connections**: Maintain gradient flow through residual connections
    around each spectral layer and feedforward network.
@@ -205,8 +226,9 @@ The mathematical foundation for spectral mixing is based on the convolution
 theorem, which states that convolution in the spatial domain is equivalent
 to element-wise multiplication in the frequency domain:
 
-.. math::
-    \mathcal{F}[f * g] = \mathcal{F}[f] \odot \mathcal{F}[g]
+$$
+\mathcal{F}[f * g] = \mathcal{F}[f] \odot \mathcal{F}[g]
+$$
 
 This enables efficient global mixing of sequence elements through spectral
 transforms like FFT, DCT, or DWT, avoiding the quadratic complexity of
@@ -214,34 +236,49 @@ traditional attention mechanisms.
 
 **Model Complexity Comparison:**
 
-- Standard Transformer: :math:`O(n^2 d + nd^2)` time, :math:`O(n^2 + nd)` space
-- FNet: :math:`O(nd \log n + nd^2)` time, :math:`O(nd)` space  
-- GFNet: :math:`O(nd \log n + nd^2)` time, :math:`O(nd)` space
-- AFNO: :math:`O(k_n k_d d + nd \log n)` time, :math:`O(k_n k_d d)` space
-- LST: :math:`O(nd \log n + nd^2)` time, :math:`O(nd)` space
-- Wavelet: :math:`O(nd + nd^2)` time, :math:`O(nd)` space
+- Standard Transformer: $O(n^2 d + nd^2)$ time, $O(n^2 + nd)$ space
+- FNet: $O(nd \log n + nd^2)$ time, $O(nd)$ space  
+- GFNet: $O(nd \log n + nd^2)$ time, $O(nd)$ space
+- AFNO: $O(k_n k_d d + nd \log n)$ time, $O(k_n k_d d)$ space
+- LST: $O(nd \log n + nd^2)$ time, $O(nd)$ space
+- Wavelet: $O(nd + nd^2)$ time, $O(nd)$ space
 
-Where :math:`n` is sequence length, :math:`d` is hidden dimension, and
-:math:`k_n, k_d` are retained spectral modes.
+Where $n$ is sequence length, $d$ is hidden dimension, and
+$k_n, k_d$ are retained spectral modes.
 
 References
 ----------
-.. [1] Lee-Thorp, J., et al., "FNet: Mixing Tokens with Fourier Transforms", 
-       NAACL 2022.
-.. [2] Rao, Y., et al., "Global Filter Networks for Image Classification", 
-       NeurIPS 2021.  
-.. [3] Guibas, J., et al., "Adaptive Fourier Neural Operators", ICLR 2022.
-.. [4] Li, Z., et al., "Fourier Neural Operator for Parametric Partial 
-       Differential Equations", ICLR 2021.
-.. [5] Choromanski, K., et al., "Rethinking Attention with Performers", 
-       ICLR 2021.
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
+
+Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik
+Bhattacharya, Andrew Stuart, and Anima Anandkumar. 2021. Fourier neural
+operator for parametric partial differential equations. In Proceedings of
+the International Conference on Learning Representations (ICLR).
+
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song,
+Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin,
+Lukasz Kaiser, David Belanger, Lucy Colwell, and Adrian Weller. 2021.
+Rethinking attention with performers. In Proceedings of the International
+Conference on Learning Representations (ICLR).
 
 See Also
 --------
-spectrans.layers.mixing : Spectral mixing layer implementations.
-spectrans.layers.attention : Spectral attention mechanisms.
-spectrans.layers.operators : Neural operator layers.
-spectrans.blocks : Transformer block implementations.
+[`spectrans.layers.mixing`][] : Spectral mixing layer implementations.
+[`spectrans.layers.attention`][] : Spectral attention mechanisms.
+[`spectrans.layers.operators`][] : Neural operator layers.
+[`spectrans.blocks`][] : Transformer block implementations.
 """
 
 from .afno import AFNOEncoder, AFNOModel
@@ -267,6 +304,7 @@ from .spectral_attention import (
 )
 from .wavenet_transformer import WaveletDecoder, WaveletEncoder, WaveletTransformer
 
+# Public API - alphabetically sorted
 __all__ = [
     "AFNOEncoder",
     "AFNOModel",
@@ -274,11 +312,11 @@ __all__ = [
     "AlternatingTransformer",
     "BaseModel",
     "ClassificationHead",
+    "FNet",
+    "FNetEncoder",
     "FNODecoder",
     "FNOEncoder",
     "FNOTransformer",
-    "FNet",
-    "FNetEncoder",
     "GFNet",
     "GFNetEncoder",
     "HybridEncoder",

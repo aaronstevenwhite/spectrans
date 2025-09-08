@@ -2,10 +2,10 @@ r"""Linear Spectral Transform (LST) attention mechanisms.
 
 This module implements attention mechanisms based on Linear Spectral Transforms
 such as Discrete Cosine Transform (DCT), Discrete Sine Transform (DST), and
-Hadamard Transform. These transforms enable efficient :math:`O(n \log n)` attention
+Hadamard Transform. These transforms enable efficient $O(n \log n)$ attention
 computation while maintaining orthogonality properties.
 
-The LST attention mechanism replaces the standard :math:`QK^T` computation with
+The LST attention mechanism replaces the standard $QK^T$ computation with
 element-wise multiplication in the transform domain, significantly reducing
 computational complexity for long sequences.
 
@@ -47,29 +47,35 @@ Notes
 -----
 The LST attention computes:
 
-.. math::
-    \text{Attention}(Q, K, V) = T^{-1}(\Lambda \odot (T(Q) \odot T(K) \odot T(V)))
+$$
+\text{Attention}(Q, K, V) = T^{-1}(\Lambda \odot (T(Q) \odot T(K) \odot T(V)))
+$$
 
 Where:
 
-- :math:`T` is an orthogonal transform (DCT, DST, Hadamard)
-- :math:`\Lambda` is a learnable diagonal scaling matrix
-- :math:`\odot` denotes element-wise multiplication
+- $T$ is an orthogonal transform (DCT, DST, Hadamard)
+- $\Lambda$ is a learnable diagonal scaling matrix
+- $\odot$ denotes element-wise multiplication
 
 Complexity:
 
-- Standard attention: :math:`O(n^2d)`
-- LST attention: :math:`O(nd \log n)`
+- Standard attention: $O(n^2d)$
+- LST attention: $O(nd \log n)$
 
 The orthogonality of transforms preserves information while
 enabling efficient computation in the frequency domain.
 
 References
 ----------
-.. [1] Wang, S. et al., "FNet: Mixing Tokens with Fourier Transforms",
-       NAACL 2022.
-.. [2] Tay, Y. et al., "Long Range Arena: A Benchmark for Efficient
-       Transformers", ICLR 2021.
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yi Tay, Mostafa Dehghani, Samira Abnar, Yikang Shen, Dara Bahri, Philip Pham,
+Jinfeng Rao, Liu Yang, Sebastian Ruder, and Donald Metzler. 2021. Long range arena:
+A benchmark for efficient transformers. In Proceedings of the International Conference
+on Learning Representations (ICLR).
 
 See Also
 --------

@@ -40,8 +40,16 @@ Hybrid blocks are useful for:
 
 References
 ----------
-.. [1] Dosovitskiy et al., "An Image is Worth 16x16 Words", ICLR 2021.
-.. [2] Liu et al., "Swin Transformer", ICCV 2021.
+Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai,
+Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly,
+Jakob Uszkoreit, and Neil Houlsby. 2021. An image is worth 16x16 words: Transformers
+for image recognition at scale. In Proceedings of the International Conference on
+Learning Representations (ICLR).
+
+Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and
+Baining Guo. 2021. Swin transformer: Hierarchical vision transformer using shifted
+windows. In Proceedings of the IEEE/CVF International Conference on Computer Vision
+(ICCV), pages 10012-10022.
 """
 
 import torch

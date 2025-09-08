@@ -4,23 +4,29 @@ Welcome to the Spectrans API reference documentation. This section provides deta
 
 ## Core Modules
 
-### [Transforms](transforms.md)
+### [Transforms](transforms/index.md)
 Spectral transform implementations including FFT, wavelet, cosine, and Hadamard transforms.
 
-### [Kernels](kernels.md)
+### [Kernels](kernels/index.md)
 Kernel approximation methods for efficient attention computation.
 
-### [Layers](layers.md)
+### [Layers](layers/index.md)
 Neural network layers including attention mechanisms, mixing layers, and operators.
 
-### [Blocks](blocks.md)
+### [Blocks](blocks/index.md)
 Pre-built transformer blocks combining attention and feedforward components.
 
-### [Models](models.md)
+### [Models](models/index.md)
 Complete model architectures for various tasks.
 
-### [Utils](utils.md)
+### [Utils](utils/index.md)
 Utility functions for complex operations, padding, and initialization.
+
+### [Core](core/index.md)
+Core interfaces, base classes, and registry system.
+
+### [Configuration](config/index.md)
+Configuration system for models and components.
 
 ## Quick Links
 
@@ -32,15 +38,53 @@ The library is organized into the following main packages:
 
 ```
 spectrans/
-├── transforms/      # Spectral transforms (FFT, DWT, DCT, etc.)
-├── kernels/        # Kernel approximation methods
+├── core/           # Core interfaces and registry
+│   ├── base        # Base classes
+│   ├── types       # Type definitions
+│   └── registry    # Component registry
+├── transforms/     # Spectral transforms
+│   ├── base        # Base transform classes
+│   ├── fourier     # FFT implementations
+│   ├── cosine      # DCT/DST transforms
+│   ├── hadamard    # Hadamard transforms
+│   └── wavelet     # Wavelet transforms
+├── kernels/        # Kernel approximations
+│   ├── base        # Base kernel classes
+│   ├── rff         # Random Fourier Features
+│   └── spectral    # Spectral kernels
 ├── layers/         # Neural network layers
 │   ├── attention/  # Attention mechanisms
-│   ├── mixing/     # Mixing layers (Fourier, wavelet, etc.)
-│   └── operators/  # Neural operators (FNO, etc.)
+│   │   ├── lst     # Linear Spectral Transform
+│   │   └── spectral # Spectral attention
+│   ├── mixing/     # Mixing layers
+│   │   ├── base    # Base mixing classes
+│   │   ├── afno    # AFNO mixing
+│   │   ├── fourier # Fourier mixing
+│   │   ├── global_filter # Global filters
+│   │   └── wavelet # Wavelet mixing
+│   └── operators/  # Neural operators
+│       └── fno     # Fourier Neural Operators
 ├── blocks/         # Transformer blocks
+│   ├── base        # Base block classes
+│   ├── hybrid      # Hybrid blocks
+│   └── spectral    # Spectral blocks
 ├── models/         # Complete architectures
-└── utils/          # Utility functions
+│   ├── base        # Base model classes
+│   ├── afno        # AFNO models
+│   ├── fnet        # FNet models
+│   ├── gfnet       # GFNet models
+│   └── ...         # Other models
+├── utils/          # Utility functions
+│   ├── complex     # Complex operations
+│   ├── initialization # Initialization
+│   └── padding     # Padding utilities
+└── config/         # Configuration system
+    ├── core        # Core configuration
+    ├── builder     # Model builder
+    ├── models      # Model configs
+    └── layers/     # Layer configs
+        ├── attention # Attention configs
+        └── mixing   # Mixing configs
 ```
 
 ## Mathematical Notation

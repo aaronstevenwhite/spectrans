@@ -47,30 +47,38 @@ Notes
 -----
 Random Fourier Features Theory:
 
-For a shift-invariant kernel :math:`k(x, y) = \kappa(x - y)` with Fourier transform :math:`p(\omega)`,
+For a shift-invariant kernel $k(x, y) = \kappa(x - y)$ with Fourier transform $p(\omega)$,
 Bochner's theorem gives:
 
-.. math::
-    k(x, y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
+$$
+k(x, y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
+$$
 
-The RFF approximation samples :math:`\omega \sim p(\omega)` and uses:
+The RFF approximation samples $\omega \sim p(\omega)$ and uses:
 
-.. math::
-    \varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+$$
+\varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+$$
 
-This gives :math:`k(x, y) \approx \varphi(x)^T \varphi(y)` with approximation error :math:`O(1/\sqrt{D})`.
+This gives $k(x, y) \approx \varphi(x)^T \varphi(y)$ with approximation error $O(1/\sqrt{D})$.
 
-For Gaussian kernel: :math:`p(\omega) = \mathcal{N}(0, \sigma^2 I)`
+For Gaussian kernel: $p(\omega) = \mathcal{N}(0, \sigma^2 I)$
 
-For Laplacian kernel: :math:`p(\omega) = \text{Cauchy}(0, \sigma)`
+For Laplacian kernel: $p(\omega) = \text{Cauchy}(0, \sigma)$
 
 References
 ----------
-.. [1] Rahimi, A. & Recht, B., "Random Features for Large-Scale Kernel
-       Machines", NeurIPS 2007.
-.. [2] Yu, F. et al., "Orthogonal Random Features", NeurIPS 2016.
-.. [3] Choromanski, K. et al., "Rethinking Attention with Performers",
-       ICLR 2021.
+Ali Rahimi and Benjamin Recht. 2007. Random features for large-scale kernel machines.
+In Advances in Neural Information Processing Systems 20 (NeurIPS 2007), pages 1177-1184.
+
+Felix X. Yu, Ananda Theertha Suresh, Krzysztof M. Choromanski, Daniel N. Holtmann-Rice,
+and Sanjiv Kumar. 2016. Orthogonal random features. In Advances in Neural Information
+Processing Systems 29 (NeurIPS 2016), pages 1975-1983.
+
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song, Andreea Gane,
+Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin, Lukasz Kaiser, David Belanger,
+Lucy Colwell, and Adrian Weller. 2021. Rethinking attention with performers. In Proceedings
+of the International Conference on Learning Representations (ICLR).
 
 See Also
 --------
@@ -94,7 +102,7 @@ from .base import RandomFeatureMap, ShiftInvariantKernel
 class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Gaussian (RBF) kernel with Random Fourier Features approximation.
 
-    Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|^2}{2\sigma^2}\right)` using RFF.
+    Implements $k(x, y) = \exp\left(-\frac{\|x - y\|^2}{2\sigma^2}\right)$ using RFF.
 
     Parameters
     ----------
@@ -278,7 +286,7 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Laplacian kernel with Random Fourier Features approximation.
 
-    Implements :math:`k(x, y) = \exp\left(-\frac{\|x - y\|_1}{\sigma}\right)` using RFF with Cauchy
+    Implements $k(x, y) = \exp\left(-\frac{\|x - y\|_1}{\sigma}\right)$ using RFF with Cauchy
     distribution for sampling frequencies.
 
     Parameters
@@ -658,13 +666,13 @@ class RFFAttentionKernel(RandomFeatureMap):
 
         if self.kernel_type == "softmax":
             # Positive features for softmax kernel approximation
-            # :math:`\varphi(x) = \exp(x^T \omega - \|x\|^2/2) / \sqrt{m}`
+            # $\varphi(x) = \exp(x^T \omega - \|x\|^2/2) / \sqrt{m}$
             x_norm_sq = torch.sum(x ** 2, dim=-1, keepdim=True) / 2
             features = torch.exp(z - x_norm_sq)
             scale = 1.0 / math.sqrt(self.num_features)
 
         elif self.kernel_type == "relu":
-            # ReLU kernel: :math:`\max(0, x^T \omega)`
+            # ReLU kernel: $\max(0, x^T \omega)$
             features = F.relu(z)
             scale = math.sqrt(2.0 / self.num_features)
 

@@ -1,7 +1,7 @@
-"""Enhanced base classes for spectral mixing layers.
+"""Base classes for spectral mixing layers.
 
-This module provides enhanced base classes specifically for spectral mixing layers,
-extending the core MixingLayer with domain-specific functionality for token mixing
+This module provides base classes specifically for spectral mixing layers,
+extending a base MixingLayer with domain-specific functionality for token mixing
 operations using spectral transforms. These classes define the mathematical
 interfaces and computational requirements for spectral transformers.
 
@@ -49,7 +49,7 @@ All spectral mixing layers must preserve certain properties:
 - **Differentiability**: Full gradient flow for end-to-end training
 
 Unitary mixing layers additionally satisfy:
-- **Energy Preservation**: ||f(x)||² = ||x||² (Parseval's theorem)
+- **Energy Preservation**: $||f(x)||^2 = ||x||^2$ (Parseval's theorem)
 - **Orthogonality**: Transform preserves inner products
 
 Filter mixing layers operate in frequency domain:
@@ -233,7 +233,7 @@ class UnitaryMixingLayer(MixingLayer):
     def verify_energy_preservation(self, input_tensor: torch.Tensor, output_tensor: torch.Tensor) -> bool:
         """Verify energy preservation (Parseval's theorem).
 
-        Checks that ||output||² ≈ ||input||² within tolerance.
+        Checks that $||\text{output}||^2 \approx ||\text{input}||^2$ within tolerance.
 
         Parameters
         ----------
@@ -261,7 +261,7 @@ class UnitaryMixingLayer(MixingLayer):
     def verify_orthogonality(self, transform_matrix: torch.Tensor) -> bool:
         """Verify orthogonality of the transform matrix.
 
-        Checks that T @ T^H ≈ I (identity matrix).
+        Checks that $T T^H \approx I$ (identity matrix).
 
         Parameters
         ----------

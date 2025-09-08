@@ -60,60 +60,73 @@ Notes
 Mathematical Foundation:
 
 Hybrid transformers alternate between spectral and spatial mixing strategies across
-layers. For the default "even_spectral" pattern with :math:`L` layers:
+layers. For the default "even_spectral" pattern with $L$ layers:
 
 Even-indexed layers (spectral mixing):
 
-.. math::
-    \mathbf{X}_{2i+1} = \mathbf{X}_{2i} + \text{SpectralMix}(\text{LayerNorm}(\mathbf{X}_{2i}))
+$$
+\mathbf{X}_{2i+1} = \mathbf{X}_{2i} + \text{SpectralMix}(\text{LayerNorm}(\mathbf{X}_{2i}))
+$$
 
 Odd-indexed layers (spatial mixing):
 
-.. math::
-    \mathbf{X}_{2i+2} = \mathbf{X}_{2i+1} + \text{SpatialMix}(\text{LayerNorm}(\mathbf{X}_{2i+1}))
+$$
+\mathbf{X}_{2i+2} = \mathbf{X}_{2i+1} + \text{SpatialMix}(\text{LayerNorm}(\mathbf{X}_{2i+1}))
+$$
 
 where each is followed by a feedforward network:
 
-.. math::
-    \mathbf{X}_{l+1} = \mathbf{X}_{l} + \text{FFN}(\text{LayerNorm}(\mathbf{X}_{l}))
+$$
+\mathbf{X}_{l+1} = \mathbf{X}_{l} + \text{FFN}(\text{LayerNorm}(\mathbf{X}_{l}))
+$$
 
 Spectral Mixing Operations:
 
 Different spectral mixing types provide varying computational complexities:
 
-- **Fourier**: :math:`\text{FFT}` and :math:`\text{IFFT}` with :math:`O(n \log n)` complexity
-- **Wavelet**: Multi-scale DWT decomposition with :math:`O(n)` complexity
-- **AFNO**: Mode-truncated spectral convolution with :math:`O(k_n k_d)` complexity
-- **GFNet**: Learnable global filters with :math:`O(n \log n)` complexity
+- **Fourier**: $\text{FFT}$ and $\text{IFFT}$ with $O(n \log n)$ complexity
+- **Wavelet**: Multi-scale DWT decomposition with $O(n)$ complexity
+- **AFNO**: Mode-truncated spectral convolution with $O(k_n k_d)$ complexity
+- **GFNet**: Learnable global filters with $O(n \log n)$ complexity
 
 Spatial Mixing Operations:
 
 Spatial mixing layers model position-dependent interactions:
 
-- **Standard Attention**: :math:`\text{softmax}(\mathbf{Q}\mathbf{K}^T/\sqrt{d})\mathbf{V}` with :math:`O(n^2 d)` complexity
-- **Spectral Attention**: RFF-approximated attention with :math:`O(n D d)` complexity where :math:`D` is feature dimension
-- **LST**: Linear spectral transform attention with :math:`O(n \log n \cdot d)` complexity
+- **Standard Attention**: $\text{softmax}(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d}})\mathbf{V}$ with $O(n^2 d)$ complexity
+- **Spectral Attention**: RFF-approximated attention with $O(n D d)$ complexity where $D$ is feature dimension
+- **LST**: Linear spectral transform attention with $O(n \log n \cdot d)$ complexity
 
 Complexity Analysis:
 
-For a hybrid model with :math:`L` layers, :math:`n` sequence length, :math:`d` hidden dimension:
+For a hybrid model with $L$ layers, $n$ sequence length, $d$ hidden dimension:
 
-Total complexity depends on the dominant mixing operation. With :math:`L_s` spectral
-and :math:`L_{sp}` spatial layers:
+Total complexity depends on the dominant mixing operation. With $L_s$ spectral
+and $L_{sp}$ spatial layers:
 
-.. math::
-    T_{\text{total}} = L_s \cdot T_{\text{spectral}} + L_{sp} \cdot T_{\text{spatial}} + L \cdot T_{\text{FFN}}
+$$
+T_{\text{total}} = L_s \cdot T_{\text{spectral}} + L_{sp} \cdot T_{\text{spatial}} + L \cdot T_{\text{FFN}}
+$$
 
-where :math:`T_{\text{FFN}} = O(n d^2)` for feedforward networks.
+where $T_{\text{FFN}} = O(n d^2)$ for feedforward networks.
 
 The hybrid approach reduces the overall complexity compared to pure attention models
 while maintaining modeling capacity through the complementary mixing strategies.
 
 References
 ----------
-.. [1] Tay, Y., et al. "Efficient Transformers: A Survey." ACM Computing Surveys 55.6 (2022): 1-28.
-.. [2] Lee-Thorp, J., et al. "FNet: Mixing Tokens with Fourier Transforms." NAACL 2022.
-.. [3] Guibas, J., et al. "Adaptive Fourier Neural Operators." ICLR 2022.
+Yi Tay, Mostafa Dehghani, Dara Bahri, and Donald Metzler. 2022. Efficient
+transformers: A survey. ACM Computing Surveys, 55(6):1-28.
+
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
 
 See Also
 --------
@@ -199,29 +212,32 @@ class HybridTransformer(BaseModel):
     between spectral layers (efficient global mixing) and spatial layers
     (expressive local modeling) according to configurable patterns.
 
-    For a sequence :math:`\mathbf{X}_0 \in \mathbb{R}^{n \times d}`, the hybrid
+    For a sequence $\mathbf{X}_0 \in \mathbb{R}^{n \times d}$, the hybrid
     transformer applies alternating transformations:
 
-    **Spectral layers** (:math:`\ell` even for "even_spectral" pattern):
+    **Spectral layers** ($\ell$ even for "even_spectral" pattern):
 
-    .. math::
-        \mathbf{Z}_\ell = \mathbf{X}_\ell + \text{SpectralMix}(\text{LN}(\mathbf{X}_\ell))
+    $$
+    \mathbf{Z}_\ell = \mathbf{X}_\ell + \text{SpectralMix}(\text{LN}(\mathbf{X}_\ell))
+    $$
 
-    **Spatial layers** (:math:`\ell` odd for "even_spectral" pattern):
+    **Spatial layers** ($\ell$ odd for "even_spectral" pattern):
 
-    .. math::
-        \mathbf{Z}_\ell = \mathbf{X}_\ell + \text{SpatialMix}(\text{LN}(\mathbf{X}_\ell))
+    $$
+    \mathbf{Z}_\ell = \mathbf{X}_\ell + \text{SpatialMix}(\text{LN}(\mathbf{X}_\ell))
+    $$
 
-    where :math:`\text{LN}(\cdot)` denotes LayerNorm and each block concludes with:
+    where $\text{LN}(\cdot)$ denotes LayerNorm and each block concludes with:
 
-    .. math::
-        \mathbf{X}_{\ell+1} = \mathbf{Z}_\ell + \text{FFN}(\text{LN}(\mathbf{Z}_\ell))
+    $$
+    \mathbf{X}_{\ell+1} = \mathbf{Z}_\ell + \text{FFN}(\text{LN}(\mathbf{Z}_\ell))
+    $$
 
     The spectral mixing operations provide different complexity-accuracy tradeoffs:
-    - Fourier: :math:`O(n \log n)` via FFT/IFFT
-    - Wavelet: :math:`O(n)` via fast DWT algorithms
-    - AFNO: :math:`O(k_n k_d d)` with mode truncation parameters :math:`k_n, k_d`
-    - GFNet: :math:`O(n \log n)` with learnable spectral filters
+    - Fourier: $O(n \log n)$ via FFT/IFFT
+    - Wavelet: $O(n)$ via fast DWT algorithms
+    - AFNO: $O(k_n k_d d)$ with mode truncation parameters $k_n, k_d$
+    - GFNet: $O(n \log n)$ with learnable spectral filters
 
     Parameters
     ----------
@@ -576,18 +592,20 @@ class AlternatingTransformer(BaseModel):
     layers, layer2_type for odd-indexed layers. This design enables controlled
     comparisons between different mixing strategies.
 
-    For :math:`L` layers, the alternation follows:
+    For $L$ layers, the alternation follows:
 
-    .. math::
-        \text{Layer}(\ell) = \begin{cases}
-        \text{layer1_type} & \text{if } \ell \bmod 2 = 0 \\
-        \text{layer2_type} & \text{if } \ell \bmod 2 = 1
-        \end{cases}
+    $$
+    \text{Layer}(\ell) = \begin{cases}
+    \text{layer1_type} & \text{if } \ell \bmod 2 = 0 \\
+    \text{layer2_type} & \text{if } \ell \bmod 2 = 1
+    \end{cases}
+    $$
 
     Each layer applies the mixing operation with residual connection:
 
-    .. math::
-        \mathbf{X}_{\ell+1} = \mathbf{X}_\ell + \text{MixingLayer}_\ell(\text{LayerNorm}(\mathbf{X}_\ell))
+    $$
+    \mathbf{X}_{\ell+1} = \mathbf{X}_\ell + \text{MixingLayer}_\ell(\text{LayerNorm}(\mathbf{X}_\ell))
+    $$
 
     followed by the standard feedforward block with another residual connection.
 

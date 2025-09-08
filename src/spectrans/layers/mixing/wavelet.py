@@ -39,20 +39,23 @@ Notes
 -----
 Mathematical Foundation:
 
-The discrete wavelet transform decomposes a signal :math:`x` into approximation
-coefficients :math:`c_A` and detail coefficients :math:`\{c_{D_j}\}_{j=1}^J` at :math:`J` levels:
+The discrete wavelet transform decomposes a signal $x$ into approximation
+coefficients $c_A$ and detail coefficients $\{c_{D_j}\}_{j=1}^J$ at $J$ levels:
 
-.. math::
-    \text{DWT}(x) = \{c_{A_J}, \{c_{D_j}\}_{j=1}^J\}
+$$
+\text{DWT}(x) = \{c_{A_J}, \{c_{D_j}\}_{j=1}^J\}
+$$
 
-The decomposition uses filter banks with low-pass filter :math:`h` and high-pass
-filter :math:`g`:
+The decomposition uses filter banks with low-pass filter $h$ and high-pass
+filter $g$:
 
-.. math::
-    c_{A_{j+1}}[k] = \sum_m h[m-2k] c_{A_j}[m]
+$$
+c_{A_{j+1}}[k] = \sum_m h[m-2k] c_{A_j}[m]
+$$
 
-.. math::
-    c_{D_{j+1}}[k] = \sum_m g[m-2k] c_{A_j}[m]
+$$
+c_{D_{j+1}}[k] = \sum_m g[m-2k] c_{A_j}[m]
+$$
 
 Wavelet mixing applies learnable transformations to these coefficients:
 - Pointwise mixing: Element-wise scaling of coefficients
@@ -60,8 +63,8 @@ Wavelet mixing applies learnable transformations to these coefficients:
 - Level mixing: Cross-scale interactions using attention mechanisms
 
 Computational Properties:
-- Time complexity: :math:`O(nd)` for :math:`n`-length signals with :math:`d` channels
-- Space complexity: :math:`O(nd)` for coefficient storage
+- Time complexity: $O(nd)$ for $n$-length signals with $d$ channels
+- Space complexity: $O(nd)$ for coefficient storage
 - Decomposition levels: Typically 1-5 depending on signal length
 
 The wavelet choice affects the analysis properties:
@@ -76,6 +79,13 @@ All wavelet operations maintain gradient flow for end-to-end training.
 The transforms use PyTorch-native implementations compatible with
 automatic differentiation, avoiding external library dependencies
 that could break gradient computation.
+
+References
+----------
+Ingrid Daubechies. 1992. Ten Lectures on Wavelets. SIAM, Philadelphia.
+
+Stéphane Mallat. 2009. A Wavelet Tour of Signal Processing: The Sparse Way,
+3rd edition. Academic Press, Boston.
 
 See Also
 --------
@@ -109,25 +119,27 @@ class WaveletMixing(nn.Module):
 
     Mathematical Formulation
     ------------------------
-    Given input tensor :math:`\mathbf{X} \in \mathbb{R}^{B \times N \times D}` where :math:`B` is batch size,
-    :math:`N` is sequence length, and :math:`D` is hidden dimension:
+    Given input tensor $\mathbf{X} \in \mathbb{R}^{B \times N \times D}$ where $B$ is batch size,
+    $N$ is sequence length, and $D$ is hidden dimension:
 
     **Step 1: Channel-wise Decomposition**
 
-    For each channel :math:`d \in \{0, 1, \ldots, D-1\}`, extract the channel signal:
+    For each channel $d \in \{0, 1, \ldots, D-1\}$, extract the channel signal:
 
-    .. math::
-        \mathbf{x}^{(d)} = \mathbf{X}[:, :, d] \in \mathbb{R}^{B \times N}
+    $$
+    \mathbf{x}^{(d)} = \mathbf{X}[:, :, d] \in \mathbb{R}^{B \times N}
+    $$
 
-    Apply :math:`J`-level DWT decomposition:
+    Apply $J$-level DWT decomposition:
 
-    .. math::
-        \text{DWT}_J(\mathbf{x}^{(d)}) = \{\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}_{j=1}^J\}
+    $$
+    \text{DWT}_J(\mathbf{x}^{(d)}) = \{\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}_{j=1}^J\}
+    $$
 
     Where:
-    - :math:`\mathbf{c}_{A_J}^{(d)} \in \mathbb{R}^{B \times L_{A_J}}` are approximation coefficients at level :math:`J`
-    - :math:`\mathbf{c}_{D_j}^{(d)} \in \mathbb{R}^{B \times L_{D_j}}` are detail coefficients at level :math:`j`
-    - :math:`L_{A_J}` and :math:`L_{D_j}` are coefficient lengths after subsampling
+    - $\mathbf{c}_{A_J}^{(d)} \in \mathbb{R}^{B \times L_{A_J}}$ are approximation coefficients at level $J$
+    - $\mathbf{c}_{D_j}^{(d)} \in \mathbb{R}^{B \times L_{D_j}}$ are detail coefficients at level $j$
+    - $L_{A_J}$ and $L_{D_j}$ are coefficient lengths after subsampling
 
     **Step 2: Learnable Mixing**
 
@@ -135,73 +147,82 @@ class WaveletMixing(nn.Module):
 
     *Pointwise Mixing* (:code:`mixing_mode='pointwise'`):
 
-    .. math::
-        \tilde{\mathbf{c}}_{A_J}^{(d)} = \mathbf{c}_{A_J}^{(d)} \odot \mathbf{W}_{A}[:, :L_{A_J}, d]
+    $$
+    \tilde{\mathbf{c}}_{A_J}^{(d)} = \mathbf{c}_{A_J}^{(d)} \odot \mathbf{W}_{A}[:, :L_{A_J}, d]
+    $$
 
-    .. math::
-        \tilde{\mathbf{c}}_{D_j}^{(d)} = \mathbf{c}_{D_j}^{(d)} \odot \mathbf{W}_{D_j}[:, :L_{D_j}, d]
+    $$
+    \tilde{\mathbf{c}}_{D_j}^{(d)} = \mathbf{c}_{D_j}^{(d)} \odot \mathbf{W}_{D_j}[:, :L_{D_j}, d]
+    $$
 
-    Where :math:`\mathbf{W}_{A}, \mathbf{W}_{D_j} \in \mathbb{R}^{1 \times \max(L) \times D}` are learnable parameters,
-    and :math:`\odot` denotes element-wise multiplication with broadcasting.
+    Where $\mathbf{W}_{A}, \mathbf{W}_{D_j} \in \mathbb{R}^{1 \times \max(L) \times D}$ are learnable parameters,
+    and $\odot$ denotes element-wise multiplication with broadcasting.
 
     *Channel Mixing* (:code:`mixing_mode='channel'`):
 
-    .. math::
-        \tilde{\mathbf{c}}_{A_J}^{(d)} = \mathbf{c}_{A_J}^{(d)} \cdot \mathbf{W}_{A}[0, d, d]
+    $$
+    \tilde{\mathbf{c}}_{A_J}^{(d)} = \mathbf{c}_{A_J}^{(d)} \cdot \mathbf{W}_{A}[0, d, d]
+    $$
 
-    .. math::
-        \tilde{\mathbf{c}}_{D_j}^{(d)} = \mathbf{c}_{D_j}^{(d)} \cdot \mathbf{W}_{D_j}[0, d, d]
+    $$
+    \tilde{\mathbf{c}}_{D_j}^{(d)} = \mathbf{c}_{D_j}^{(d)} \cdot \mathbf{W}_{D_j}[0, d, d]
+    $$
 
-    Where :math:`\mathbf{W}_{A}, \mathbf{W}_{D_j} \in \mathbb{R}^{1 \times D \times D}` are initialized as identity matrices.
+    Where $\mathbf{W}_{A}, \mathbf{W}_{D_j} \in \mathbb{R}^{1 \times D \times D}$ are initialized as identity matrices.
 
     *Level Mixing* (:code:`mixing_mode='level'`):
 
     Cross-level attention is applied to all coefficients simultaneously:
 
-    .. math::
-        \{\tilde{\mathbf{c}}_{A_J}^{(d)}, \{\tilde{\mathbf{c}}_{D_j}^{(d)}\}_{j=1}^J\} = \text{MultiHeadAttn}(\text{Concat}(\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}))
+    $$
+    \{\tilde{\mathbf{c}}_{A_J}^{(d)}, \{\tilde{\mathbf{c}}_{D_j}^{(d)}\}_{j=1}^J\} = \text{MultiHeadAttn}(\text{Concat}(\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}))
+    $$
 
     **Step 3: Reconstruction**
 
     Reconstruct the signal using inverse DWT:
 
-    .. math::
-        \tilde{\mathbf{x}}^{(d)} = \text{IDWT}_J(\{\tilde{\mathbf{c}}_{A_J}^{(d)}, \{\tilde{\mathbf{c}}_{D_j}^{(d)}\}_{j=1}^J\})
+    $$
+    \tilde{\mathbf{x}}^{(d)} = \text{IDWT}_J(\{\tilde{\mathbf{c}}_{A_J}^{(d)}, \{\tilde{\mathbf{c}}_{D_j}^{(d)}\}_{j=1}^J\})
+    $$
 
     Apply length adjustment if necessary:
 
-    .. math::
-        \hat{\mathbf{x}}^{(d)} = \begin{cases}
-        \tilde{\mathbf{x}}^{(d)}[:, :N] & \text{if } |\tilde{\mathbf{x}}^{(d)}| > N \\
-        \text{Pad}(\tilde{\mathbf{x}}^{(d)}, N) & \text{if } |\tilde{\mathbf{x}}^{(d)}| < N \\
-        \tilde{\mathbf{x}}^{(d)} & \text{otherwise}
-        \end{cases}
+    $$
+    \hat{\mathbf{x}}^{(d)} = \begin{cases}
+    \tilde{\mathbf{x}}^{(d)}[:, :N] & \text{if } |\tilde{\mathbf{x}}^{(d)}| > N \\
+    \text{Pad}(\tilde{\mathbf{x}}^{(d)}, N) & \text{if } |\tilde{\mathbf{x}}^{(d)}| < N \\
+    \tilde{\mathbf{x}}^{(d)} & \text{otherwise}
+    \end{cases}
+    $$
 
     **Step 4: Residual Connection and Dropout**
 
     Combine all channels and apply residual connection:
 
-    .. math::
-        \hat{\mathbf{X}} = \text{Concat}(\{\hat{\mathbf{x}}^{(d)}\}_{d=0}^{D-1}) \in \mathbb{R}^{B \times N \times D}
+    $$
+    \hat{\mathbf{X}} = \text{Concat}(\{\hat{\mathbf{x}}^{(d)}\}_{d=0}^{D-1}) \in \mathbb{R}^{B \times N \times D}
+    $$
 
-    .. math::
-        \mathbf{Y} = \mathbf{X} + \text{Dropout}(\hat{\mathbf{X}})
+    $$
+    \mathbf{Y} = \mathbf{X} + \text{Dropout}(\hat{\mathbf{X}})
+    $$
 
     Complexity Analysis
     -------------------
-    - **Time Complexity**: :math:`O(NJ) + O(D \cdot N \log N)` per forward pass
+    - **Time Complexity**: $O(NJ) + O(D \cdot N \log N)$ per forward pass
 
-        - :math:`O(N)` for DWT/IDWT per level and channel (linear in signal length)
-        - :math:`O(DJ)` for mixing operations across all levels and channels
-        - Dominated by DWT operations when :math:`J` is small
+        - $O(N)$ for DWT/IDWT per level and channel (linear in signal length)
+        - $O(DJ)$ for mixing operations across all levels and channels
+        - Dominated by DWT operations when $J$ is small
 
-    - **Space Complexity**: :math:`O(DN + P)` where :math:`P` is parameter count
+    - **Space Complexity**: $O(DN + P)$ where $P$ is parameter count
 
-        - :math:`O(DN)` for storing coefficient tensors
+        - $O(DN)$ for storing coefficient tensors
         - Parameter count depends on mixing mode:
-            - Pointwise: :math:`P = O(LD)` where :math:`L` is max coefficient length
-            - Channel: :math:`P = O(JD^2)`
-            - Level: :math:`P = O(D^2)` for attention parameters
+            - Pointwise: $P = O(LD)$ where $L$ is max coefficient length
+            - Channel: $P = O(JD^2)$
+            - Level: $P = O(D^2)$ for attention parameters
 
     Implementation Notes
     --------------------
@@ -213,11 +234,11 @@ class WaveletMixing(nn.Module):
     Parameters
     ----------
     hidden_dim : int
-        Hidden dimension size :math:`D`.
+        Hidden dimension size $D$.
     wavelet : str, default='db4'
         Wavelet type (e.g., 'db1', 'db4', 'sym2'). Determines filter bank characteristics.
     levels : int, default=3
-        Number of decomposition levels :math:`J`. Controls resolution hierarchy.
+        Number of decomposition levels $J$. Controls resolution hierarchy.
     mixing_mode : str, default='pointwise'
         Mixing strategy: 'pointwise' (element-wise), 'channel' (diagonal), 'level' (attention).
     dropout : float, default=0.0
@@ -322,26 +343,26 @@ class WaveletMixing(nn.Module):
         ---------------------------
         The forward pass implements the mathematical formulation exactly:
 
-        1. **Channel Extraction**: :math:`\mathbf{x}^{(d)} = \mathbf{X}[:, :, d]` for :math:`d = 0, \ldots, D-1`
-        2. **Wavelet Decomposition**: :math:`\text{DWT}_J(\mathbf{x}^{(d)}) \rightarrow \{\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}\}`
+        1. **Channel Extraction**: $\mathbf{x}^{(d)} = \mathbf{X}[:, :, d]$ for $d = 0, \ldots, D-1$
+        2. **Wavelet Decomposition**: $\text{DWT}_J(\mathbf{x}^{(d)}) \rightarrow \{\mathbf{c}_{A_J}^{(d)}, \{\mathbf{c}_{D_j}^{(d)}\}\}$
         3. **Learnable Mixing**: Apply mode-specific transformations to coefficients
-        4. **Signal Reconstruction**: :math:`\text{IDWT}_J(\text{mixed coefficients}) \rightarrow \hat{\mathbf{x}}^{(d)}`
-        5. **Channel Concatenation**: :math:`\hat{\mathbf{X}} = [\hat{\mathbf{x}}^{(0)}, \ldots, \hat{\mathbf{x}}^{(D-1)}]`
-        6. **Residual Connection**: :math:`\mathbf{Y} = \mathbf{X} + \text{Dropout}(\hat{\mathbf{X}})`
+        4. **Signal Reconstruction**: $\text{IDWT}_J(\text{mixed coefficients}) \rightarrow \hat{\mathbf{x}}^{(d)}$
+        5. **Channel Concatenation**: $\hat{\mathbf{X}} = [\hat{\mathbf{x}}^{(0)}, \ldots, \hat{\mathbf{x}}^{(D-1)}]$
+        6. **Residual Connection**: $\mathbf{Y} = \mathbf{X} + \text{Dropout}(\hat{\mathbf{X}})
 
         Parameters
         ----------
         x : Tensor
-            Input tensor of shape :math:`(B, N, D)` where:
+            Input tensor of shape $(B, N, D)$ where:
 
-            - :math:`B` is batch size
-            - :math:`N` is sequence length
-            - :math:`D` is hidden dimension
+            - $B$ is batch size
+            - $N$ is sequence length
+            - $D$ is hidden dimension
 
         Returns
         -------
         Tensor
-            Mixed output tensor of identical shape :math:`(B, N, D)` with wavelet-domain
+            Mixed output tensor of identical shape $(B, N, D)$ with wavelet-domain
             mixing applied and residual connection.
 
         Notes
@@ -482,25 +503,27 @@ class WaveletMixing2D(nn.Module):
 
     Mathematical Formulation
     ------------------------
-    Given input tensor :math:`\mathbf{X} \in \mathbb{R}^{B \times C \times H \times W}` where :math:`B` is batch size,
-    :math:`C` is channels, :math:`H` is height, and :math:`W` is width:
+    Given input tensor $\mathbf{X} \in \mathbb{R}^{B \times C \times H \times W}$ where $B$ is batch size,
+    $C$ is channels, $H$ is height, and $W$ is width:
 
     **Step 1: Channel-wise 2D Decomposition**
 
-    For each channel :math:`c \in \{0, 1, \ldots, C-1\}`, extract spatial data:
+    For each channel $c \in \{0, 1, \ldots, C-1\}$, extract spatial data:
 
-    .. math::
-        \mathbf{X}^{(c)} = \mathbf{X}[:, c, :, :] \in \mathbb{R}^{B \times H \times W}
+    $$
+    \mathbf{X}^{(c)} = \mathbf{X}[:, c, :, :] \in \mathbb{R}^{B \times H \times W}
+    $$
 
-    Apply :math:`J`-level 2D DWT decomposition:
+    Apply $J$-level 2D DWT decomposition:
 
-    .. math::
-        \text{DWT2D}_J(\mathbf{X}^{(c)}) = \{\mathbf{LL}_J^{(c)}, \{(\mathbf{LH}_j^{(c)}, \mathbf{HL}_j^{(c)}, \mathbf{HH}_j^{(c)})\}_{j=1}^J\}
+    $$
+    \text{DWT2D}_J(\mathbf{X}^{(c)}) = \{\mathbf{LL}_J^{(c)}, \{(\mathbf{LH}_j^{(c)}, \mathbf{HL}_j^{(c)}, \mathbf{HH}_j^{(c)})\}_{j=1}^J\}
+    $$
 
     Where:
-    - :math:`\mathbf{LL}_J^{(c)} \in \mathbb{R}^{B \times H_J \times W_J}` is the approximation subband (low-low)
-    - :math:`\mathbf{LH}_j^{(c)}, \mathbf{HL}_j^{(c)}, \mathbf{HH}_j^{(c)} \in \mathbb{R}^{B \times H_j \times W_j}` are detail subbands
-    - :math:`H_j = H/2^j`, :math:`W_j = W/2^j` are spatial dimensions at level :math:`j`
+    - $\mathbf{LL}_J^{(c)} \in \mathbb{R}^{B \times H_J \times W_J}$ is the approximation subband (low-low)
+    - $\mathbf{LH}_j^{(c)}, \mathbf{HL}_j^{(c)}, \mathbf{HH}_j^{(c)} \in \mathbb{R}^{B \times H_j \times W_j}$ are detail subbands
+    - $H_j = \frac{H}{2^j}$, $W_j = \frac{W}{2^j}$ are spatial dimensions at level $j$
 
     **Step 2: Subband Mixing**
 
@@ -510,54 +533,60 @@ class WaveletMixing2D(nn.Module):
 
     Independent processing of each subband using convolutional networks:
 
-    .. math::
-        \tilde{\mathbf{LL}}_J^{(c)} = f_{LL}(\mathbf{LL}_J^{(c)})
+    $$
+    \tilde{\mathbf{LL}}_J^{(c)} = f_{LL}(\mathbf{LL}_J^{(c)})
+    $$
 
-    .. math::
-        \tilde{\mathbf{LH}}_j^{(c)} = f_{LH}^{(j)}(\mathbf{LH}_j^{(c)}), \quad \tilde{\mathbf{HL}}_j^{(c)} = f_{HL}^{(j)}(\mathbf{HL}_j^{(c)}), \quad \tilde{\mathbf{HH}}_j^{(c)} = f_{HH}^{(j)}(\mathbf{HH}_j^{(c)})
+    $$
+    \tilde{\mathbf{LH}}_j^{(c)} = f_{LH}^{(j)}(\mathbf{LH}_j^{(c)}), \quad \tilde{\mathbf{HL}}_j^{(c)} = f_{HL}^{(j)}(\mathbf{HL}_j^{(c)}), \quad \tilde{\mathbf{HH}}_j^{(c)} = f_{HH}^{(j)}(\mathbf{HH}_j^{(c)})
+    $$
 
-    Where :math:`f_{\cdot}` are learnable convolutional transformations.
+    Where $f_{\cdot}$ are learnable convolutional transformations.
 
     *Cross Mixing* (:code:`mixing_mode='cross'`):
 
     Cross-attention across all subbands:
 
-    .. math::
-        \{\tilde{\mathbf{LL}}_J^{(c)}, \{\tilde{\mathbf{LH}}_j^{(c)}, \tilde{\mathbf{HL}}_j^{(c)}, \tilde{\mathbf{HH}}_j^{(c)}\}\} = \text{CrossAttn}(\text{AllSubbands}^{(c)})
+    $$
+    \{\tilde{\mathbf{LL}}_J^{(c)}, \{\tilde{\mathbf{LH}}_j^{(c)}, \tilde{\mathbf{HL}}_j^{(c)}, \tilde{\mathbf{HH}}_j^{(c)}\}\} = \text{CrossAttn}(\text{AllSubbands}^{(c)})
+    $$
 
     **Step 3: 2D Reconstruction**
 
     Reconstruct the spatial signal:
 
-    .. math::
-        \tilde{\mathbf{X}}^{(c)} = \text{IDWT2D}_J(\{\tilde{\mathbf{LL}}_J^{(c)}, \{\tilde{\mathbf{LH}}_j^{(c)}, \tilde{\mathbf{HL}}_j^{(c)}, \tilde{\mathbf{HH}}_j^{(c)}\}\})
+    $$
+    \tilde{\mathbf{X}}^{(c)} = \text{IDWT2D}_J(\{\tilde{\mathbf{LL}}_J^{(c)}, \{\tilde{\mathbf{LH}}_j^{(c)}, \tilde{\mathbf{HL}}_j^{(c)}, \tilde{\mathbf{HH}}_j^{(c)}\}\})
+    $$
 
     **Step 4: Channel Concatenation and Residual**
 
-    .. math::
-        \hat{\mathbf{X}} = \text{Stack}(\{\tilde{\mathbf{X}}^{(c)}\}_{c=0}^{C-1}) \in \mathbb{R}^{B \times C \times H \times W}
+    $$
+    \hat{\mathbf{X}} = \text{Stack}(\{\tilde{\mathbf{X}}^{(c)}\}_{c=0}^{C-1}) \in \mathbb{R}^{B \times C \times H \times W}
+    $$
 
-    .. math::
-        \mathbf{Y} = \mathbf{X} + \hat{\mathbf{X}}
+    $$
+    \mathbf{Y} = \mathbf{X} + \hat{\mathbf{X}}
+    $$
 
     Complexity Analysis
     -------------------
-    - **Time Complexity**: :math:`O(CHW \cdot J) + O(\text{mixing operations})`
-    - **Space Complexity**: :math:`O(CHW + \text{subband storage})`
+    - **Time Complexity**: $O(CHW \cdot J) + O(\text{mixing operations})$
+    - **Space Complexity**: $O(CHW + \text{subband storage})$
 
     Where mixing complexity depends on mode:
-    - Subband: :math:`O(\text{conv operations per subband})`
-    - Cross: :math:`O(\text{attention across subbands})`
-    - Attention: :math:`O(\text{transformer encoder})`
+    - Subband: $O(\text{conv operations per subband})$
+    - Cross: $O(\text{attention across subbands})$
+    - Attention: $O(\text{transformer encoder})$
 
     Parameters
     ----------
     channels : int
-        Number of input/output channels :math:`C`.
+        Number of input/output channels $C$.
     wavelet : str, default='db4'
         Wavelet type determining 2D filter bank characteristics.
     levels : int, default=2
-        Number of decomposition levels :math:`J`.
+        Number of decomposition levels $J$.
     mixing_mode : str, default='subband'
         Subband mixing strategy: 'subband' (independent), 'cross' (attention), 'attention' (transformer).
 
@@ -662,27 +691,27 @@ class WaveletMixing2D(nn.Module):
 
         Mathematical Implementation
         ---------------------------
-        1. **Channel Extraction**: :math:`\mathbf{X}^{(c)} = \mathbf{X}[:, c, :, :]` for each channel :math:`c`
-        2. **2D Wavelet Decomposition**: :math:`\text{DWT2D}_J(\mathbf{X}^{(c)}) \rightarrow \text{subbands}`
+        1. **Channel Extraction**: $\mathbf{X}^{(c)} = \mathbf{X}[:, c, :, :]$ for each channel $c$
+        2. **2D Wavelet Decomposition**: $\text{DWT2D}_J(\mathbf{X}^{(c)}) \rightarrow \text{subbands}$
         3. **Subband Mixing**: Apply mode-specific transformations to wavelet subbands
-        4. **2D Reconstruction**: :math:`\text{IDWT2D}_J(\text{mixed subbands}) \rightarrow \tilde{\mathbf{X}}^{(c)}`
-        5. **Channel Stacking**: :math:`\hat{\mathbf{X}} = [\tilde{\mathbf{X}}^{(0)}, \ldots, \tilde{\mathbf{X}}^{(C-1)}]`
-        6. **Residual Connection**: :math:`\mathbf{Y} = \mathbf{X} + \hat{\mathbf{X}}`
+        4. **2D Reconstruction**: $\text{IDWT2D}_J(\text{mixed subbands}) \rightarrow \tilde{\mathbf{X}}^{(c)}$
+        5. **Channel Stacking**: $\hat{\mathbf{X}} = [\tilde{\mathbf{X}}^{(0)}, \ldots, \tilde{\mathbf{X}}^{(C-1)}]$
+        6. **Residual Connection**: $\mathbf{Y} = \mathbf{X} + \hat{\mathbf{X}}$
 
         Parameters
         ----------
         x : Tensor
-            Input tensor of shape :math:`(B, C, H, W)` where:
+            Input tensor of shape $(B, C, H, W)$ where:
 
-            - :math:`B` is batch size
-            - :math:`C` is number of channels
-            - :math:`H` is height
-            - :math:`W` is width
+            - $B$ is batch size
+            - $C$ is number of channels
+            - $H$ is height
+            - $W$ is width
 
         Returns
         -------
         Tensor
-            Mixed output tensor of identical shape :math:`(B, C, H, W)` with 2D wavelet-domain
+            Mixed output tensor of identical shape $(B, C, H, W)$ with 2D wavelet-domain
             mixing applied and residual connection.
 
         Notes

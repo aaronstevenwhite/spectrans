@@ -2,7 +2,7 @@ r"""Spectral Attention transformer models using kernel approximations.
 
 This module implements transformer models based on spectral attention mechanisms
 that use Random Fourier Features (RFF) to linearize attention computation. These
-models achieve :math:`O(n)` complexity instead of the quadratic :math:`O(n^2)`
+models achieve $O(n)$ complexity instead of the quadratic $O(n^2)$
 complexity of standard transformers, making them efficient for long sequences.
 
 The spectral attention mechanism approximates the softmax kernel using random
@@ -66,37 +66,47 @@ Mathematical Foundation:
 
 The spectral attention mechanism approximates standard attention as:
 
-.. math::
-    \text{Attention}(Q, K, V) \approx \boldsymbol{\Phi}(Q)
-    \left(\boldsymbol{\Phi}(K)^T V\right) / Z
+$$
+\text{Attention}(Q, K, V) \approx \boldsymbol{\Phi}(Q)
+\left(\boldsymbol{\Phi}(K)^T V\right) / Z
+$$
 
-Where :math:`\boldsymbol{\Phi}` is a random feature map:
+Where $\boldsymbol{\Phi}$ is a random feature map:
 
-.. math::
-    \boldsymbol{\varphi}(x) = \sqrt{\frac{2}{D}} \begin{bmatrix}
-    \cos(\boldsymbol{\omega}_1^T x + b_1) \\
-    \cos(\boldsymbol{\omega}_2^T x + b_2) \\
-    \vdots \\
-    \cos(\boldsymbol{\omega}_D^T x + b_D)
-    \end{bmatrix}
+$$
+\boldsymbol{\varphi}(x) = \sqrt{\frac{2}{D}} \begin{bmatrix}
+\cos(\boldsymbol{\omega}_1^T x + b_1) \\
+\cos(\boldsymbol{\omega}_2^T x + b_2) \\
+\vdots \\
+\cos(\boldsymbol{\omega}_D^T x + b_D)
+\end{bmatrix}
+$$
 
-With random frequencies :math:`\omega_i \sim \mathcal{N}(0, \sigma^2 I)` and
-phases :math:`b_i \sim \text{Uniform}[0, 2\pi]`.
+With random frequencies $\omega_i \sim \mathcal{N}(0, \sigma^2 I)$ and
+phases $b_i \sim \text{Uniform}[0, 2\pi]$.
 
-The approximation quality improves with more random features :math:`D`, with
-error decreasing as :math:`O(1/\sqrt{D})`. The linear complexity :math:`O(nDd)`
-becomes favorable over standard attention :math:`O(n^2d)` when :math:`D \ll n`.
+The approximation quality improves with more random features $D$, with
+error decreasing as $O(\frac{1}{\sqrt{D}})$. The linear complexity $O(nDd)$
+becomes favorable over standard attention $O(n^2d)$ when $D \ll n$.
 
 For the Performer variant, orthogonal random features are used to reduce
 the variance of the approximation, leading to better convergence.
 
 References
 ----------
-.. [1] Choromanski, K. et al., "Rethinking Attention with Performers",
-       ICLR 2021.
-.. [2] Peng, H. et al., "Random Feature Attention", ICLR 2021.
-.. [3] Rahimi, A. & Recht, B., "Random Features for Large-Scale Kernel
-       Machines", NeurIPS 2007.
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song,
+Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin,
+Lukasz Kaiser, David Belanger, Lucy Colwell, and Adrian Weller. 2021.
+Rethinking attention with performers. In Proceedings of the International
+Conference on Learning Representations (ICLR).
+
+Hao Peng, Nikolaos Pappas, Dani Yogatama, Roy Schwartz, Noah A. Smith, and
+Lingpeng Kong. 2021. Random feature attention. In Proceedings of the
+International Conference on Learning Representations (ICLR).
+
+Ali Rahimi and Benjamin Recht. 2007. Random features for large-scale kernel
+machines. In Advances in Neural Information Processing Systems 20 (NeurIPS 2007),
+pages 1177-1184.
 
 See Also
 --------

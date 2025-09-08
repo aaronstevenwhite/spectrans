@@ -39,7 +39,7 @@ from ..core.types import FFTNorm
 class BaseLayerConfig(BaseModel):
     """Base configuration for all neural network layers.
 
-    Parameters
+    Attributes
     ----------
     hidden_dim : int
         Hidden dimension size, must be positive.
@@ -59,7 +59,7 @@ class BaseLayerConfig(BaseModel):
 class UnitaryLayerConfig(BaseLayerConfig):
     """Configuration for layers that preserve energy/unitarity.
 
-    Parameters
+    Attributes
     ----------
     norm_eps : float
         Epsilon for numerical stability in normalization, defaults to 1e-5.
@@ -77,7 +77,7 @@ class UnitaryLayerConfig(BaseLayerConfig):
 class FilterLayerConfig(BaseLayerConfig):
     """Configuration for layers using learnable spectral filters.
 
-    Parameters
+    Attributes
     ----------
     sequence_length : int
         Input sequence length, must be positive.
@@ -98,7 +98,7 @@ class FilterLayerConfig(BaseLayerConfig):
 class AttentionLayerConfig(BaseLayerConfig):
     """Configuration for attention-based layers.
 
-    Parameters
+    Attributes
     ----------
     num_heads : int
         Number of attention heads, must be positive, defaults to 8.

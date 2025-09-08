@@ -1,61 +1,70 @@
-r"""Comprehensive layer implementations for spectral transformers.
+r"""Layer implementations for spectral transformers.
 
-This module provides a complete collection of spectral transformer layers that
+This module provides a collection of spectral transformer layers that
 replace traditional attention mechanisms with efficient spectral operations.
 The layers are organized into three main categories: mixing layers, attention
 layers, and neural operators, each optimized for different use cases while
 maintaining compatibility with standard transformer architectures.
 
+Modules
+-------
+attention
+    Spectral attention mechanisms with linear complexity.
+mixing
+    Token mixing layers using spectral transforms.
+operators
+    Fourier neural operators for function space learning.
+
 Classes
 -------
-MixingLayer
-    Base class for spectral mixing operations.
-UnitaryMixingLayer
-    Base class for energy-preserving mixing transforms.
-FilterMixingLayer
-    Base class for learnable frequency domain filters.
-FourierMixing
-    2D FFT mixing for both sequence and feature dimensions (FNet).
-FourierMixing1D
-    1D FFT mixing along sequence dimension only.
-RealFourierMixing
-    Memory-efficient real FFT variant for real-valued inputs.
-SeparableFourierMixing
-    Configurable sequence and/or feature mixing.
-GlobalFilterMixing
-    Learnable complex filters in frequency domain (GFNet).
-GlobalFilterMixing2D
-    2D variant with filtering in both dimensions.
 AdaptiveGlobalFilter
     Enhanced global filter with adaptive initialization.
 AFNOMixing
     Adaptive Fourier Neural Operator with mode truncation.
-WaveletMixing
-    1D wavelet mixing using discrete wavelet transform.
-WaveletMixing2D
-    2D wavelet mixing for spatial data processing.
-SpectralAttention
-    Multi-head spectral attention using random Fourier features.
-PerformerAttention
-    Performer-style attention with FAVOR+ algorithm.
+DCTAttention
+    Specialized LST attention using discrete cosine transform.
+FilterMixingLayer
+    Base class for learnable frequency domain filters.
+FNOBlock
+    FNO block with spectral convolution and feedforward.
+FourierMixing
+    2D FFT mixing for both sequence and feature dimensions (FNet).
+FourierMixing1D
+    1D FFT mixing along sequence dimension only.
+FourierNeuralOperator
+    Base FNO layer for learning operators in function spaces.
+GlobalFilterMixing
+    Learnable complex filters in frequency domain (GFNet).
+GlobalFilterMixing2D
+    2D variant with filtering in both dimensions.
+HadamardAttention
+    Fast attention using Hadamard transform operations.
 KernelAttention
     General kernel-based attention with various kernel options.
 LSTAttention
     Linear Spectral Transform attention with configurable transforms.
-DCTAttention
-    Specialized LST attention using discrete cosine transform.
-HadamardAttention
-    Fast attention using Hadamard transform operations.
 MixedSpectralAttention
     Multi-transform attention combining multiple spectral methods.
-FourierNeuralOperator
-    Base FNO layer for learning operators in function spaces.
-FNOBlock
-    Complete FNO block with spectral convolution and feedforward.
+MixingLayer
+    Base class for spectral mixing operations.
+PerformerAttention
+    Performer-style attention with FAVOR+ algorithm.
+RealFourierMixing
+    Memory-efficient real FFT variant for real-valued inputs.
+SeparableFourierMixing
+    Configurable sequence and/or feature mixing.
+SpectralAttention
+    Multi-head spectral attention using random Fourier features.
 SpectralConv1d
     1D spectral convolution operator for sequence data.
 SpectralConv2d
     2D spectral convolution operator for image-like data.
+UnitaryMixingLayer
+    Base class for energy-preserving mixing transforms.
+WaveletMixing
+    1D wavelet mixing using discrete wavelet transform.
+WaveletMixing2D
+    2D wavelet mixing for spatial data processing.
 
 Examples
 --------
@@ -96,109 +105,66 @@ Spectral attention with random Fourier features:
 >>> x = torch.randn(8, 256, 768)
 >>> output = attention(x)
 
-Fourier Neural Operator for function learning:
-
->>> from spectrans.layers import FourierNeuralOperator
->>> 
->>> # Create FNO layer for continuous function approximation
->>> fno = FourierNeuralOperator(
-...     hidden_dim=256,
-...     modes=32
-... )
->>> x = torch.randn(16, 128, 256)
->>> output = fno(x)
-
-Wavelet mixing for multiresolution analysis:
-
->>> from spectrans.layers import WaveletMixing
->>> 
->>> # Create wavelet mixing layer
->>> wavelet_layer = WaveletMixing(
-...     hidden_dim=512,
-...     wavelet='db4',
-...     levels=3
-... )
->>> x = torch.randn(32, 256, 512)
->>> output = wavelet_layer(x)
-
-Hybrid mixing with multiple transforms:
-
->>> from spectrans.layers import MixedSpectralAttention
->>> 
->>> # Combine multiple spectral transforms
->>> hybrid_attention = MixedSpectralAttention(
-...     hidden_dim=768,
-...     num_heads=8,
-...     transforms=['dct', 'dst', 'hadamard'],
-...     mixing_weights=[0.4, 0.3, 0.3]
-... )
->>> x = torch.randn(16, 512, 768)
->>> output = hybrid_attention(x)
-
 Notes
 -----
 **Layer Categories and Complexity:**
 
-1. **Mixing Layers** (:math:`O(n \log n)` or :math:`O(n)` complexity):
+1. **Mixing Layers** ($O(n \log n)$ or $O(n)$ complexity):
    - Parameter-free: FourierMixing variants using FFT operations
    - Learnable filters: Global filters and AFNO with trainable parameters
    - Multiresolution: Wavelet transforms for hierarchical processing
 
-2. **Attention Layers** (Linear :math:`O(n)` complexity):
+2. **Attention Layers** (Linear $O(n)$ complexity):
    - Kernel approximation: Random Fourier Features and orthogonal features
    - Transform-based: DCT, DST, and Hadamard transforms
    - Hybrid approaches: Multiple transforms with learnable mixing
 
-3. **Neural Operators** (:math:`O(k \cdot d^2 + n \log n)` complexity):
+3. **Neural Operators** ($O(k \cdot d^2 + n \log n)$ complexity):
    - Function space learning: Map between infinite-dimensional spaces
    - Resolution invariance: Learn operators independent of discretization
    - Spectral parameterization: Efficient representation in Fourier domain
 
-**Mathematical Foundation:**
-
 All layers leverage the convolution theorem for efficient global mixing:
 
-.. math::
-    \mathcal{F}[f \star g] = \mathcal{F}[f] \odot \mathcal{F}[g]
+$$
+\mathcal{F}[f \star g] = \mathcal{F}[f] \odot \mathcal{F}[g]
+$$
 
-This enables replacement of quadratic attention :math:`O(n^2)` with logarithmic 
+This enables replacement of quadratic attention $O(n^2)$ with logarithmic 
 or linear complexity spectral operations.
-
-**Key Advantages:**
-
-- **Efficiency**: Subquadratic complexity compared to standard attention
-- **Global Mixing**: All positions interact through spectral domain operations  
-- **Mathematical Rigor**: Based on well-established signal processing principles
-- **Hardware Optimization**: Leverage highly optimized FFT implementations
-- **Memory Efficiency**: Reduced memory footprint for long sequences
-
-**Integration Guidelines:**
-
-All layers follow consistent interfaces and can be easily substituted for
-standard attention in transformer architectures. They support:
-
-- Batch processing with variable sequence lengths
-- Gradient flow for end-to-end training  
-- Mixed precision and distributed training
-- Configuration-based instantiation via YAML
 
 References
 ----------
-.. [1] Lee-Thorp, J., et al., "FNet: Mixing Tokens with Fourier Transforms", 
-       NAACL 2022.
-.. [2] Rao, Y., et al., "Global Filter Networks for Image Classification",
-       NeurIPS 2021.
-.. [3] Guibas, J., et al., "Adaptive Fourier Neural Operators", ICLR 2022.
-.. [4] Li, Z., et al., "Fourier Neural Operator for Parametric Partial
-       Differential Equations", ICLR 2021.
-.. [5] Choromanski, K., et al., "Rethinking Attention with Performers", 
-       ICLR 2021.
+James Lee-Thorp, Joshua Ainslie, Ilya Eckstein, and Santiago Ontanon. 2022.
+FNet: Mixing tokens with Fourier transforms. In Proceedings of the 2022 Conference
+of the North American Chapter of the Association for Computational Linguistics:
+Human Language Technologies (NAACL-HLT), pages 4296-4313, Seattle.
+
+Yongming Rao, Wenliang Zhao, Zheng Zhu, Jiwen Lu, and Jie Zhou. 2021.
+Global filter networks for image classification. In Advances in Neural
+Information Processing Systems 34 (NeurIPS 2021), pages 980-993.
+
+John Guibas, Morteza Mardani, Zongyi Li, Andrew Tao, Anima Anandkumar, and
+Bryan Catanzaro. 2022. Adaptive Fourier neural operators: Efficient token
+mixers for transformers. In Proceedings of the International Conference on
+Learning Representations (ICLR).
+
+Zongyi Li, Nikola Kovachki, Kamyar Azizzadenesheli, Burigede Liu, Kaushik
+Bhattacharya, Andrew Stuart, and Anima Anandkumar. 2021. Fourier neural
+operator for parametric partial differential equations. In Proceedings of
+the International Conference on Learning Representations (ICLR).
+
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song,
+Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin,
+Lukasz Kaiser, David Belanger, Lucy Colwell, and Adrian Weller. 2021.
+Rethinking attention with performers. In Proceedings of the International
+Conference on Learning Representations (ICLR).
 
 See Also
 --------
-spectrans.transforms : Underlying spectral transform implementations.
-spectrans.models : Complete model implementations using these layers.
-spectrans.blocks : Transformer blocks that compose these layers.
+[`spectrans.transforms`][] : Underlying spectral transform implementations.
+[`spectrans.models`][] : Model implementations using these layers.
+[`spectrans.blocks`][] : Transformer blocks that compose these layers.
 """
 
 from .attention import (
@@ -232,35 +198,30 @@ from .operators import (
     SpectralConv2d,
 )
 
+# Public API - alphabetically sorted
 __all__ = [
-    # Base classes
-    "MixingLayer",
-    "UnitaryMixingLayer", 
+    "AFNOMixing",
+    "AdaptiveGlobalFilter",
+    "DCTAttention",
+    "FNOBlock",
     "FilterMixingLayer",
-    # Fourier mixing layers
     "FourierMixing",
     "FourierMixing1D",
-    "RealFourierMixing",
-    "SeparableFourierMixing",
-    # Global filter mixing layers
+    "FourierNeuralOperator",
     "GlobalFilterMixing",
     "GlobalFilterMixing2D",
-    "AdaptiveGlobalFilter",
-    # Advanced mixing layers
-    "AFNOMixing",
-    "WaveletMixing",
-    "WaveletMixing2D",
-    # Spectral attention layers
-    "SpectralAttention",
-    "PerformerAttention",
+    "HadamardAttention",
     "KernelAttention",
     "LSTAttention",
-    "DCTAttention",
-    "HadamardAttention",
     "MixedSpectralAttention",
-    # Neural operators
-    "FourierNeuralOperator",
-    "FNOBlock", 
+    "MixingLayer",
+    "PerformerAttention",
+    "RealFourierMixing",
+    "SeparableFourierMixing",
+    "SpectralAttention",
     "SpectralConv1d",
     "SpectralConv2d",
+    "UnitaryMixingLayer",
+    "WaveletMixing",
+    "WaveletMixing2D",
 ]

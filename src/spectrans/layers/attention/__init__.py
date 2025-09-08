@@ -1,32 +1,42 @@
-"""Attention layer implementations for spectral transformers.
+r"""Spectral attention layer implementations with linear complexity.
 
 This module provides efficient attention mechanisms based on spectral methods
 and kernel approximations, achieving linear or logarithmic complexity compared
-to the quadratic complexity of standard attention.
+to the quadratic complexity of standard attention. The implementations include
+Random Fourier Features, orthogonal transforms, and hybrid approaches.
+
+Modules
+-------
+lst
+    Linear Spectral Transform attention implementations.
+spectral
+    Kernel-based spectral attention mechanisms.
 
 Classes
 -------
-SpectralAttention
-    Multi-head spectral attention using RFF approximation.
-PerformerAttention
-    Performer-style attention with FAVOR+ algorithm.
+DCTAttention
+    Specialized LST attention using discrete cosine transform.
+HadamardAttention
+    Fast attention using Hadamard transform operations.
 KernelAttention
     General kernel-based attention with various kernel options.
 LSTAttention
-    Linear Spectral Transform attention with orthogonal transforms.
-DCTAttention
-    Attention using Discrete Cosine Transform.
-HadamardAttention
-    Attention using fast Hadamard transform.
+    Linear Spectral Transform attention with configurable transforms.
 MixedSpectralAttention
-    Mixed spectral attention using multiple transform types.
+    Multi-transform attention combining multiple spectral methods.
+PerformerAttention
+    Performer-style attention with FAVOR+ algorithm.
+SpectralAttention
+    Multi-head spectral attention using random Fourier features.
 
 Examples
 --------
-Using spectral attention:
+Using spectral attention with RFF:
 
+>>> import torch
 >>> from spectrans.layers.attention import SpectralAttention
->>> attn = SpectralAttention(hidden_dim=512, num_heads=8)
+>>> 
+>>> attn = SpectralAttention(hidden_dim=512, num_heads=8, num_features=256)
 >>> x = torch.randn(32, 100, 512)
 >>> output = attn(x)
 >>> assert output.shape == x.shape
@@ -34,13 +44,54 @@ Using spectral attention:
 Using LST attention with DCT:
 
 >>> from spectrans.layers.attention import DCTAttention
+>>> 
 >>> attn = DCTAttention(hidden_dim=512, num_heads=8)
+>>> x = torch.randn(16, 128, 512)
 >>> output = attn(x)
+
+Using Performer attention:
+
+>>> from spectrans.layers.attention import PerformerAttention
+>>> 
+>>> attn = PerformerAttention(
+...     hidden_dim=768,
+...     num_heads=12,
+...     num_features=256,
+...     use_orthogonal=True
+... )
+>>> output = attn(x)
+
+Notes
+-----
+**Complexity Analysis:**
+
+- Standard attention: $O(n^2 d)$ time, $O(n^2)$ memory
+- Spectral attention: $O(n d k)$ time, $O(n k)$ memory
+- LST attention: $O(n d \log n)$ time, $O(n d)$ memory
+- Performer: $O(n d k)$ time with orthogonal features
+
+Where $n$ is sequence length, $d$ is dimension, and $k$ is number of random features.
+
+The kernel approximation quality improves as $O(1/\sqrt{k})$ for random features.
+
+References
+----------
+Krzysztof Choromanski, Valerii Likhosherstov, David Dohan, Xingyou Song,
+Andreea Gane, Tamas Sarlos, Peter Hawkins, Jared Davis, Afroz Mohiuddin,
+Lukasz Kaiser, David Belanger, Lucy Colwell, and Adrian Weller. 2021.
+Rethinking attention with performers. In Proceedings of the International
+Conference on Learning Representations (ICLR).
+
+Angelos Katharopoulos, Apoorv Vyas, Nikolaos Pappas, and François Fleuret. 2020.
+Transformers are RNNs: Fast autoregressive transformers with linear attention.
+In Proceedings of the 37th International Conference on Machine Learning (ICML),
+pages 5156-5165.
 
 See Also
 --------
-spectrans.kernels : Kernel functions used by attention mechanisms.
-spectrans.transforms : Spectral transforms used by LST attention.
+[`spectrans.kernels`][] : Kernel functions used by attention mechanisms.
+[`spectrans.transforms`][] : Spectral transforms used by LST attention.
+[`spectrans.layers`][] : Parent module containing all layer implementations.
 """
 
 from .lst import (
@@ -55,14 +106,13 @@ from .spectral import (
     SpectralAttention,
 )
 
+# Public API - alphabetically sorted
 __all__ = [
     "DCTAttention",
     "HadamardAttention",
     "KernelAttention",
-    # LST attention variants
     "LSTAttention",
     "MixedSpectralAttention",
     "PerformerAttention",
-    # Spectral attention variants
     "SpectralAttention",
 ]

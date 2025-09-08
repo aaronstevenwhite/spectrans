@@ -1,0 +1,3 @@
+# Configuration System
+
+::: spectrans.config

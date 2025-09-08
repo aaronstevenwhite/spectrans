@@ -39,8 +39,14 @@ The transformer block architecture follows the standard pattern:
 
 References
 ----------
-.. [1] Vaswani et al., "Attention is All You Need", NeurIPS 2017.
-.. [2] Xiong et al., "On Layer Normalization in the Transformer Architecture", ICML 2020.
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez,
+Lukasz Kaiser, and Illia Polosukhin. 2017. Attention is all you need. In Advances in
+Neural Information Processing Systems 30 (NeurIPS 2017), pages 5998-6008.
+
+Ruibin Xiong, Yunchang Yang, Di He, Kai Zheng, Shuxin Zheng, Chen Xing, Huishuai Zhang,
+Yanyan Lan, Liwei Wang, and Tie-Yan Liu. 2020. On layer normalization in the transformer
+architecture. In Proceedings of the 37th International Conference on Machine Learning
+(ICML 2020), pages 10524-10533.
 """
 
 
