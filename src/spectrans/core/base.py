@@ -1,4 +1,4 @@
-"""Base classes and interfaces for spectral transformer components.
+r"""Base classes and interfaces for spectral transformer components.
 
 This module defines the core abstract base classes and interfaces that all spectral
 transformer components must implement. These classes establish consistent APIs for
@@ -35,9 +35,10 @@ Implementing a custom spectral component:
 
 Building a transformer block:
 
+>>> import torch.nn as nn
 >>> from spectrans.core.base import TransformerBlock
->>> from spectrans.layers.mixing.base import MixingLayer
->>> mixing_layer = SomeSpectralMixing(hidden_dim=768)
+>>> from spectrans.layers.mixing.fourier import FourierMixing
+>>> mixing_layer = FourierMixing(hidden_dim=768)
 >>> ffn = nn.Sequential(nn.Linear(768, 3072), nn.GELU(), nn.Linear(3072, 768))
 >>> block = TransformerBlock(mixing_layer, ffn)
 
@@ -57,8 +58,13 @@ Mathematical Properties:
 - Layer normalization follows the pre-norm architecture pattern
 
 The TransformerBlock implements the standard architecture:
-H_l = LayerNorm(X_l + MixingLayer(X_l))
-X_{l+1} = LayerNorm(H_l + FFN(H_l))
+
+$$
+\begin{align}
+\mathbf{H}_l &= \text{LayerNorm}(\mathbf{X}_l + \text{MixingLayer}(\mathbf{X}_l)) \\
+\mathbf{X}_{l+1} &= \text{LayerNorm}(\mathbf{H}_l + \text{FFN}(\mathbf{H}_l))
+\end{align}
+$$
 
 See Also
 --------

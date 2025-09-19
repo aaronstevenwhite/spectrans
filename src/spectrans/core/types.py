@@ -1,9 +1,9 @@
-"""Type definitions and aliases for the spectrans library.
+r"""Type definitions and aliases for the spectrans library.
 
-This module provides comprehensive definitions, aliases, and literal types used
-throughout the spectrans library. The system ensures safety, enables better
-IDE support, and provides clear documentation of expected parameter types for all
-spectral transformer components.
+This module provides type definitions, aliases, and literal types used
+throughout the spectrans library. The type system ensures safety and provides
+clear documentation of expected parameter types for all spectral transformer
+components.
 
 The types are organized into logical groups covering tensors, shapes, transforms,
 neural network components, training configurations, and mathematical operations.

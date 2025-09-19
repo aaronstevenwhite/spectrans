@@ -1,4 +1,4 @@
-"""Core components and interfaces for the spectrans library.
+r"""Core components and interfaces for the spectrans library.
 
 This module provides the fundamental building blocks for spectral transformer implementations,
 including abstract base classes, type definitions, and the component registry system. All
@@ -61,10 +61,11 @@ Using the component registry system:
 
 Working with base classes for type safety:
 
+>>> import torch
 >>> from spectrans.core import SpectralComponent
->>> def process_component(component: SpectralComponent):
-...     complexity = component.complexity
-...     return component(input_tensor)
+>>> def process_component(component: SpectralComponent, input_tensor: torch.Tensor):
+...     output = component(input_tensor)
+...     return output
 
 Notes
 -----

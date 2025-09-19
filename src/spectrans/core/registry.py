@@ -1,6 +1,6 @@
-"""Component registry system for dynamic component registration and retrieval.
+r"""Component registry system for dynamic component registration and retrieval.
 
-This module implements a flexible registry pattern that allows spectral transformer
+This module implements a registry pattern that allows spectral transformer
 components to be registered at runtime and retrieved by name. The registry system
 enables modular composition of different spectral transforms, mixing layers, attention
 mechanisms, and complete models without tight coupling.
