@@ -1,13 +1,12 @@
-"""Fourier-based mixing layers for spectral transformers.
+r"""Fourier-based mixing layers for spectral transformers.
 
-This module implements Fourier-based token mixing mechanisms, including the
-FNet architecture that replaces attention with two-dimensional Fourier transforms.
-The implementations follow the mathematical formulations from the original papers
-while providing efficient PyTorch implementations optimized for modern hardware.
+Implements Fourier-based token mixing mechanisms, including the FNet architecture
+that replaces attention with two-dimensional Fourier transforms. Implementations
+follow mathematical formulations from the original papers with PyTorch implementations.
 
-The core idea is to perform mixing in the frequency domain using Fast Fourier
-Transforms, which provides O(n log n) complexity compared to O(n²) for attention
-while maintaining competitive performance on many sequence modeling tasks.
+Performs mixing in the frequency domain using Fast Fourier Transforms, which provides
+$O(n \log n)$ complexity compared to $O(n^2)$ for attention while maintaining performance
+on sequence modeling tasks.
 
 Classes
 -------
@@ -46,33 +45,27 @@ Notes
 Mathematical Foundation:
 
 The FNet mixing operation is defined as:
-    FourierMix(X) = Re(F_d^(-1)(F_n(X)))
+$$
+\text{FourierMix}(\mathbf{X}) = \text{Re}(\mathcal{F}_d^{-1}(\mathcal{F}_n(\mathbf{X})))
+$$
 
-Where:
-- F_n: 1D DFT along sequence dimension (n)
-- F_d^(-1): Inverse 1D DFT along feature dimension (d)
-- Re(·): Real part extraction
+Where $\mathcal{F}_n$ is 1D DFT along sequence dimension, $\mathcal{F}_d^{-1}$ is inverse
+1D DFT along feature dimension, and $\text{Re}(\cdot)$ denotes real part extraction.
 
-This can be efficiently implemented using PyTorch's 2D FFT:
-    FourierMix(X) = Re(fft2d(X, dim=(-2, -1)))
+This is implemented using PyTorch's 2D FFT as:
+$$
+\text{FourierMix}(\mathbf{X}) = \text{Re}(\text{fft2d}(\mathbf{X}, \text{dim}=(-2, -1)))
+$$
 
-Complexity Analysis:
-- Time: O(nd log n + nd log d) ≈ O(nd log(nd))
-- Space: O(nd) for storing frequency domain representations
+Time complexity is $O(nd \log n + nd \log d) \approx O(nd \log(nd))$ with $O(nd)$ space
+for storing frequency domain representations. The real FFT variant exploits Hermitian
+symmetry for approximately 2x memory and computational savings when inputs are real-valued.
 
-The real FFT variant exploits Hermitian symmetry for ~2x memory and
-computational savings when inputs are real-valued.
-
-Advantages:
-- Linear complexity in sequence length (vs quadratic for attention)
-- No learnable parameters (reduces overfitting risk)
-- Translation equivariance in both sequence and feature dimensions
-- Excellent parallelization properties
-
-Limitations:
-- No content-based interactions (purely positional mixing)
-- May struggle with tasks requiring precise positional reasoning
-- Real part extraction can lose information
+Linear complexity in sequence length contrasts with quadratic complexity for attention.
+No learnable parameters reduce overfitting risk. Translation equivariance holds in both
+sequence and feature dimensions with parallelization properties. Content-based interactions
+are not present (purely positional mixing). Tasks requiring precise positional reasoning
+may be challenging. Real part extraction can lose information.
 
 References
 ----------
@@ -102,11 +95,11 @@ from .base import UnitaryMixingLayer
 
 @register_component("mixing", "fourier")
 class FourierMixing(UnitaryMixingLayer):
-    """FNet-style Fourier mixing layer.
+    r"""FNet-style Fourier mixing layer.
 
     Implements the core FNet mixing operation using 2D Fourier transforms
-    along both sequence and feature dimensions. This provides an efficient
-    alternative to attention with O(n log n) complexity.
+    along both sequence and feature dimensions, providing an alternative
+    to attention with $O(n \log n)$ complexity.
 
     The operation performs:
     1. 2D FFT across sequence and feature dimensions
@@ -186,10 +179,10 @@ class FourierMixing(UnitaryMixingLayer):
             Properties including energy preservation and domain information.
         """
         return {
-            'unitary': False,  # Real part extraction breaks unitarity
+            'unitary': False,
             'real_output': True,
             'frequency_domain': True,
-            'energy_preserving': False,  # Real part extraction changes energy
+            'energy_preserving': False,
             'translation_equivariant': True,
             'learnable_parameters': False,
         }

@@ -1,9 +1,9 @@
 r"""Spectral attention layer implementations with linear complexity.
 
-This module provides efficient attention mechanisms based on spectral methods
-and kernel approximations, achieving linear or logarithmic complexity compared
-to the quadratic complexity of standard attention. The implementations include
-Random Fourier Features, orthogonal transforms, and hybrid approaches.
+Provides attention mechanisms based on spectral methods and kernel approximations,
+achieving linear or logarithmic complexity compared to the quadratic complexity of
+standard attention. Implementations include Random Fourier Features, orthogonal
+transforms, and hybrid approaches.
 
 Modules
 -------
@@ -63,16 +63,15 @@ Using Performer attention:
 
 Notes
 -----
-**Complexity Analysis:**
+Complexity Analysis:
 
-- Standard attention: $O(n^2 d)$ time, $O(n^2)$ memory
-- Spectral attention: $O(n d k)$ time, $O(n k)$ memory
-- LST attention: $O(n d \log n)$ time, $O(n d)$ memory
-- Performer: $O(n d k)$ time with orthogonal features
+Standard attention requires $O(n^2 d)$ time and $O(n^2)$ memory. Spectral attention
+reduces this to $O(n d k)$ time and $O(n k)$ memory, where $k$ is the number of random
+features. LST attention achieves $O(n d \log n)$ time with $O(n d)$ memory. Performer
+uses $O(n d k)$ time with orthogonal features. Here $n$ is sequence length and $d$ is
+dimension.
 
-Where $n$ is sequence length, $d$ is dimension, and $k$ is number of random features.
-
-The kernel approximation quality improves as $O(1/\sqrt{k})$ for random features.
+Kernel approximation quality scales as $O(1/\sqrt{k})$ for random features.
 
 References
 ----------

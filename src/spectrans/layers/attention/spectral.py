@@ -1,12 +1,11 @@
 r"""Spectral attention mechanisms using kernel approximations.
 
-This module implements efficient attention mechanisms based on spectral methods
-and kernel approximations, particularly Random Fourier Features (RFF). These
-methods achieve linear complexity $O(n)$ instead of the quadratic $O(n^2)$ complexity
-of standard attention.
+Implements attention mechanisms based on spectral methods and kernel approximations,
+particularly Random Fourier Features (RFF). These methods achieve linear complexity
+$O(n)$ instead of the quadratic $O(n^2)$ complexity of standard attention.
 
-The implementations follow the Performer architecture and related work on
-linearizing attention through kernel feature maps.
+Implementations follow the Performer architecture and related work on linearizing
+attention through kernel feature maps.
 
 Classes
 -------
@@ -44,16 +43,14 @@ Notes
 The spectral attention approximates standard attention as:
 
 $$
-\text{Attention}(Q, K, V) \approx \varphi(Q) (\varphi(K)^T V) / \text{normalization}
+\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) \approx \varphi(\mathbf{Q}) (\varphi(\mathbf{K})^T \mathbf{V}) / \text{normalization}
 $$
 
-Where $\varphi$ is a feature map (e.g., RFF) that linearizes the computation:
+Where $\varphi$ is a feature map (such as RFF) that linearizes the computation. Standard
+attention requires $O(n^2d)$ time and $O(n^2)$ space, while spectral attention reduces this
+to $O(nrd)$ time and $O(nr)$ space for $r$ features.
 
-- Standard attention: $O(n^2d)$ time, $O(n^2)$ space
-- Spectral attention: $O(nrd)$ time, $O(nr)$ space for $r$ features
-
-The approximation quality improves with more random features, with
-error decreasing as $O(1/\sqrt{r})$.
+Approximation quality scales as $O(1/\sqrt{r})$ with the number of random features.
 
 References
 ----------
@@ -90,8 +87,8 @@ from ...kernels.rff import GaussianRFFKernel, RFFAttentionKernel
 class SpectralAttention(AttentionLayer):
     """Multi-head spectral attention using RFF approximation.
 
-    Implements efficient attention using Random Fourier Features to
-    approximate the softmax kernel with linear complexity.
+    Implements attention using Random Fourier Features to approximate
+    the softmax kernel with linear complexity.
 
     Parameters
     ----------
@@ -265,7 +262,7 @@ class PerformerAttention(SpectralAttention):
     """Performer-style attention with FAVOR+ algorithm.
 
     Implements the Performer architecture with positive orthogonal
-    random features (FAVOR+) for unbiased softmax kernel approximation.
+    random features (FAVOR+) for softmax kernel approximation.
 
     Parameters
     ----------

@@ -1,14 +1,14 @@
 r"""Wavelet-based mixing layers for spectral transformer networks.
 
-This module implements neural network layers that perform token mixing operations
-through discrete wavelet transforms (DWT). The wavelet domain provides natural
-decomposition of signals into approximation and detail coefficients at multiple
-resolution levels, enabling structured processing of different frequency components.
+Implements neural network layers that perform token mixing operations through
+discrete wavelet transforms (DWT). The wavelet domain provides decomposition of
+signals into approximation and detail coefficients at multiple resolution levels,
+structuring processing of different frequency components.
 
 Wavelet mixing layers apply learnable transformations to wavelet coefficients
 before reconstruction, providing an alternative to attention mechanisms with
-different inductive biases. The multi-scale nature of wavelets makes these
-layers particularly suitable for signals with hierarchical structure.
+different inductive biases. The multi-scale nature of wavelets suits signals
+with hierarchical structure.
 
 Classes
 -------
@@ -39,46 +39,39 @@ Notes
 -----
 Mathematical Foundation:
 
-The discrete wavelet transform decomposes a signal $x$ into approximation
-coefficients $c_A$ and detail coefficients $\{c_{D_j}\}_{j=1}^J$ at $J$ levels:
+The discrete wavelet transform decomposes a signal $\mathbf{x}$ into approximation
+coefficients $\mathbf{c}_A$ and detail coefficients $\{\mathbf{c}_{D_j}\}_{j=1}^J$ at $J$ levels:
 
 $$
-\text{DWT}(x) = \{c_{A_J}, \{c_{D_j}\}_{j=1}^J\}
+\text{DWT}(\mathbf{x}) = \{\mathbf{c}_{A_J}, \{\mathbf{c}_{D_j}\}_{j=1}^J\}
 $$
 
-The decomposition uses filter banks with low-pass filter $h$ and high-pass
-filter $g$:
+The decomposition uses filter banks with low-pass filter $\mathbf{h}$ and high-pass
+filter $\mathbf{g}$:
 
 $$
-c_{A_{j+1}}[k] = \sum_m h[m-2k] c_{A_j}[m]
+\mathbf{c}_{A_{j+1}}[k] = \sum_m \mathbf{h}[m-2k] \mathbf{c}_{A_j}[m]
 $$
 
 $$
-c_{D_{j+1}}[k] = \sum_m g[m-2k] c_{A_j}[m]
+\mathbf{c}_{D_{j+1}}[k] = \sum_m \mathbf{g}[m-2k] \mathbf{c}_{A_j}[m]
 $$
 
-Wavelet mixing applies learnable transformations to these coefficients:
-- Pointwise mixing: Element-wise scaling of coefficients
-- Channel mixing: Linear transformations across feature dimensions
-- Level mixing: Cross-scale interactions using attention mechanisms
+Wavelet mixing applies learnable transformations to these coefficients through pointwise
+mixing with element-wise scaling, channel mixing with linear transformations across feature
+dimensions, and level mixing with cross-scale interactions using attention mechanisms.
 
-Computational Properties:
-- Time complexity: $O(nd)$ for $n$-length signals with $d$ channels
-- Space complexity: $O(nd)$ for coefficient storage
-- Decomposition levels: Typically 1-5 depending on signal length
+Time complexity is $O(nd)$ for $n$-length signals with $d$ channels. Space complexity is
+$O(nd)$ for coefficient storage. Decomposition typically uses 1-5 levels depending on signal
+length.
 
-The wavelet choice affects the analysis properties:
-- Daubechies wavelets: Compact support, good localization
-- Symlets: Symmetric, reduced phase distortion
-- Coiflets: Balanced time-frequency resolution
-- Biorthogonal: Perfect reconstruction with linear phase
+Daubechies wavelets provide compact support with localization. Symlets are symmetric with
+reduced phase distortion. Coiflets balance time-frequency resolution. Biorthogonal wavelets
+enable perfect reconstruction with linear phase.
 
-Implementation Details:
-
-All wavelet operations maintain gradient flow for end-to-end training.
-The transforms use PyTorch-native implementations compatible with
-automatic differentiation, avoiding external library dependencies
-that could break gradient computation.
+All wavelet operations maintain gradient flow for end-to-end training. The transforms use
+PyTorch-native implementations compatible with automatic differentiation, avoiding external
+library dependencies that could break gradient computation.
 
 References
 ----------

@@ -1,10 +1,9 @@
 r"""Layer implementations for spectral transformers.
 
-This module provides a collection of spectral transformer layers that
-replace traditional attention mechanisms with efficient spectral operations.
-The layers are organized into three main categories: mixing layers, attention
-layers, and neural operators, each optimized for different use cases while
-maintaining compatibility with standard transformer architectures.
+Provides spectral transformer layers that replace traditional attention mechanisms
+with spectral operations. The layers are organized into three categories: mixing layers,
+attention layers, and neural operators for different use cases with standard
+transformer architecture compatibility.
 
 Modules
 -------
@@ -107,31 +106,28 @@ Spectral attention with random Fourier features:
 
 Notes
 -----
-**Layer Categories and Complexity:**
+Layer Categories and Complexity:
 
-1. **Mixing Layers** ($O(n \log n)$ or $O(n)$ complexity):
-   - Parameter-free: FourierMixing variants using FFT operations
-   - Learnable filters: Global filters and AFNO with trainable parameters
-   - Multiresolution: Wavelet transforms for hierarchical processing
+Mixing layers have $O(n \log n)$ or $O(n)$ complexity. Parameter-free variants use FFT operations,
+while learnable filters like global filters and AFNO include trainable parameters. Multiresolution
+approaches use wavelet transforms for hierarchical processing.
 
-2. **Attention Layers** (Linear $O(n)$ complexity):
-   - Kernel approximation: Random Fourier Features and orthogonal features
-   - Transform-based: DCT, DST, and Hadamard transforms
-   - Hybrid approaches: Multiple transforms with learnable mixing
+Attention layers achieve linear $O(n)$ complexity through kernel approximation with Random Fourier
+Features and orthogonal features, transform-based methods using DCT, DST, and Hadamard transforms,
+or hybrid approaches combining multiple transforms with learnable mixing.
 
-3. **Neural Operators** ($O(k \cdot d^2 + n \log n)$ complexity):
-   - Function space learning: Map between infinite-dimensional spaces
-   - Resolution invariance: Learn operators independent of discretization
-   - Spectral parameterization: Efficient representation in Fourier domain
+Neural operators have $O(k \cdot d^2 + n \log n)$ complexity where $k$ is the number of modes and
+$d$ is the dimension. These operators map between infinite-dimensional function spaces with
+resolution-invariant learning independent of discretization through spectral parameterization
+in the Fourier domain.
 
-All layers leverage the convolution theorem for efficient global mixing:
+All layers use the convolution theorem for global mixing:
 
 $$
 \mathcal{F}[f \star g] = \mathcal{F}[f] \odot \mathcal{F}[g]
 $$
 
-This enables replacement of quadratic attention $O(n^2)$ with logarithmic
-or linear complexity spectral operations.
+This replaces quadratic attention $O(n^2)$ with logarithmic or linear complexity spectral operations.
 
 References
 ----------

@@ -1,15 +1,13 @@
-"""Global Filter Networks (GFNet) mixing layers.
+r"""Global Filter Networks (GFNet) mixing layers.
 
-This module implements Global Filter Network mixing layers that apply learnable
-complex-valued filters in the frequency domain. GFNet provides an efficient
-alternative to attention by performing element-wise filtering operations in
-the Fourier domain, maintaining O(n log n) complexity while introducing
-learnable parameters for improved expressiveness.
+Implements Global Filter Network mixing layers that apply learnable complex-valued
+filters in the frequency domain. GFNet provides an alternative to attention by
+performing element-wise filtering operations in the Fourier domain, maintaining
+$O(n \log n)$ complexity while introducing learnable parameters.
 
-The core innovation is the use of learnable complex filters that can selectively
-emphasize or suppress different frequency components, providing more modeling
-flexibility than parameter-free Fourier mixing while remaining computationally
-efficient.
+Learnable complex filters can selectively emphasize or suppress different frequency
+components, providing more modeling flexibility than parameter-free Fourier mixing
+while maintaining computational complexity.
 
 Classes
 -------
@@ -51,41 +49,34 @@ Notes
 Mathematical Foundation:
 
 The Global Filter operation is defined as:
-    GF(X) = F^(-1)(H * F(X))
+$$
+\text{GF}(\mathbf{X}) = \mathcal{F}^{-1}(\mathbf{H} \odot \mathcal{F}(\mathbf{X}))
+$$
 
-Where:
-- F: FFT along sequence dimension
-- F^(-1): Inverse FFT
-- H in C^(n x d): Learnable complex filter
-- *: Element-wise (Hadamard) multiplication
+Where $\mathcal{F}$ is FFT along sequence dimension, $\mathcal{F}^{-1}$ is inverse FFT,
+$\mathbf{H} \in \mathbb{C}^{n \times d}$ is a learnable complex filter, and $\odot$ denotes
+element-wise (Hadamard) multiplication.
 
 The complex filter is parameterized as:
-    H = sigma(W_r + iW_i)
+$$
+\mathbf{H} = \sigma(\mathbf{W}_r + i\mathbf{W}_i)
+$$
 
-Where:
-- W_r, W_i in R^(n x d): Real-valued learnable parameters
-- sigma: Activation function (typically sigmoid or tanh)
-- i: Imaginary unit
+Where $\mathbf{W}_r, \mathbf{W}_i \in \mathbb{R}^{n \times d}$ are real-valued learnable parameters,
+$\sigma$ is an activation function (typically sigmoid or tanh), and $i$ is the imaginary unit.
 
-Activation Functions:
-- Sigmoid: Provides soft gating with values in (0,1)
-- Tanh: Symmetric activation with values in (-1,1)
-- Identity: No activation, full expressiveness but may be unstable
+Sigmoid activation provides soft gating with values in $(0,1)$. Tanh provides symmetric
+activation with values in $(-1,1)$. Identity activation has no transformation but may be
+unstable.
 
-Complexity Analysis:
-- Time: O(nd log n) for FFT operations
-- Space: O(nd) for filter parameters and frequency representations
-- Parameters: 2nd real parameters (W_r and W_i)
+Time complexity is $O(nd \log n)$ for FFT operations. Space complexity is $O(nd)$ for filter
+parameters and frequency representations. The model uses $2nd$ real parameters ($\mathbf{W}_r$ and
+$\mathbf{W}_i$).
 
-Advantages over FNet:
-- Learnable parameters allow task-specific adaptation
-- Can emphasize important frequencies and suppress noise
-- Maintains linear complexity while adding expressiveness
-
-Design Considerations:
-- Filter initialization affects training stability
-- Regularization helps prevent overfitting to specific frequencies
-- Activation choice impacts gradient flow and expressiveness
+Learnable parameters allow task-specific adaptation compared to FNet. Filters can emphasize
+important frequencies and suppress noise while maintaining linear complexity with added
+expressiveness. Filter initialization affects training stability. Regularization prevents
+overfitting to specific frequencies. Activation choice impacts gradient flow and expressiveness.
 
 References
 ----------
@@ -120,13 +111,12 @@ from .base import FilterMixingLayer
 class GlobalFilterMixing(FilterMixingLayer):
     """Global Filter Network mixing layer.
 
-    Implements the core GFNet mixing operation with learnable complex
-    filters applied in the frequency domain along the sequence dimension.
+    Implements the core GFNet mixing operation with learnable complex filters
+    applied in the frequency domain along the sequence dimension.
 
     The layer uses interpolation to adapt filters to different sequence lengths,
-    allowing it to process variable-length inputs while preserving learned
-    frequency patterns. This makes the layer resolution-independent and more
-    flexible than fixed-size filtering.
+    processing variable-length inputs while preserving learned frequency patterns.
+    This provides resolution independence compared to fixed-size filtering.
 
     Parameters
     ----------

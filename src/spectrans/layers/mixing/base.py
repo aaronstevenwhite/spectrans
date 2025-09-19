@@ -1,14 +1,13 @@
-"""Base classes for spectral mixing layers.
+r"""Base classes for spectral mixing layers.
 
-This module provides base classes specifically for spectral mixing layers,
-extending a base MixingLayer with domain-specific functionality for token mixing
-operations using spectral transforms. These classes define the mathematical
-interfaces and computational requirements for spectral transformers.
+Provides base classes for spectral mixing layers, extending a base MixingLayer
+with domain-specific functionality for token mixing operations using spectral
+transforms. These classes define mathematical interfaces and computational
+requirements for spectral transformers.
 
-The mixing layers implement the core token mixing operations that replace
-traditional attention mechanisms in spectral transformers, providing
-linear or log-linear computational complexity while maintaining effectiveness
-for sequence modeling tasks.
+Mixing layers implement core token mixing operations that replace traditional
+attention mechanisms in spectral transformers, providing linear or log-linear
+computational complexity for sequence modeling tasks.
 
 Classes
 -------
@@ -43,18 +42,15 @@ Notes
 -----
 Mathematical Properties:
 
-All spectral mixing layers must preserve certain properties:
-- **Shape Preservation**: Output shape equals input shape for sequence modeling
-- **Batch Compatibility**: Support batched processing with consistent behavior
-- **Differentiability**: Full gradient flow for end-to-end training
+All spectral mixing layers preserve shape where output equals input shape for sequence
+modeling, support batched processing with consistent behavior, and maintain full gradient
+flow for end-to-end training.
 
-Unitary mixing layers additionally satisfy:
-- **Energy Preservation**: $||f(x)||^2 = ||x||^2$ (Parseval's theorem)
-- **Orthogonality**: Transform preserves inner products
+Unitary mixing layers additionally satisfy energy preservation $||f(\mathbf{x})||^2 = ||\mathbf{x}||^2$
+following Parseval's theorem and preserve inner products through orthogonality.
 
-Filter mixing layers operate in frequency domain:
-- **Frequency Selectivity**: Apply learned filters to frequency components
-- **Spectral Locality**: Localized operations in frequency space
+Filter mixing layers operate in frequency domain, applying learned filters to frequency
+components with localized operations in frequency space.
 
 
 See Also
@@ -231,9 +227,9 @@ class UnitaryMixingLayer(MixingLayer):
         }
 
     def verify_energy_preservation(self, input_tensor: torch.Tensor, output_tensor: torch.Tensor) -> bool:
-        """Verify energy preservation (Parseval's theorem).
+        r"""Verify energy preservation (Parseval's theorem).
 
-        Checks that $||\text{output}||^2 \approx ||\text{input}||^2$ within tolerance.
+        Checks that $||\mathbf{output}||^2 \approx ||\mathbf{input}||^2$ within tolerance.
 
         Parameters
         ----------
@@ -259,9 +255,9 @@ class UnitaryMixingLayer(MixingLayer):
         return bool(torch.all(relative_error < self.energy_tolerance))
 
     def verify_orthogonality(self, transform_matrix: torch.Tensor) -> bool:
-        """Verify orthogonality of the transform matrix.
+        r"""Verify orthogonality of the transform matrix.
 
-        Checks that $T T^H \approx I$ (identity matrix).
+        Checks that $\mathbf{T} \mathbf{T}^H \approx \mathbf{I}$ (identity matrix).
 
         Parameters
         ----------

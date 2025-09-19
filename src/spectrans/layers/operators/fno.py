@@ -1,13 +1,12 @@
 r"""Fourier Neural Operator (FNO) implementation for spectral transformers.
 
-This module provides the Fourier Neural Operator, which learns mappings between
-infinite-dimensional function spaces by parameterizing integral kernels in the
-Fourier domain. FNO is particularly effective for learning solution operators
-for partial differential equations and other continuous transformations.
+Provides the Fourier Neural Operator, which learns mappings between infinite-dimensional
+function spaces by parameterizing integral kernels in the Fourier domain. FNO is useful
+for learning solution operators for partial differential equations and other continuous
+transformations.
 
-The FNO architecture combines spectral convolutions in the Fourier domain with
-pointwise linear transformations, enabling efficient learning of global
-dependencies while maintaining resolution invariance.
+The FNO architecture combines spectral convolutions in the Fourier domain with pointwise
+linear transformations, learning global dependencies while maintaining resolution invariance.
 
 Classes
 -------
@@ -47,20 +46,20 @@ FNO block with residual connection:
 
 Notes
 -----
-The FNO learns the kernel $K$ in the integral operator:
+The FNO learns the kernel $\mathcal{K}$ in the integral operator:
 
 $$
-(K*v)(x) = \int k(x,y)v(y)dy
+(\mathcal{K}*\mathbf{v})(x) = \int k(x,y)\mathbf{v}(y)dy
 $$
 
-By parameterizing $k$ in the Fourier domain as $R_{\theta}$, the convolution becomes:
+By parameterizing $k$ in the Fourier domain as $\mathbf{R}_{\theta}$, the convolution becomes:
 
 $$
-\mathcal{F}[(K*v)] = R_{\theta} \cdot \mathcal{F}[v]
+\mathcal{F}[(\mathcal{K}*\mathbf{v})] = \mathbf{R}_{\theta} \cdot \mathcal{F}[\mathbf{v}]
 $$
 
-This allows efficient computation via FFT and learnable complex weights $R_{\theta}$
-that are truncated to retain only the lowest frequency modes.
+This allows computation via FFT and learnable complex weights $\mathbf{R}_{\theta}$ that are
+truncated to retain only the lowest frequency modes.
 
 References
 ----------

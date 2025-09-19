@@ -1,13 +1,11 @@
 r"""Linear Spectral Transform (LST) attention mechanisms.
 
-This module implements attention mechanisms based on Linear Spectral Transforms
-such as Discrete Cosine Transform (DCT), Discrete Sine Transform (DST), and
-Hadamard Transform. These transforms enable efficient $O(n \log n)$ attention
-computation while maintaining orthogonality properties.
+Implements attention mechanisms based on Linear Spectral Transforms including
+Discrete Cosine Transform (DCT), Discrete Sine Transform (DST), and Hadamard Transform.
+These transforms provide $O(n \log n)$ attention computation with orthogonality properties.
 
-The LST attention mechanism replaces the standard $QK^T$ computation with
-element-wise multiplication in the transform domain, significantly reducing
-computational complexity for long sequences.
+LST attention replaces the standard $\mathbf{Q}\mathbf{K}^T$ computation with element-wise
+multiplication in the transform domain, reducing computational complexity for long sequences.
 
 Classes
 -------
@@ -48,22 +46,14 @@ Notes
 The LST attention computes:
 
 $$
-\text{Attention}(Q, K, V) = T^{-1}(\Lambda \odot (T(Q) \odot T(K) \odot T(V)))
+\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = T^{-1}(\mathbf{\Lambda} \odot (T(\mathbf{Q}) \odot T(\mathbf{K}) \odot T(\mathbf{V})))
 $$
 
-Where:
+Where $T$ is an orthogonal transform (DCT, DST, Hadamard), $\mathbf{\Lambda}$ is a learnable
+diagonal scaling matrix, and $\odot$ denotes element-wise multiplication.
 
-- $T$ is an orthogonal transform (DCT, DST, Hadamard)
-- $\Lambda$ is a learnable diagonal scaling matrix
-- $\odot$ denotes element-wise multiplication
-
-Complexity:
-
-- Standard attention: $O(n^2d)$
-- LST attention: $O(nd \log n)$
-
-The orthogonality of transforms preserves information while
-enabling efficient computation in the frequency domain.
+Standard attention has $O(n^2d)$ complexity while LST attention reduces this to $O(nd \log n)$.
+The orthogonality of transforms preserves information while computing in the frequency domain.
 
 References
 ----------
@@ -101,8 +91,8 @@ from ...transforms.base import SpectralTransform
 class LSTAttention(AttentionLayer):
     """Linear Spectral Transform attention mechanism.
 
-    Implements efficient attention using orthogonal transforms
-    (DCT, DST, Hadamard) with learnable diagonal scaling.
+    Implements attention using orthogonal transforms (DCT, DST, Hadamard)
+    with learnable diagonal scaling.
 
     Parameters
     ----------
@@ -323,8 +313,8 @@ class LSTAttention(AttentionLayer):
 class DCTAttention(LSTAttention):
     """Attention using Discrete Cosine Transform.
 
-    Specialized LST attention that uses DCT for all heads,
-    optimized for real-valued signals with energy compaction.
+    Specialized LST attention that uses DCT for all heads for
+    real-valued signals with energy compaction.
 
     Parameters
     ----------
@@ -369,10 +359,10 @@ class DCTAttention(LSTAttention):
 
 @register_component("attention", "hadamard")
 class HadamardAttention(LSTAttention):
-    """Attention using fast Hadamard transform.
+    r"""Attention using fast Hadamard transform.
 
-    Uses Hadamard transform for O(n log n) attention computation
-    with binary coefficients for efficiency.
+    Uses Hadamard transform for $O(n \log n)$ attention computation
+    with binary coefficients.
 
     Parameters
     ----------
