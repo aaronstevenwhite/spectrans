@@ -32,11 +32,11 @@ Creating hybrid blocks with different strategies:
 
 Notes
 -----
-Hybrid blocks are useful for:
-- Combining complementary strengths of different mixing strategies
-- Adapting to different types of patterns in the data
-- Balancing computational efficiency with modeling capacity
-- Capturing both local and global dependencies
+Hybrid blocks combine multiple mixing strategies through:
+- Alternating selection between different layer types
+- Adaptive gating mechanisms for dynamic layer selection
+- Parallel processing at multiple scales
+- Sequential cascading of different transformations
 
 References
 ----------

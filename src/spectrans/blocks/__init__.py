@@ -108,7 +108,7 @@ All blocks maintain:
 - Residual connections for gradient flow
 - LayerNorm for training stability
 - Dropout for regularization
-- Optional activation checkpointing for memory efficiency
+- Optional activation checkpointing
 
 References
 ----------

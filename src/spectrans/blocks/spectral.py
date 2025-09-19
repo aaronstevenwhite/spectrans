@@ -1,4 +1,4 @@
-"""Spectral transformer blocks.
+r"""Spectral transformer blocks.
 
 This module provides pre-configured transformer blocks for different spectral
 architectures, combining various mixing and attention layers with feedforward
@@ -31,14 +31,14 @@ Creating different spectral blocks:
 
 Notes
 -----
-Each spectral block is optimized for specific use cases:
-- FNetBlock: Efficient mixing using FFT, good for long sequences
-- GFNetBlock: Learnable frequency filters, good for structured patterns
-- AFNOBlock: Adaptive mode selection, good for multiscale features
-- SpectralAttentionBlock: Kernel approximation, good when attention patterns matter
-- LSTBlock: Orthogonal transforms, good for preserving energy
-- WaveletBlock: Multiscale analysis, good for hierarchical features
-- FNOBlock: Neural operators, good for function approximation
+Each spectral block implements different mixing strategies:
+- FNetBlock: Uses FFT for token mixing with $O(n \log n)$ complexity
+- GFNetBlock: Applies learnable filters in frequency domain
+- AFNOBlock: Selects Fourier modes adaptively
+- SpectralAttentionBlock: Approximates kernels using random features
+- LSTBlock: Uses orthogonal transforms (DCT, DST, or Hadamard)
+- WaveletBlock: Performs multi-resolution decomposition
+- FNOBlock: Implements neural operators in frequency domain
 
 References
 ----------
@@ -75,10 +75,10 @@ from .base import PreNormBlock
 
 @register_component("block", "fnet")
 class FNetBlock(PreNormBlock):
-    """FNet transformer block with Fourier mixing.
+    r"""FNet transformer block with Fourier mixing.
 
-    This block uses Fourier transforms for token mixing, providing an efficient
-    alternative to attention with O(n log n) complexity.
+    This block uses Fourier transforms for token mixing, providing an
+    alternative to attention with $O(n \log n)$ complexity.
 
     Parameters
     ----------
@@ -117,8 +117,7 @@ class FNetBlock(PreNormBlock):
 class GFNetBlock(PreNormBlock):
     """GFNet transformer block with global filter mixing.
 
-    This block uses learnable frequency-domain filters for token mixing,
-    allowing the model to learn which frequency components to emphasize.
+    This block uses learnable frequency-domain filters for token mixing.
 
     Parameters
     ----------
@@ -172,7 +171,7 @@ class AFNOBlock(PreNormBlock):
     """AFNO transformer block with adaptive Fourier neural operator.
 
     This block uses adaptive Fourier mode selection with MLPs in the frequency
-    domain for efficient token mixing.
+    domain for token mixing.
 
     Parameters
     ----------
@@ -232,7 +231,7 @@ class SpectralAttentionBlock(PreNormBlock):
     """Spectral attention transformer block.
 
     This block uses spectral attention with random Fourier features for
-    efficient kernel approximation.
+    kernel approximation.
 
     Parameters
     ----------
@@ -287,7 +286,7 @@ class LSTBlock(PreNormBlock):
     """LST transformer block with linear spectral transform attention.
 
     This block uses orthogonal transforms (DCT, DST, or Hadamard) for
-    efficient attention computation.
+    attention computation.
 
     Parameters
     ----------
@@ -341,8 +340,7 @@ class LSTBlock(PreNormBlock):
 class WaveletBlock(PreNormBlock):
     """Wavelet transformer block with wavelet mixing.
 
-    This block uses discrete wavelet transforms for multiscale token mixing,
-    capturing both local and global patterns.
+    This block uses discrete wavelet transforms for multiscale token mixing.
 
     Parameters
     ----------
@@ -393,7 +391,7 @@ class FNOBlock(PreNormBlock):
     """FNO transformer block with Fourier neural operator.
 
     This block uses Fourier neural operators for learning mappings between
-    function spaces, particularly useful for PDE-related tasks.
+    function spaces.
 
     Parameters
     ----------
