@@ -110,10 +110,10 @@ from spectrans.models import GFNet
 # GFNet uses learnable filters in frequency domain
 gfnet = GFNet(
     vocab_size=30000,
-    hidden_dim=768,
-    num_layers=12,
-    max_sequence_length=512,
-    num_classes=10  # Multi-class classification
+    hidden_dim=512,
+    num_layers=8,
+    max_sequence_length=256,
+    num_classes=10
 )
 
 input_ids = torch.randint(0, 30000, (2, 256))
@@ -129,17 +129,17 @@ from spectrans.models import AFNOModel
 # AFNO is great for tasks requiring global context
 afno = AFNOModel(
     vocab_size=30000,
-    hidden_dim=768,
+    hidden_dim=512,
     num_layers=8,
-    max_sequence_length=1024,  # Longer sequences
-    num_classes=3,
-    n_modes=64  # Number of Fourier modes to retain
+    max_sequence_length=256,
+    modes_seq=32,  # Number of Fourier modes to keep
+    num_classes=10
 )
 
 # AFNO excels with longer sequences
-input_ids = torch.randint(0, 30000, (1, 1024))
+input_ids = torch.randint(0, 30000, (4, 256))
 logits = afno(input_ids=input_ids)
-print(f"AFNO output: {logits.shape}")  # (1, 3)
+print(f"AFNO output: {logits.shape}")  # (4, 10)
 ```
 
 ### Wavelet Transformers
@@ -151,16 +151,16 @@ from spectrans.models import WaveletTransformer
 wavelet_model = WaveletTransformer(
     vocab_size=30000,
     hidden_dim=512,
-    num_layers=10,
-    max_sequence_length=512,
-    num_classes=4,
-    wavelet_type="db4",  # Daubechies-4 wavelet
-    decomposition_levels=3
+    num_layers=8,
+    wavelet="db4",  # Daubechies-4 wavelet
+    levels=3,        # 3 decomposition levels
+    max_sequence_length=256,
+    num_classes=10
 )
 
 input_ids = torch.randint(0, 30000, (2, 256))
 logits = wavelet_model(input_ids=input_ids)
-print(f"Wavelet output: {logits.shape}")  # (2, 4)
+print(f"Wavelet output: {logits.shape}")  # (2, 10)
 ```
 
 ## Working with Individual Components
@@ -197,38 +197,38 @@ wavelet_block = SpectralTransformerBlock(
 Here's a simple training loop example:
 
 ```python
-import torch.nn.functional as F
+import torch
+import torch.nn as nn
 from torch.optim import AdamW
+from spectrans.models import FNet
 
-# Create model and data
-model = FNet(vocab_size=10000, hidden_dim=512, num_layers=6, 
-             max_sequence_length=256, num_classes=2)
+# Setup model and optimizer
+model = FNet(
+    vocab_size=30000,
+    hidden_dim=256,
+    num_layers=6,
+    max_sequence_length=128,
+    num_classes=2
+)
 optimizer = AdamW(model.parameters(), lr=1e-4)
+criterion = nn.CrossEntropyLoss()
 
-# Sample training step
-def training_step(model, batch):
-    input_ids, labels = batch
-    
+# Training loop
+for epoch in range(3):
+    # Sample batch
+    input_ids = torch.randint(0, 30000, (8, 128))
+    labels = torch.randint(0, 2, (8,))
+
     # Forward pass
     logits = model(input_ids=input_ids)
-    
-    # Compute loss
-    loss = F.cross_entropy(logits, labels)
-    
+    loss = criterion(logits, labels)
+
     # Backward pass
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
-    return loss.item()
 
-# Example batch
-batch_size = 8
-input_ids = torch.randint(0, 10000, (batch_size, 128))
-labels = torch.randint(0, 2, (batch_size,))
-
-loss = training_step(model, (input_ids, labels))
-print(f"Training loss: {loss:.4f}")
+    print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
 ```
 
 ## GPU Usage
@@ -237,7 +237,7 @@ All models support GPU acceleration automatically:
 
 ```python
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = FNet(vocab_size=30000, hidden_dim=768, num_layers=12, 
+model = FNet(vocab_size=30000, hidden_dim=768, num_layers=12,
              max_sequence_length=512, num_classes=2)
 model = model.to(device)
 
@@ -275,16 +275,17 @@ scaler.update()
 Now that you've got the basics:
 
 1. **Explore Examples**: Check out the [examples](../examples/) directory for complete applications
-2. **Read the API Documentation**: Detailed reference at [API docs](api/index.md)  
+2. **Read the API Documentation**: Detailed reference at [API docs](api/index.md)
 3. **Experiment with Configurations**: Modify the YAML configs in `examples/configs/` to try different architectures
-4. **Build Custom Components**: Learn how to create your own spectral layers
+4. **Contribute**: See the [Contributing Guide](contributing.md) for development setup
+5. **Build Custom Components**: Learn how to create your own spectral layers
 
 ## Key Concepts to Remember
 
 - **Direct Instantiation**: Use model classes like `FNet()`, `GFNet()` directly
 - **Configuration**: Use YAML files with `ConfigBuilder` for experiments
 - **Components**: Mix and match layers, blocks, and transforms
-- **Efficiency**: Spectral methods offer :math:`O(n \log n)` complexity vs :math:`O(n^2)` for attention
+- **Efficiency**: Spectral methods offer $O(n \log n)$ complexity vs $O(n^2)$ for attention
 - **Flexibility**: Works with both token IDs and pre-computed embeddings
 
 Happy building with Spectrans! 🚀

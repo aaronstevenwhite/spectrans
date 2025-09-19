@@ -90,103 +90,30 @@ print("✓ Installation successful!")
 
 ## Development Setup
 
-If you're planning to contribute to Spectrans:
-
-### Install Pre-commit Hooks
-
-```bash
-pre-commit install
-```
-
-This sets up automatic code formatting and linting.
-
-### Run Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=spectrans
-
-# Run specific test module
-pytest tests/unit/test_models/test_fnet.py -v
-```
-
-### Type Checking
-
-```bash
-mypy src/spectrans
-```
-
-### Code Formatting and Linting
-
-```bash
-# Check code style
-ruff check src tests
-
-# Format code
-black src tests
-isort src tests
-```
-
-## Configuration
-
-Spectrans supports YAML-based configuration. Example configurations are included in the `examples/configs/` directory:
-
-```bash
-ls examples/configs/
-# afno.yaml  fnet.yaml  gfnet.yaml  hybrid.yaml  ...
-```
+For contributors and developers, see the [Contributing Guide](contributing.md) for complete development setup instructions including pre-commit hooks, testing, and code quality tools.
 
 ## GPU Support
 
-Spectrans automatically uses CUDA if available. To verify GPU support:
+Spectrans automatically uses CUDA if available:
 
 ```python
 import torch
-print(f"CUDA available: {torch.cuda.is_available()}")
-print(f"CUDA device count: {torch.cuda.device_count()}")
-
-# Models will automatically use GPU if available
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = model.to(device)
 ```
 
-## Troubleshooting
+## Getting Help
 
-### Common Issues
+If you encounter installation issues:
 
-**ImportError: No module named 'spectrans'**
-- Ensure you've activated your virtual environment
-- Try reinstalling: `pip install -e .`
-
-**CUDA out of memory**
-- Reduce batch size or sequence length
-- Use gradient checkpointing: `model.enable_gradient_checkpointing()`
-
-**Type checking errors**
-- Ensure you're using Python 3.13+
-- Install development dependencies: `pip install -e ".[dev]"`
-
-**Tests failing**
-- Activate virtual environment: `source venv/bin/activate`
-- Ensure all dependencies installed: `pip install -e ".[dev]"`
-
-### Getting Help
-
-If you encounter issues:
-
-1. Check the [documentation](https://spectrans.readthedocs.io)
-2. Search [existing issues](https://github.com/aaronstevenwhite/spectrans/issues)
-3. Create a new issue with:
-   - Python version: `python --version`
-   - PyTorch version: `python -c "import torch; print(torch.__version__)"`
-   - Spectrans version: `python -c "import spectrans; print(spectrans.__version__)"`
-   - Full error traceback
+1. Ensure you're using Python 3.13+
+2. Try reinstalling: `pip install --upgrade spectrans`
+3. Check [existing issues](https://github.com/aaronstevenwhite/spectrans/issues)
+4. For development setup, see the [Contributing Guide](contributing.md)
 
 ## Next Steps
 
 - Follow the [Quick Start Guide](quickstart.md) to build your first model
+- See the [Contributing Guide](contributing.md) for development setup
 - Explore [Examples](../examples/) for common use cases
 - Read the [API Reference](api/index.md) for detailed documentation

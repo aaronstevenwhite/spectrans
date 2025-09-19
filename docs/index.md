@@ -15,7 +15,7 @@ Spectrans provides efficient implementations of spectral methods for deep learni
 
 ### 🚀 Performance
 - GPU-accelerated spectral operations
-- Linear complexity :math:`O(n \log n)` for sequence mixing
+- Linear complexity $O(n \log n)$ for sequence mixing
 - Memory-efficient real-valued FFT variants
 
 ### 🧮 Mathematical Rigor
@@ -77,23 +77,24 @@ pip install -e ".[dev]"
 ## Getting Started
 
 - [Installation](installation.md) - Complete installation guide
-- [Quick Start](quickstart.md) - Step-by-step tutorial with examples  
+- [Quick Start](quickstart.md) - Step-by-step tutorial with examples
+- [Contributing](contributing.md) - Development setup and contribution workflow
 - [API Reference](api/index.md) - Detailed documentation of all modules
 
 ## Mathematical Foundation
 
 Spectrans is built on solid mathematical foundations:
 
-- **Fourier Transform**: Global frequency analysis with :math:`O(n \log n)` complexity
+- **Fourier Transform**: Global frequency analysis with $O(n \log n)$ complexity
 - **Wavelet Transform**: Multi-resolution analysis for hierarchical features
 - **Kernel Methods**: Efficient approximations of infinite-dimensional mappings
 - **Neural Operators**: Learning solution operators for differential equations
 
 ## Why Spectral Methods?
 
-Traditional attention mechanisms have :math:`O(n^2)` complexity, limiting their scalability. Spectral methods offer:
+Traditional attention mechanisms have $O(n^2)$ complexity, limiting their scalability. Spectral methods offer:
 
-1. **Efficiency**: :math:`O(n \log n)` complexity for global interactions
+1. **Efficiency**: $O(n \log n)$ complexity for global interactions
 2. **Interpretability**: Frequency-domain processing reveals signal structure
 3. **Invariances**: Natural translation and rotation invariances
 4. **Generalization**: Resolution-independent learned representations
