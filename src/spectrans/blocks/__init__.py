@@ -60,31 +60,29 @@ Using a FNet block:
 >>> import torch
 >>> from spectrans.blocks import FNetBlock
 >>>
->>> block = FNetBlock(hidden_dim=768, mlp_ratio=4.0)
+>>> block = FNetBlock(hidden_dim=768, ffn_hidden_dim=3072)
 >>> x = torch.randn(32, 512, 768)
 >>> output = block(x)
 >>> assert output.shape == x.shape
 
 Using a hybrid block with multiple mixing strategies:
 
->>> from spectrans.blocks import HybridBlock
+>>> from spectrans.blocks import AlternatingBlock
+>>> from spectrans.layers.mixing.fourier import FourierMixing
+>>> from spectrans.layers.mixing.wavelet import WaveletMixing
 >>>
->>> block = HybridBlock(
-...     hidden_dim=512,
-...     mixing_types=['fourier', 'wavelet'],
-...     mixing_weights=[0.6, 0.4]
-... )
+>>> layer1 = FourierMixing(hidden_dim=512)
+>>> layer2 = WaveletMixing(hidden_dim=512, wavelet='db4')
+>>> block = AlternatingBlock(layer1=layer1, layer2=layer2, hidden_dim=512)
 >>> output = block(x)
 
 Using parallel execution:
 
 >>> from spectrans.blocks import ParallelBlock
+>>> from spectrans.layers.mixing.fourier import FourierMixing
 >>>
->>> block = ParallelBlock(
-...     hidden_dim=768,
-...     mixing_type='global_filter',
-...     sequence_length=512
-... )
+>>> mixing = FourierMixing(hidden_dim=768)
+>>> block = ParallelBlock(mixing_layer=mixing, hidden_dim=768)
 >>> output = block(x)
 
 Notes
