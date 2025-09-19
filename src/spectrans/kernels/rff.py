@@ -2,12 +2,11 @@ r"""Random Fourier Features (RFF) for kernel approximation.
 
 This module implements Random Fourier Features, a technique for approximating
 shift-invariant kernels through explicit feature maps. RFF enables linear-time
-computation of kernel operations that would normally require quadratic time,
-making them suitable for large-scale machine learning applications.
+computation of kernel operations that would normally require quadratic time.
 
 The implementation supports various kernel types including Gaussian (RBF),
 Laplacian, and other shift-invariant kernels. It also includes orthogonal
-random features for improved approximation quality.
+random features that reduce approximation variance.
 
 Classes
 -------
@@ -37,7 +36,7 @@ Computing approximate kernel matrix:
 >>> K_approx = kernel.kernel_approximation(x, y)
 >>> assert K_approx.shape == (32, 100, 50)
 
-Using orthogonal features for better approximation:
+Using orthogonal features:
 
 >>> from spectrans.kernels.rff import OrthogonalRandomFeatures
 >>> orf = OrthogonalRandomFeatures(input_dim=64, num_features=256)
@@ -45,22 +44,23 @@ Using orthogonal features for better approximation:
 
 Notes
 -----
-Random Fourier Features Theory:
-
-For a shift-invariant kernel $k(x, y) = \kappa(x - y)$ with Fourier transform $p(\omega)$,
+For a shift-invariant kernel
+$k(\mathbf{x}, \mathbf{y}) = \kappa(\mathbf{x} - \mathbf{y})$ with Fourier transform $p(\omega)$,
 Bochner's theorem gives:
 
 $$
-k(x, y) = \int p(\omega) \exp(i\omega^T(x-y)) d\omega
+k(\mathbf{x}, \mathbf{y}) = \int p(\omega) \exp(i\omega^T(\mathbf{x}-\mathbf{y})) d\omega
 $$
 
 The RFF approximation samples $\omega \sim p(\omega)$ and uses:
 
 $$
-\varphi(x) = \sqrt{\frac{2}{D}} \left[\cos(\omega_1^Tx + b_1), \ldots, \cos(\omega_D^Tx + b_D)\right]
+\varphi(\mathbf{x}) = \sqrt{\frac{2}{D}}
+\left[\cos(\omega_1^T\mathbf{x} + b_1), \ldots, \cos(\omega_D^T\mathbf{x} + b_D)\right]
 $$
 
-This gives $k(x, y) \approx \varphi(x)^T \varphi(y)$ with approximation error $O(1/\sqrt{D})$.
+This gives $k(\mathbf{x}, \mathbf{y}) \approx \varphi(\mathbf{x})^T \varphi(\mathbf{y})$
+with approximation error $O(1/\sqrt{D})$.
 
 For Gaussian kernel: $p(\omega) = \mathcal{N}(0, \sigma^2 I)$
 
@@ -102,7 +102,10 @@ from .base import RandomFeatureMap, ShiftInvariantKernel
 class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Gaussian (RBF) kernel with Random Fourier Features approximation.
 
-    Implements $k(x, y) = \exp\left(-\frac{\|x - y\|^2}{2\sigma^2}\right)$ using RFF.
+    Implements the Gaussian kernel using RFF.
+
+    The kernel function is:
+    $k(\mathbf{x}, \mathbf{y}) = \exp\left(-\frac{\|\mathbf{x} - \mathbf{y}\|^2}{2\sigma^2}\right)$.
 
     Parameters
     ----------
@@ -286,8 +289,10 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
     r"""Laplacian kernel with Random Fourier Features approximation.
 
-    Implements $k(x, y) = \exp\left(-\frac{\|x - y\|_1}{\sigma}\right)$ using RFF with Cauchy
-    distribution for sampling frequencies.
+    Implements the Laplacian kernel using RFF with Cauchy distribution.
+
+    The kernel function is:
+    $k(\mathbf{x}, \mathbf{y}) = \exp\left(-\frac{\|\mathbf{x} - \mathbf{y}\|_1}{\sigma}\right)$.
 
     Parameters
     ----------
@@ -407,9 +412,9 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
 
 @register_component("kernel", "orthogonal_rff")
 class OrthogonalRandomFeatures(RandomFeatureMap):
-    """Orthogonal Random Features for improved kernel approximation.
+    """Orthogonal Random Features for kernel approximation.
 
-    Uses structured orthogonal matrices for better approximation quality
+    Uses structured orthogonal matrices to reduce approximation variance
     compared to standard i.i.d. Gaussian features.
 
     Parameters
@@ -423,7 +428,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
     sigma : float, default=1.0
         Kernel bandwidth parameter.
     use_hadamard : bool, default=False
-        If True, use fast Hadamard transform for efficiency.
+        If True, use fast Hadamard transform.
     trainable : bool, default=False
         If True, make scaling parameters trainable.
     seed : int | None, default=None
@@ -666,13 +671,13 @@ class RFFAttentionKernel(RandomFeatureMap):
 
         if self.kernel_type == "softmax":
             # Positive features for softmax kernel approximation
-            # $\varphi(x) = \exp(x^T \omega - \|x\|^2/2) / \sqrt{m}$
+            # $\varphi(\mathbf{x}) = \exp(\mathbf{x}^T \omega - \|\mathbf{x}\|^2/2) / \sqrt{m}$
             x_norm_sq = torch.sum(x ** 2, dim=-1, keepdim=True) / 2
             features = torch.exp(z - x_norm_sq)
             scale = 1.0 / math.sqrt(self.num_features)
 
         elif self.kernel_type == "relu":
-            # ReLU kernel: $\max(0, x^T \omega)$
+            # ReLU kernel: $\max(0, \mathbf{x}^T \omega)$
             features = F.relu(z)
             scale = math.sqrt(2.0 / self.num_features)
 

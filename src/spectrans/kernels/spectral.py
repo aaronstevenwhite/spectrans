@@ -1,9 +1,8 @@
 r"""Spectral kernel functions for attention mechanisms.
 
 This module implements kernel functions based on spectral decomposition
-and eigenfunction expansions. These kernels are particularly useful for
-spectral attention mechanisms and provide alternatives to RFF-based
-approximations.
+and eigenfunction expansions. These kernels provide alternatives to
+RFF-based approximations for spectral attention mechanisms.
 
 The implementations include polynomial spectral kernels, eigenvalue-based
 decompositions, and learnable spectral filters that can be optimized
@@ -42,16 +41,14 @@ Learnable spectral kernel:
 
 Notes
 -----
-Spectral kernels leverage eigendecomposition for efficient computation:
-    K(X, Y) = Φ(X) Λ Φ(Y)^T
+Spectral kernels leverage eigendecomposition for kernel computation through
+the representation $K(\mathbf{X}, \mathbf{Y}) = \Phi(\mathbf{X}) \mathbf{\Lambda} \Phi(\mathbf{Y})^T$
+where $\Phi$ are eigenfunctions and $\mathbf{\Lambda}$ are eigenvalues.
 
-Where Φ are eigenfunctions and Λ are eigenvalues. This allows:
-1. Low-rank approximations via truncation
-2. Learnable spectral filters via trainable Λ
-3. Efficient computation in eigenspace
-
-The rank parameter controls the tradeoff between approximation
-quality and computational efficiency.
+This decomposition enables low-rank approximations via truncation of the
+eigenspectrum and learnable spectral filters through trainable eigenvalues.
+The rank parameter determines the number of eigenmodes retained in the
+approximation.
 
 References
 ----------
@@ -140,7 +137,7 @@ class SpectralKernel(KernelFunction):
 class PolynomialSpectralKernel(SpectralKernel):
     r"""Polynomial kernel with spectral decomposition.
 
-    Computes $(XY^T + c)^d$ using eigendecomposition for efficiency.
+    Computes $(\mathbf{X}\mathbf{Y}^T + c)^d$ using eigendecomposition.
 
     Parameters
     ----------
@@ -259,7 +256,7 @@ class PolynomialSpectralKernel(SpectralKernel):
         cov = cov / x.shape[-2]
 
         # Eigendecomposition of covariance
-        eigenvalues, eigenvectors = torch.linalg.eigh(cov)
+        _, eigenvectors = torch.linalg.eigh(cov)
 
         # Keep top-r components
         top_components = eigenvectors[..., -self.rank:]
@@ -283,7 +280,7 @@ class TruncatedSVDKernel(SpectralKernel):
     normalize : bool, default=True
         Whether to normalize.
     use_randomized : bool, default=False
-        Use randomized SVD for efficiency.
+        Use randomized SVD for large matrices.
 
     Attributes
     ----------
@@ -353,7 +350,7 @@ class TruncatedSVDKernel(SpectralKernel):
         Tensor
             Low-rank approximation of shape (..., n, m).
         """
-        n, m = matrix.shape[-2:]
+        m = matrix.shape[-1]
 
         # Random sampling matrix
         omega = torch.randn(m, self.rank + 10, device=matrix.device)

@@ -5,8 +5,8 @@ attention mechanisms and other kernel-based methods. It includes both
 explicit kernel evaluations and implicit representations through random
 feature maps.
 
-The kernels support efficient approximations of attention mechanisms
-with linear complexity, enabling scalable transformer architectures.
+The kernels approximate attention mechanisms with linear complexity
+through random feature expansions and spectral decompositions.
 
 Modules
 -------
@@ -69,19 +69,17 @@ Using learnable spectral kernel:
 
 Notes
 -----
-Kernel approximation enables linear complexity attention mechanisms through:
+Kernel approximation achieves linear complexity attention mechanisms through
+random feature expansions and spectral decompositions. Random Fourier Features,
+based on Bochner's theorem, approximate shift-invariant kernels via the
+factorization $k(\mathbf{x}, \mathbf{y}) \approx \varphi(\mathbf{x})^T \varphi(\mathbf{y})$
+where $\varphi$ maps inputs to a feature space.
 
-1. **Random Fourier Features**: Based on Bochner's theorem, approximates
-   shift-invariant kernels via $k(x, y) \approx \varphi(x)^T \varphi(y)$
-
-2. **Spectral Decomposition**: Leverages eigendecomposition for efficient
-   kernel computation via low-rank approximations
-
-3. **Orthogonal Features**: Improves approximation quality through
-   orthogonalized random projections
-
-The approximation quality improves with $O(1/\sqrt{D})$ where $D$ is the
-number of random features.
+Spectral decomposition methods leverage eigendecomposition for kernel
+computation through low-rank approximations, while orthogonal feature
+variants apply orthogonalized random projections to reduce approximation
+variance. The approximation error decreases with $O(1/\sqrt{D})$ where
+$D$ is the number of random features.
 
 References
 ----------
