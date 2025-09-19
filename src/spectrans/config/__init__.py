@@ -85,7 +85,7 @@ Examples
 Loading and building from YAML:
 
 >>> from spectrans.config import ConfigBuilder
->>> 
+>>>
 >>> builder = ConfigBuilder()
 >>> model = builder.build_model("configs/fnet.yaml")
 >>> print(model.num_parameters())
@@ -93,7 +93,7 @@ Loading and building from YAML:
 Programmatic configuration:
 
 >>> from spectrans.config import FNetModelConfig, build_model_from_config
->>> 
+>>>
 >>> config = FNetModelConfig(
 ...     hidden_dim=768,
 ...     num_layers=12,
@@ -105,7 +105,7 @@ Programmatic configuration:
 Custom layer configuration:
 
 >>> from spectrans.config import GlobalFilterMixingConfig
->>> 
+>>>
 >>> layer_config = GlobalFilterMixingConfig(
 ...     hidden_dim=512,
 ...     sequence_length=1024,
@@ -190,9 +190,9 @@ __all__ = [
     "ConfigBuilder",
     "ConfigurationError",
     "DCTAttentionConfig",
-    "FilterLayerConfig",
-    "FNetModelConfig",
     "FNOTransformerConfig",
+    "FNetModelConfig",
+    "FilterLayerConfig",
     "FourierMixingConfig",
     "GFNetModelConfig",
     "GlobalFilterMixingConfig",

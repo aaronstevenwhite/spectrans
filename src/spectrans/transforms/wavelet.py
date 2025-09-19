@@ -70,7 +70,7 @@ $$
 c_D[k] = \sum_{n} g[n-2k] \cdot x[n]
 $$
 
-Where $h[n]$ and $g[n]$ are the low-pass and high-pass analysis 
+Where $h[n]$ and $g[n]$ are the low-pass and high-pass analysis
 filters. The reconstruction is achieved through:
 
 $$
@@ -106,18 +106,18 @@ Numerical Precision:
 - Perfect reconstruction to $\sim 10^{-7}$ for ``float32``
 
 Supported Wavelets:
-Daubechies (``db1``-``db38``), Symlets (``sym2``-``sym20``), 
-Coiflets (``coif1``-``coif17``), Biorthogonal (``bior``/``rbio``), 
+Daubechies (``db1``-``db38``), Symlets (``sym2``-``sym20``),
+Coiflets (``coif1``-``coif17``), Biorthogonal (``bior``/``rbio``),
 Discrete Meyer (``dmey``), Haar (``haar``)
 
 References
 ----------
-Stéphane Mallat. 2009. A Wavelet Tour of Signal Processing: The Sparse Way, 
+Stéphane Mallat. 2009. A Wavelet Tour of Signal Processing: The Sparse Way,
 3rd edition. Academic Press, Boston.
 
 Ingrid Daubechies. 1992. Ten Lectures on Wavelets. SIAM, Philadelphia.
 
-Gilbert Strang and Truong Nguyen. 1996. Wavelets and Filter Banks. 
+Gilbert Strang and Truong Nguyen. 1996. Wavelets and Filter Banks.
 Wellesley-Cambridge Press, Wellesley.
 
 PyWavelets Development Team. 2024. PyWavelets: Wavelet transforms in Python.

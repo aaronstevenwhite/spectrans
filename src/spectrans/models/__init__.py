@@ -100,7 +100,7 @@ Basic FNet usage:
 
 >>> import torch
 >>> from spectrans.models import FNet
->>> 
+>>>
 >>> # Create FNet model
 >>> model = FNet(
 ...     hidden_dim=512,
@@ -108,7 +108,7 @@ Basic FNet usage:
 ...     vocab_size=32000,
 ...     max_seq_len=512
 ... )
->>> 
+>>>
 >>> # Forward pass
 >>> input_ids = torch.randint(0, 32000, (2, 128))
 >>> outputs = model(input_ids)
@@ -117,7 +117,7 @@ Basic FNet usage:
 Global Filter Network example:
 
 >>> from spectrans.models import GFNet
->>> 
+>>>
 >>> # Create GFNet for sequence classification
 >>> model = GFNet(
 ...     hidden_dim=768,
@@ -125,7 +125,7 @@ Global Filter Network example:
 ...     num_classes=10,
 ...     sequence_length=256
 ... )
->>> 
+>>>
 >>> # Classification forward pass
 >>> x = torch.randn(4, 256, 768)
 >>> logits = model(x)
@@ -134,7 +134,7 @@ Global Filter Network example:
 AFNO for continuous functions:
 
 >>> from spectrans.models import AFNOModel
->>> 
+>>>
 >>> # Create AFNO model
 >>> model = AFNOModel(
 ...     hidden_dim=512,
@@ -143,7 +143,7 @@ AFNO for continuous functions:
 ...     input_dim=2,
 ...     output_dim=1
 ... )
->>> 
+>>>
 >>> # Function approximation
 >>> x = torch.randn(8, 64, 64, 2)  # Batch of 2D functions
 >>> output = model(x)
@@ -152,7 +152,7 @@ AFNO for continuous functions:
 Hybrid spectral-attention model:
 
 >>> from spectrans.models import HybridTransformer
->>> 
+>>>
 >>> # Create hybrid model alternating spectral and attention
 >>> model = HybridTransformer(
 ...     hidden_dim=512,
@@ -161,7 +161,7 @@ Hybrid spectral-attention model:
 ...     spectral_type="fourier",
 ...     vocab_size=50000
 ... )
->>> 
+>>>
 >>> input_ids = torch.randint(0, 50000, (2, 256))
 >>> outputs = model(input_ids)
 >>> print(outputs.shape)  # torch.Size([2, 256, 512])
@@ -169,7 +169,7 @@ Hybrid spectral-attention model:
 Wavelet transformer for multiresolution analysis:
 
 >>> from spectrans.models import WaveletTransformer
->>> 
+>>>
 >>> # Create wavelet transformer
 >>> model = WaveletTransformer(
 ...     hidden_dim=512,
@@ -178,7 +178,7 @@ Wavelet transformer for multiresolution analysis:
 ...     levels=3,
 ...     vocab_size=32000
 ... )
->>> 
+>>>
 >>> input_ids = torch.randint(0, 32000, (2, 512))
 >>> outputs = model(input_ids)
 >>> print(outputs.shape)  # torch.Size([2, 512, 512])
@@ -186,7 +186,7 @@ Wavelet transformer for multiresolution analysis:
 Positional encodings with RoPE and ALiBi:
 
 >>> from spectrans.models import FNet, RotaryPositionalEncoding, ALiBiPositionalBias
->>> 
+>>>
 >>> # FNet with RoPE
 >>> model = FNet(
 ...     hidden_dim=512,
@@ -194,7 +194,7 @@ Positional encodings with RoPE and ALiBi:
 ...     vocab_size=50000,
 ...     pos_encoding=RotaryPositionalEncoding(dim=512)
 ... )
->>> 
+>>>
 >>> # Or with ALiBi (no positional embeddings needed)
 >>> model_alibi = FNet(
 ...     hidden_dim=512,
@@ -237,7 +237,7 @@ traditional attention mechanisms.
 **Model Complexity Comparison:**
 
 - Standard Transformer: $O(n^2 d + nd^2)$ time, $O(n^2 + nd)$ space
-- FNet: $O(nd \log n + nd^2)$ time, $O(nd)$ space  
+- FNet: $O(nd \log n + nd^2)$ time, $O(nd)$ space
 - GFNet: $O(nd \log n + nd^2)$ time, $O(nd)$ space
 - AFNO: $O(k_n k_d d + nd \log n)$ time, $O(k_n k_d d)$ space
 - LST: $O(nd \log n + nd^2)$ time, $O(nd)$ space
@@ -312,11 +312,11 @@ __all__ = [
     "AlternatingTransformer",
     "BaseModel",
     "ClassificationHead",
-    "FNet",
-    "FNetEncoder",
     "FNODecoder",
     "FNOEncoder",
     "FNOTransformer",
+    "FNet",
+    "FNetEncoder",
     "GFNet",
     "GFNetEncoder",
     "HybridEncoder",

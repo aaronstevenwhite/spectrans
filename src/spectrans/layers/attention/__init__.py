@@ -35,7 +35,7 @@ Using spectral attention with RFF:
 
 >>> import torch
 >>> from spectrans.layers.attention import SpectralAttention
->>> 
+>>>
 >>> attn = SpectralAttention(hidden_dim=512, num_heads=8, num_features=256)
 >>> x = torch.randn(32, 100, 512)
 >>> output = attn(x)
@@ -44,7 +44,7 @@ Using spectral attention with RFF:
 Using LST attention with DCT:
 
 >>> from spectrans.layers.attention import DCTAttention
->>> 
+>>>
 >>> attn = DCTAttention(hidden_dim=512, num_heads=8)
 >>> x = torch.randn(16, 128, 512)
 >>> output = attn(x)
@@ -52,7 +52,7 @@ Using LST attention with DCT:
 Using Performer attention:
 
 >>> from spectrans.layers.attention import PerformerAttention
->>> 
+>>>
 >>> attn = PerformerAttention(
 ...     hidden_dim=768,
 ...     num_heads=12,

@@ -44,7 +44,7 @@ Examples
 Configuring a Fourier mixing layer:
 
 >>> from spectrans.config.layers import FourierMixingConfig
->>> 
+>>>
 >>> config = FourierMixingConfig(
 ...     hidden_dim=768,
 ...     dropout=0.1,
@@ -55,7 +55,7 @@ Configuring a Fourier mixing layer:
 Configuring spectral attention:
 
 >>> from spectrans.config.layers import SpectralAttentionConfig
->>> 
+>>>
 >>> config = SpectralAttentionConfig(
 ...     hidden_dim=512,
 ...     num_heads=8,
@@ -66,7 +66,7 @@ Configuring spectral attention:
 Validation example:
 
 >>> from spectrans.config.layers import GlobalFilterMixingConfig
->>> 
+>>>
 >>> # This will raise a validation error
 >>> try:
 ...     config = GlobalFilterMixingConfig(

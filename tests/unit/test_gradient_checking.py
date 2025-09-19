@@ -275,7 +275,7 @@ class TestGradientAccumulation:
         """Test gradient checkpointing reduces memory but maintains correctness."""
         # Set seed for reproducibility
         torch.manual_seed(42)
-        
+
         # Model without checkpointing
         model1 = create_component(
             'model', 'fnet',
@@ -296,7 +296,7 @@ class TestGradientAccumulation:
 
         # Copy weights to ensure same initialization
         model2.load_state_dict(model1.state_dict())
-        
+
         # Set both models to eval mode to disable dropout
         model1.eval()
         model2.eval()
@@ -401,11 +401,11 @@ class TestSecondOrderGradients:
             def __init__(self):
                 super().__init__()
                 self.weight = torch.nn.Parameter(torch.randn(16, 16, dtype=torch.float64))
-            
+
             def forward(self, x):
                 # Use a nonlinear operation to ensure non-zero second derivatives
                 return torch.tanh(x @ self.weight)
-        
+
         layer = NonlinearLayer()
 
         x = torch.randn(1, 8, 16, dtype=torch.float64, requires_grad=True)
@@ -423,7 +423,7 @@ class TestSecondOrderGradients:
 
         assert grad2_y is not None
         assert torch.isfinite(grad2_y).all()
-        
+
         # For a nonlinear layer, second-order gradients should be non-zero
         assert not torch.allclose(grad2_y, torch.zeros_like(grad2_y))
 

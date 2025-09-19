@@ -147,7 +147,7 @@ class ConfigBuilder:
                 GFNet,
                 HybridTransformer,
                 LSTTransformer,
-                SpectralAttentionModel,
+                SpectralAttentionTransformer,
                 WaveletTransformer,
             )
         except ImportError as e:

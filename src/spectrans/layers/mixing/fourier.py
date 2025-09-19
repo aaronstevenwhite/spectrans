@@ -168,12 +168,8 @@ class FourierMixing(UnitaryMixingLayer):
         """
         # Apply 2D FFT along last two dimensions (sequence and feature)
         x_freq = self.fft2d.transform(x, dim=(-2, -1))
-        if self.keep_complex:
-            # Keep full complex values for information preservation
-            x_mixed = x_freq
-        else:
-            # Take real part as in original FNet (default behavior)
-            x_mixed = torch.real(x_freq)
+        # Keep complex values for information preservation or take real part (default)
+        x_mixed = x_freq if self.keep_complex else torch.real(x_freq)
 
         # Apply dropout
         x_mixed = self.dropout(x_mixed)
@@ -283,14 +279,10 @@ class FourierMixing1D(UnitaryMixingLayer):
             Complex if keep_complex=True, real values only if keep_complex=False.
         """
         # Apply 1D FFT along sequence dimension only
-        x_freq = self.fft1d.transform(x, dim=1)  # type: ignore[operator] # sequence dimension
+        x_freq = self.fft1d.transform(x, dim=1)  # sequence dimension
 
-        if self.keep_complex:
-            # Keep full complex values
-            x_mixed = x_freq
-        else:
-            # Take real part (default behavior)
-            x_mixed = torch.real(x_freq)
+        # Keep complex values or take real part (default behavior)
+        x_mixed = x_freq if self.keep_complex else torch.real(x_freq)
 
         # Apply dropout
         x_mixed = self.dropout(x_mixed)

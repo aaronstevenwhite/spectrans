@@ -105,7 +105,7 @@ IEEE Transactions on Computers, C-23(1):90-93.
 K. R. Rao and P. Yip. 1990. Discrete Cosine Transform: Algorithms, Advantages,
 Applications. Academic Press, Boston.
 
-William B. Pennebaker and Joan L. Mitchell. 1993. JPEG: Still Image Data 
+William B. Pennebaker and Joan L. Mitchell. 1993. JPEG: Still Image Data
 Compression Standard. Van Nostrand Reinhold, New York.
 
 See Also

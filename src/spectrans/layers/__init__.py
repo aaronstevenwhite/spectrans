@@ -72,7 +72,7 @@ Basic Fourier mixing layer (FNet-style):
 
 >>> import torch
 >>> from spectrans.layers import FourierMixing
->>> 
+>>>
 >>> # Create Fourier mixing layer
 >>> mixer = FourierMixing(hidden_dim=768)
 >>> x = torch.randn(32, 512, 768)  # (batch, sequence, hidden)
@@ -82,7 +82,7 @@ Basic Fourier mixing layer (FNet-style):
 Global filter mixing with learnable parameters:
 
 >>> from spectrans.layers import GlobalFilterMixing
->>> 
+>>>
 >>> # Create global filter with learnable complex weights
 >>> filter_layer = GlobalFilterMixing(
 ...     hidden_dim=512,
@@ -95,7 +95,7 @@ Global filter mixing with learnable parameters:
 Spectral attention with random Fourier features:
 
 >>> from spectrans.layers import SpectralAttention
->>> 
+>>>
 >>> # Create spectral attention layer
 >>> attention = SpectralAttention(
 ...     hidden_dim=768,
@@ -130,7 +130,7 @@ $$
 \mathcal{F}[f \star g] = \mathcal{F}[f] \odot \mathcal{F}[g]
 $$
 
-This enables replacement of quadratic attention $O(n^2)$ with logarithmic 
+This enables replacement of quadratic attention $O(n^2)$ with logarithmic
 or linear complexity spectral operations.
 
 References
@@ -177,8 +177,8 @@ from .attention import (
     SpectralAttention,
 )
 from .mixing import (
-    AFNOMixing,
     AdaptiveGlobalFilter,
+    AFNOMixing,
     FilterMixingLayer,
     FourierMixing,
     FourierMixing1D,

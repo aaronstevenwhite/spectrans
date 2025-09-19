@@ -59,7 +59,7 @@ Using a FNet block:
 
 >>> import torch
 >>> from spectrans.blocks import FNetBlock
->>> 
+>>>
 >>> block = FNetBlock(hidden_dim=768, mlp_ratio=4.0)
 >>> x = torch.randn(32, 512, 768)
 >>> output = block(x)
@@ -68,7 +68,7 @@ Using a FNet block:
 Using a hybrid block with multiple mixing strategies:
 
 >>> from spectrans.blocks import HybridBlock
->>> 
+>>>
 >>> block = HybridBlock(
 ...     hidden_dim=512,
 ...     mixing_types=['fourier', 'wavelet'],
@@ -79,7 +79,7 @@ Using a hybrid block with multiple mixing strategies:
 Using parallel execution:
 
 >>> from spectrans.blocks import ParallelBlock
->>> 
+>>>
 >>> block = ParallelBlock(
 ...     hidden_dim=768,
 ...     mixing_type='global_filter',
@@ -159,10 +159,10 @@ __all__ = [
     "AdaptiveBlock",
     "AlternatingBlock",
     "CascadeBlock",
-    "FeedForwardNetwork",
-    "FNetBlock",
     "FNO2DBlock",
     "FNOBlock",
+    "FNetBlock",
+    "FeedForwardNetwork",
     "GFNetBlock",
     "HybridBlock",
     "LSTBlock",

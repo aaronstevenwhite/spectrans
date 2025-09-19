@@ -122,13 +122,13 @@ Limitations:
 
 References
 ----------
-Jacques Hadamard. 1893. Résolution d'une question relative aux déterminants. 
+Jacques Hadamard. 1893. Résolution d'une question relative aux déterminants.
 Bulletin des Sciences Mathématiques, 17:240-246.
 
-Joseph L. Walsh. 1923. A closed set of normal orthogonal functions. 
+Joseph L. Walsh. 1923. A closed set of normal orthogonal functions.
 American Journal of Mathematics, 45(1):5-24.
 
-K. R. Rao and P. Yip. 1990. Discrete Cosine Transform: Algorithms, Advantages, 
+K. R. Rao and P. Yip. 1990. Discrete Cosine Transform: Algorithms, Advantages,
 Applications. Academic Press, Boston.
 
 See Also

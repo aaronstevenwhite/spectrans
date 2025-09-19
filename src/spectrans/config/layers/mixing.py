@@ -99,14 +99,14 @@ class WaveletMixing2DConfig(BaseModel):
 
 class FourierMixingConfig(UnitaryLayerConfig):
     """Configuration for standard Fourier mixing layers.
-    
+
     Attributes
     ----------
     keep_complex : bool
         If True, keeps complex values from FFT. If False (default),
         takes only the real part as in original FNet.
     """
-    
+
     keep_complex: bool = Field(
         default=False,
         description="Keep complex values from FFT (True) or extract real part only (False)"
