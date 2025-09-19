@@ -175,7 +175,7 @@ class ModelTrainer:
                 num_layers=self.config.num_layers,
                 max_sequence_length=self.config.max_seq_length,
                 num_classes=self.config.num_classes,
-                n_modes=min(32, self.config.max_seq_length // 8)
+                modes_seq=min(32, self.config.max_seq_length // 8)
             )
         else:
             raise ValueError(f"Unknown model: {self.config.model_name}")
