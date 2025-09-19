@@ -1,6 +1,6 @@
 r"""Fourier transform implementations for spectral neural networks.
 
-This module provides Fourier transform implementations optimized for
+This module provides Fourier transform implementations for
 spectral transformer architectures. The transforms are built on PyTorch's native
 FFT operations for GPU acceleration and automatic differentiation support.
 
@@ -15,7 +15,7 @@ FFT1D
 FFT2D
     2D Fast Fourier Transform for AFNO-style 2D operations.
 RFFT
-    Real-input Fast Fourier Transform (more efficient for real signals).
+    Real-input Fast Fourier Transform.
 RFFT2D
     2D Real-input Fast Fourier Transform.
 SpectralPooling
@@ -32,7 +32,7 @@ Basic 1D FFT usage:
 >>> freq_domain = fft.transform(signal, dim=-1)
 >>> reconstructed = fft.inverse_transform(freq_domain, dim=-1)
 
-Efficient real-input FFT:
+Real-input FFT:
 
 >>> from spectrans.transforms.fourier import RFFT
 >>> rfft = RFFT(norm='ortho')
@@ -72,14 +72,12 @@ Normalization Modes:
 The 'ortho' mode is recommended for neural networks as it preserves numerical
 stability and maintains consistent scaling throughout the network.
 
-Real-Input FFT Optimizations:
+Real-Input FFT:
 RFFT and RFFT2D exploit Hermitian symmetry of real-input FFTs, storing only
-the non-redundant frequency components. This provides ~2x memory savings and
-computational speedup for real-valued inputs.
+the non-redundant frequency components for real-valued inputs.
 
 GPU Acceleration:
-All transforms utilize PyTorch's optimized cuFFT backend when tensors are on GPU,
-providing significant speedup over CPU implementations.
+All transforms utilize PyTorch's cuFFT backend when tensors are on GPU.
 
 Gradient Support:
 All transforms support automatic differentiation through PyTorch's autograd system,
@@ -215,7 +213,7 @@ class RFFT(UnitaryTransform):
     """Real Fast Fourier Transform.
 
     Applies FFT to real-valued inputs, returning only the positive
-    frequency components (more efficient than full FFT).
+    frequency components.
 
     Parameters
     ----------
@@ -267,7 +265,7 @@ class RFFT(UnitaryTransform):
 class RFFT2D(SpectralTransform2D):
     """2D Real Fast Fourier Transform.
 
-    Applies 2D FFT to real-valued inputs, efficient for real signals.
+    Applies 2D FFT to real-valued inputs.
 
     Parameters
     ----------

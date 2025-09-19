@@ -74,7 +74,7 @@ Using Fourier transforms:
 >>> complex_output = fft.transform(complex_input)
 >>> reconstructed = fft.inverse_transform(complex_output)
 >>>
->>> # Real-input FFT (more efficient for real signals)
+>>> # Real-input FFT
 >>> rfft = RFFT()
 >>> freq_domain = rfft.transform(real_input)
 
@@ -82,7 +82,7 @@ Using orthogonal transforms:
 
 >>> from spectrans.transforms import DCT, HadamardTransform
 >>> # Discrete Cosine Transform
->>> dct = DCT(norm='ortho')
+>>> dct = DCT(normalized=True)
 >>> dct_coeffs = dct.transform(signal)
 >>>
 >>> # Fast Hadamard Transform
@@ -123,7 +123,7 @@ Implementation Details:
 - Complex number operations use the spectrans.utils.complex module
 - Numerical stability is ensured through proper scaling and normalization
 - GPU acceleration through PyTorch's native FFT operations
-- Memory-efficient implementations with in-place operations where possible
+- In-place operations used where possible
 
 Performance Characteristics:
 - FFT: $O(n \log n)$ time complexity

@@ -1,7 +1,7 @@
 r"""PyWavelets-compatible Discrete Wavelet Transform implementations.
 
-This module provides mathematically correct DWT implementations that exactly
-match PyWavelets behavior while maintaining full gradient support for PyTorch.
+This module provides DWT implementations that exactly match PyWavelets behavior
+while maintaining full gradient support for PyTorch.
 The implementation is based on exhaustive analysis of PyWavelets C source code
 to ensure perfect reconstruction and compatibility with all wavelet families.
 
@@ -96,7 +96,6 @@ Implementation Details:
 Algorithm Complexity:
 - Forward/Inverse DWT: $O(N)$ for $N$-length signal
 - Memory: $O(N)$ for coefficients
-- More efficient than FFT for sparse signals
 
 Gradient Support:
 All operations use native PyTorch operations ensuring full autograd support.

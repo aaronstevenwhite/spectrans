@@ -1,13 +1,12 @@
 r"""Hadamard transform implementations for spectral neural networks.
 
 This module provides fast implementations of the Walsh-Hadamard Transform and related
-orthogonal transforms that use only +1 and -1 basis functions. These transforms are
-computationally efficient alternatives to Fourier transforms, requiring only addition
-and subtraction operations without multiplications.
+orthogonal transforms that use only +1 and -1 basis functions. These transforms provide
+alternatives to Fourier transforms, requiring only addition and subtraction operations
+without multiplications.
 
-Hadamard transforms are particularly useful in spectral neural networks for their
-simplicity, orthogonality, and ability to provide fast mixing operations with
-minimal computational overhead.
+Hadamard transforms provide simplicity, orthogonality, and fast mixing operations for
+spectral neural networks.
 
 Classes
 -------
@@ -113,7 +112,7 @@ Performance Characteristics:
 - Time Complexity: $O(n \log n)$ for fast algorithm
 - Space Complexity: $O(1)$ additional memory (in-place computation)
 - Operations: Only additions and subtractions (no multiplications)
-- Memory Bandwidth: Optimal cache usage due to regular access patterns
+- Memory Bandwidth: Regular access patterns
 
 Limitations:
 - Input size must be power of 2 for fast algorithm
@@ -152,8 +151,7 @@ class HadamardTransform(OrthogonalTransform):
     """Fast Walsh-Hadamard Transform.
 
     The Hadamard transform is an orthogonal transform using only +1 and -1
-    values, making it computationally efficient. The transform size must
-    be a power of 2.
+    values. The transform size must be a power of 2.
 
     Parameters
     ----------

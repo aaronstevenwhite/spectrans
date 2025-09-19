@@ -2,12 +2,10 @@ r"""Discrete Cosine and Sine Transform implementations.
 
 This module implements the Discrete Cosine Transform (DCT) and Discrete Sine Transform (DST)
 families, which are orthogonal transforms widely used in signal processing, image compression,
-and spectral neural networks. The implementations are mathematically rigorous and numerically
-stable, supporting various normalization conventions.
+and spectral neural networks. The implementations support various normalization conventions.
 
-The DCT and DST transforms are particularly valuable for spectral transformers because they
-provide excellent energy compaction for natural signals while maintaining orthogonality
-properties essential for neural network stability.
+The DCT and DST transforms provide energy compaction for natural signals while maintaining
+orthogonality properties for neural network stability.
 
 Classes
 -------
@@ -77,7 +75,7 @@ $$
 **Computational Complexity**:
 
 - DCT/DST: $O(N \log N)$ via FFT-based algorithms
-- Direct computation: $O(N^2)$ but rarely used due to inefficiency
+- Direct computation: $O(N^2)$
 
 Implementation Details:
 - Uses FFT-based algorithms for $O(N \log N)$ complexity
@@ -85,17 +83,11 @@ Implementation Details:
 - Proper handling of boundary conditions for different transform types
 - Gradient-compatible for neural network training
 
-Applications in Spectral Transformers:
-1. **Energy Compaction**: DCT concentrates signal energy in low-frequency coefficients
-2. **Orthogonal Mixing**: Provides mixing operation alternative to attention
-3. **Compression**: Natural sparsity patterns in transformed domain
-4. **Boundary Handling**: DCT has good properties for finite-length signals
-
 Performance Characteristics:
-- Memory efficient: in-place computation where possible
-- GPU accelerated: utilizes optimized CUDA kernels
-- Numerically stable: proper scaling and normalization
-- Batch processing: efficient handling of multiple signals
+- In-place computation where possible
+- GPU accelerated through CUDA kernels
+- Proper scaling and normalization
+- Batch processing support
 
 References
 ----------
