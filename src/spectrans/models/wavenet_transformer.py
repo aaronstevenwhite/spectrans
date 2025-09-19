@@ -155,7 +155,7 @@ class WaveletTransformer(BaseModel):
     This model replaces attention mechanisms with discrete wavelet transforms,
     providing multi-resolution analysis of sequences with $O(n)$ complexity per channel.
     The DWT decomposes input sequences into approximation and detail coefficients at
-    multiple scales, naturally capturing both local transients and global structure.
+    multiple scales, representing both local transients and global structure.
 
     The wavelet mixing operation applies the DWT along the sequence dimension for each
     channel independently, processes the coefficients through learnable transformations,

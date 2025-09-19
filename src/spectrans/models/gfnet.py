@@ -138,11 +138,10 @@ if TYPE_CHECKING:
 
 @register_component("model", "gfnet")
 class GFNet(BaseModel):
-    """Global Filter Network model with learnable frequency domain filters.
+    r"""Global Filter Network model with learnable frequency domain filters.
 
     GFNet uses learnable complex filters in the Fourier domain for
-    efficient token mixing, providing more expressiveness than FNet
-    while maintaining O(n log n) complexity.
+    token mixing, maintaining $O(n \log n)$ complexity.
 
     Parameters
     ----------

@@ -2,9 +2,8 @@ r"""Spectral transformer model implementations.
 
 This module provides transformer model implementations that replace
 traditional attention mechanisms with various spectral mixing approaches.
-Each model is optimized for different use cases while maintaining the core
-transformer architecture with residual connections, layer normalization,
-and feedforward networks.
+Each model maintains the core transformer architecture with residual
+connections, layer normalization, and feedforward networks.
 
 The models implement spectral transformers including FNet,
 Global Filter Networks, AFNO, spectral attention variants, and hybrid
@@ -205,22 +204,17 @@ Positional encodings with RoPE and ALiBi:
 
 Notes
 -----
-All models in this module follow the same architectural principles:
+All models in this module follow the same architectural principles.
+Spectral processing replaces quadratic attention with spectral transforms
+that scale as $O(n \log n)$ or $O(n)$ in time complexity. Residual
+connections maintain gradient flow around each spectral layer and
+feedforward network. Layer normalization is applied before spectral
+mixing and feedforward operations for training stability.
 
-1. **Spectral Processing**: Replace quadratic attention with efficient spectral
-   transforms that scale as $O(n \log n)$ or $O(n)$.
-
-2. **Residual Connections**: Maintain gradient flow through residual connections
-   around each spectral layer and feedforward network.
-
-3. **Layer Normalization**: Apply layer normalization before spectral mixing
-   and feedforward operations for training stability.
-
-4. **Positional Encoding**: Support multiple positional encoding methods including
-   sinusoidal, learned embeddings, RoPE, and ALiBi for various sequence modeling needs.
-
-5. **Task Heads**: Provide specialized output heads for classification,
-   regression, and sequence-to-sequence tasks.
+The models support multiple positional encoding methods including
+sinusoidal, learned embeddings, RoPE, and ALiBi for various sequence
+modeling needs. Specialized output heads are provided for classification,
+regression, and sequence-to-sequence tasks.
 
 The mathematical foundation for spectral mixing is based on the convolution
 theorem, which states that convolution in the spatial domain is equivalent

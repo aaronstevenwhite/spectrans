@@ -168,11 +168,11 @@ if TYPE_CHECKING:
 
 @register_component("model", "afno")
 class AFNOModel(BaseModel):
-    """Adaptive Fourier Neural Operator transformer model.
+    r"""Adaptive Fourier Neural Operator transformer model.
 
-    AFNO performs efficient token mixing using truncated Fourier modes
-    and learnable MLPs in the frequency domain, achieving excellent
-    performance on long sequences with reduced computational cost.
+    AFNO performs token mixing using truncated Fourier modes
+    and learnable MLPs in the frequency domain, processing long
+    sequences with $O(n \log n)$ time complexity.
 
     Parameters
     ----------

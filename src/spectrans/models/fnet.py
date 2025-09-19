@@ -2,8 +2,7 @@ r"""FNet: Mixing Tokens with Fourier Transforms.
 
 This module implements the FNet architecture, which replaces the self-attention
 mechanism in transformers with Fourier transform-based token mixing. FNet
-achieves competitive performance on many NLP tasks while maintaining
-$O(n \log n)$ computational complexity compared to $O(n^2)$ for
+maintains $O(n \log n)$ computational complexity compared to $O(n^2)$ for
 standard attention mechanisms.
 
 The architecture uses 2D Discrete Fourier Transforms (DFT) to mix tokens,
@@ -130,11 +129,10 @@ if TYPE_CHECKING:
 
 @register_component("model", "fnet")
 class FNet(BaseModel):
-    """FNet model with Fourier transform-based token mixing.
+    r"""FNet model with Fourier transform-based token mixing.
 
-    FNet replaces the self-attention mechanism with efficient Fourier
-    transforms, achieving O(n log n) complexity while maintaining
-    competitive performance on many tasks.
+    FNet replaces the self-attention mechanism with Fourier
+    transforms, achieving $O(n \log n)$ complexity.
 
     Parameters
     ----------

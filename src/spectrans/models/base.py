@@ -59,7 +59,10 @@ and can be easily configured through Pydantic configuration objects.
 
 References
 ----------
-.. [1] Vaswani et al., "Attention is All You Need", NeurIPS 2017.
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all
+you need. In Advances in Neural Information Processing Systems 30 (NeurIPS 2017),
+pages 5998-6008.
 """
 
 import math
@@ -509,8 +512,9 @@ class RotaryPositionalEncoding(nn.Module):
 
     References
     ----------
-    .. [1] Su et al., "RoFormer: Enhanced Transformer with Rotary Position Embedding",
-           arXiv:2104.09864, 2021.
+    Jianlin Su, Yu Lu, Shengfeng Pan, Ahmed Murtadha, Bo Wen, and Yunfeng Liu. 2024.
+    RoFormer: Enhanced transformer with rotary position embedding. Neurocomputing,
+    568:127063.
     """
 
     def __init__(
@@ -647,8 +651,9 @@ class ALiBiPositionalBias(nn.Module):
 
     References
     ----------
-    .. [1] Press et al., "Train Short, Test Long: Attention with Linear Biases
-           Enables Input Length Extrapolation", ICLR 2022.
+    Ofir Press, Noah A. Smith, and Mike Lewis. 2022. Train short, test long:
+    Attention with linear biases enables input length extrapolation. In Proceedings
+    of the International Conference on Learning Representations (ICLR).
     """
 
     def __init__(

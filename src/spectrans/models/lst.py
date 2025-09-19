@@ -115,7 +115,6 @@ Processing Systems 34 (NeurIPS 2021).
 
 Nasir Ahmed, T. Natarajan, and Kamisetty R. Rao. 1974. Discrete cosine transform.
 IEEE Transactions on Computers, C-23(1):90-93.
-       1974.
 
 See Also
 --------
