@@ -126,7 +126,7 @@ from collections.abc import Sequence, Mapping
 
 ### Documentation
 
-All code must include proper docstrings following NumPy style. See the [Docstring Guidelines](../spectrans-docstring-guidelines.md) for detailed requirements.
+All code must include proper docstrings following NumPy style.
 
 ### Component Registration
 

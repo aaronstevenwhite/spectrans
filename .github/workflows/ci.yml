@@ -178,7 +178,6 @@ jobs:
 
       - name: Build documentation
         run: |
-          cd docs
           mkdocs build --strict
 
   gpu-tests:

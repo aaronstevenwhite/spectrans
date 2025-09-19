@@ -87,6 +87,9 @@ extra_css:
 
 nav:
   - Home: index.md
+  - Installation: installation.md
+  - Quick Start: quickstart.md
+  - Contributing: contributing.md
   - API Reference:
       - Overview: api/index.md
       - Core:
