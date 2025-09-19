@@ -136,9 +136,9 @@ class LSTAttention(AttentionLayer):
         super().__init__(hidden_dim, num_heads, dropout)
 
         self.head_dim = hidden_dim // num_heads
-        assert (
-            self.head_dim * num_heads == hidden_dim
-        ), f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        assert self.head_dim * num_heads == hidden_dim, (
+            f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        )
 
         self.transform_type = transform_type
         self.normalize = normalize

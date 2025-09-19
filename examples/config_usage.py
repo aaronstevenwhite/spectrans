@@ -71,7 +71,7 @@ def load_predefined_configs():
 
         # GFNet may not have vocab, use embeddings instead
         # Use the model's configured sequence length
-        seq_len = getattr(gfnet_model, 'max_sequence_length', 224)
+        seq_len = getattr(gfnet_model, "max_sequence_length", 224)
         embeddings = torch.randn(2, seq_len, gfnet_model.hidden_dim)
         with torch.no_grad():
             output = gfnet_model(inputs_embeds=embeddings)
@@ -113,7 +113,7 @@ def create_custom_config_file():
             "positional_encoding_type": "sinusoidal",
             "norm_eps": 1e-12,
             "output_type": "classification",
-            "use_real_fft": True
+            "use_real_fft": True,
         },
         "layers": {
             "mixing": {
@@ -122,22 +122,22 @@ def create_custom_config_file():
                 "dropout": 0.15,
                 "norm_eps": 1e-5,
                 "energy_tolerance": 1e-4,
-                "fft_norm": "ortho"
+                "fft_norm": "ortho",
             },
             "ffn": {
                 "hidden_dim": 384,
                 "intermediate_dim": 1536,
                 "activation": "gelu",
-                "dropout": 0.15
-            }
+                "dropout": 0.15,
+            },
         },
         "training": {
             "batch_size": 24,
             "learning_rate": 8e-5,
             "weight_decay": 0.02,
             "warmup_steps": 5000,
-            "max_steps": 50000
-        }
+            "max_steps": 50000,
+        },
     }
 
     # Save to file
@@ -185,7 +185,7 @@ def programmatic_config_creation():
         num_classes=3,
         ffn_hidden_dim=2048,
         use_real_fft=True,
-        norm_eps=1e-12
+        norm_eps=1e-12,
     )
 
     print("   ✓ Configuration created and validated")
@@ -208,7 +208,7 @@ def programmatic_config_creation():
         dropout=0.1,
         vocab_size=30000,
         num_classes=2,
-        filter_activation="sigmoid"
+        filter_activation="sigmoid",
     )
 
     config_dict = {"model": gfnet_config.model_dump()}
@@ -226,7 +226,7 @@ def programmatic_config_creation():
         vocab_size=20000,
         num_classes=10,
         n_modes=32,
-        compression_ratio=0.25
+        compression_ratio=0.25,
     )
 
     config_dict = {"model": afno_config.model_dump()}
@@ -245,7 +245,7 @@ def programmatic_config_creation():
         vocab_size=15000,
         num_classes=4,
         wavelet="db6",
-        levels=4
+        levels=4,
     )
 
     config_dict = {"model": wavelet_config.model_dump()}
@@ -263,11 +263,7 @@ def config_validation_example():
     print("1. Testing valid configuration...")
     try:
         FNetModelConfig(
-            hidden_dim=768,
-            num_layers=12,
-            sequence_length=512,
-            vocab_size=30000,
-            num_classes=2
+            hidden_dim=768, num_layers=12, sequence_length=512, vocab_size=30000, num_classes=2
         )
         print("   ✓ Valid configuration accepted\n")
     except Exception as e:
@@ -282,7 +278,7 @@ def config_validation_example():
             num_layers=12,
             sequence_length=512,
             vocab_size=30000,
-            num_classes=2
+            num_classes=2,
         )
         print("   ✗ Should have rejected negative hidden_dim")
     except Exception as e:
@@ -296,7 +292,7 @@ def config_validation_example():
             sequence_length=512,
             vocab_size=30000,
             num_classes=2,
-            dropout=1.5  # Invalid: must be between 0 and 1
+            dropout=1.5,  # Invalid: must be between 0 and 1
         )
         print("   ✗ Should have rejected invalid dropout")
     except Exception as e:
@@ -309,7 +305,7 @@ def config_validation_example():
             num_layers=12,
             sequence_length=0,  # Invalid: must be positive
             vocab_size=30000,
-            num_classes=2
+            num_classes=2,
         )
         print("   ✗ Should have rejected zero sequence_length")
     except Exception as e:
@@ -324,11 +320,7 @@ def config_modification_example():
 
     # Start with base configuration
     base_config = FNetModelConfig(
-        hidden_dim=512,
-        num_layers=8,
-        sequence_length=256,
-        vocab_size=20000,
-        num_classes=2
+        hidden_dim=512, num_layers=8, sequence_length=256, vocab_size=20000, num_classes=2
     )
 
     print("1. Base configuration:")
@@ -340,30 +332,27 @@ def config_modification_example():
     print("2. Creating configuration variations...")
 
     # Larger model
-    large_config = base_config.model_copy(update={
-        "hidden_dim": 1024,
-        "num_layers": 16,
-        "ffn_hidden_dim": 4096
-    })
+    large_config = base_config.model_copy(
+        update={"hidden_dim": 1024, "num_layers": 16, "ffn_hidden_dim": 4096}
+    )
 
     # Longer sequences
-    long_seq_config = base_config.model_copy(update={
-        "sequence_length": 1024,
-        "dropout": 0.15  # Higher dropout for longer sequences
-    })
+    long_seq_config = base_config.model_copy(
+        update={
+            "sequence_length": 1024,
+            "dropout": 0.15,  # Higher dropout for longer sequences
+        }
+    )
 
     # More classes
-    multiclass_config = base_config.model_copy(update={
-        "num_classes": 10,
-        "vocab_size": 50000
-    })
+    multiclass_config = base_config.model_copy(update={"num_classes": 10, "vocab_size": 50000})
 
     # Build all models
     configs = {
         "base": base_config,
         "large": large_config,
         "long_seq": long_seq_config,
-        "multiclass": multiclass_config
+        "multiclass": multiclass_config,
     }
 
     for name, config in configs.items():
@@ -371,9 +360,11 @@ def config_modification_example():
         model = build_model_from_config(config_dict)
         param_count = sum(p.numel() for p in model.parameters())
 
-        print(f"   {name:10s}: {param_count:>8,} parameters, "
-              f"hidden_dim={config.hidden_dim}, "
-              f"seq_len={config.sequence_length}")
+        print(
+            f"   {name:10s}: {param_count:>8,} parameters, "
+            f"hidden_dim={config.hidden_dim}, "
+            f"seq_len={config.sequence_length}"
+        )
 
     print("\n   ✓ All configuration variations built successfully!\n")
 

@@ -17,7 +17,6 @@ Requirements:
 - torch
 """
 
-
 import torch
 import torch.nn as nn
 
@@ -37,7 +36,7 @@ class CustomSpectralEncoder(nn.Module):
         num_layers: int = 12,
         max_sequence_length: int = 512,
         dropout: float = 0.1,
-        norm_eps: float = 1e-12
+        norm_eps: float = 1e-12,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
@@ -45,9 +44,7 @@ class CustomSpectralEncoder(nn.Module):
 
         # Positional encoding
         self.pos_encoding = PositionalEncoding(
-            hidden_dim=hidden_dim,
-            max_sequence_length=max_sequence_length,
-            dropout=dropout
+            hidden_dim=hidden_dim, max_sequence_length=max_sequence_length, dropout=dropout
         )
 
         # Create alternating layers
@@ -60,10 +57,7 @@ class CustomSpectralEncoder(nn.Module):
             elif i % 4 == 1:
                 # Wavelet mixing (multi-resolution analysis)
                 mixing = WaveletMixing(
-                    hidden_dim=hidden_dim,
-                    wavelet="db4",
-                    levels=3,
-                    dropout=dropout
+                    hidden_dim=hidden_dim, wavelet="db4", levels=3, dropout=dropout
                 )
             elif i % 4 == 2:
                 # AFNO (adaptive frequency selection)
@@ -71,14 +65,12 @@ class CustomSpectralEncoder(nn.Module):
                     hidden_dim=hidden_dim,
                     max_sequence_length=max_sequence_length,
                     modes_seq=min(64, max_sequence_length // 8),
-                    dropout=dropout
+                    dropout=dropout,
                 )
             else:
                 # Global filter (learnable frequency filters)
                 mixing = GlobalFilterMixing(
-                    hidden_dim=hidden_dim,
-                    sequence_length=max_sequence_length,
-                    dropout=dropout
+                    hidden_dim=hidden_dim, sequence_length=max_sequence_length, dropout=dropout
                 )
 
             layer = TransformerBlock(
@@ -86,7 +78,7 @@ class CustomSpectralEncoder(nn.Module):
                 hidden_dim=hidden_dim,
                 ffn_hidden_dim=hidden_dim * 4,
                 dropout=dropout,
-                norm_eps=norm_eps
+                norm_eps=norm_eps,
             )
             self.layers.append(layer)
 
@@ -145,7 +137,7 @@ class MultiScaleSpectralModel(BaseModel):
         max_sequence_length: int = 512,
         num_classes: int = 2,
         dropout: float = 0.1,
-        scales: list[int] | None = None
+        scales: list[int] | None = None,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
@@ -161,7 +153,7 @@ class MultiScaleSpectralModel(BaseModel):
                 hidden_dim=hidden_dim // len(scales),
                 num_layers=num_layers // len(scales),
                 max_sequence_length=max_sequence_length // scale,
-                dropout=dropout
+                dropout=dropout,
             )
             self.scale_encoders.append(encoder)
 
@@ -170,20 +162,15 @@ class MultiScaleSpectralModel(BaseModel):
 
         # Classification head
         self.classifier = nn.Sequential(
-            nn.LayerNorm(hidden_dim),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dim, num_classes)
+            nn.LayerNorm(hidden_dim), nn.Dropout(dropout), nn.Linear(hidden_dim, num_classes)
         )
-
 
     def build_blocks(self) -> nn.ModuleList:
         """Build blocks - not used since we have custom architecture."""
         return nn.ModuleList()
 
     def forward(
-        self,
-        input_ids: torch.Tensor | None = None,
-        inputs_embeds: torch.Tensor | None = None
+        self, input_ids: torch.Tensor | None = None, inputs_embeds: torch.Tensor | None = None
     ) -> torch.Tensor:
         if inputs_embeds is None:
             inputs_embeds = self.embeddings(input_ids)
@@ -227,13 +214,12 @@ def demonstrate_custom_encoder():
     print("=== Custom Alternating Spectral Encoder ===\n")
 
     encoder = CustomSpectralEncoder(
-        hidden_dim=512,
-        num_layers=8,
-        max_sequence_length=256,
-        dropout=0.1
+        hidden_dim=512, num_layers=8, max_sequence_length=256, dropout=0.1
     )
 
-    print(f"Custom encoder created with {sum(p.numel() for p in encoder.parameters()):,} parameters")
+    print(
+        f"Custom encoder created with {sum(p.numel() for p in encoder.parameters()):,} parameters"
+    )
     print("Layer pattern: Fourier → Wavelet → AFNO → Global Filter (repeats)")
 
     # Test with sample input matching the encoder's configured sequence length
@@ -277,7 +263,7 @@ def demonstrate_multiscale_model():
         num_layers=12,
         max_sequence_length=512,
         num_classes=3,
-        scales=[1, 2, 4]
+        scales=[1, 2, 4],
     )
 
     print(f"Multi-scale model created: {sum(p.numel() for p in model.parameters()):,} parameters")
@@ -309,7 +295,7 @@ def demonstrate_hybrid_architectures():
         num_classes=4,
         alternation_pattern="even_spectral",  # Even layers use spectral, odd use attention
         spectral_type="fourier",
-        spatial_type="attention"
+        spatial_type="attention",
     )
 
     print(f"   Parameters: {sum(p.numel() for p in hybrid1.parameters()):,}")
@@ -322,6 +308,7 @@ def demonstrate_hybrid_architectures():
 
     # Pattern 2: Spectral preprocessing + attention
     print("\n2. Spectral preprocessing pattern...")
+
     class SpectralPreprocessor(nn.Module):
         def __init__(self, hidden_dim: int, seq_len: int):  # noqa: ARG002
             super().__init__()
@@ -360,9 +347,8 @@ def performance_analysis():
             hidden_dim=512, num_layers=8, max_sequence_length=256
         ),
         "Multi-Scale": lambda: MultiScaleSpectralModel(
-            vocab_size=10000, hidden_dim=512, num_layers=8,
-            max_sequence_length=256, scales=[1, 2]
-        )
+            vocab_size=10000, hidden_dim=512, num_layers=8, max_sequence_length=256, scales=[1, 2]
+        ),
     }
 
     # Compare parameter counts and memory usage
@@ -372,7 +358,7 @@ def performance_analysis():
         param_count = sum(p.numel() for p in model.parameters())
 
         # Estimate memory usage (rough approximation)
-        param_memory = param_count * 4 / (1024 ** 2)  # 4 bytes per param, in MB
+        param_memory = param_count * 4 / (1024**2)  # 4 bytes per param, in MB
 
         print(f"   {name:15s}: {param_count:>8,} params, ~{param_memory:.1f}MB")
 
@@ -383,7 +369,7 @@ def performance_analysis():
         "Wavelet Transform": "O(n)",
         "AFNO": "O(k * n log n) where k = n_modes",
         "Global Filter": "O(n log n)",
-        "Standard Attention": "O(n²)"
+        "Standard Attention": "O(n²)",
     }
 
     for method, complexity in complexities.items():

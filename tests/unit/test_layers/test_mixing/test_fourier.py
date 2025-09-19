@@ -16,7 +16,7 @@ class TestFourierMixing:
 
     def test_fourier_mixing_forward_shape(self, random_tensor):
         """Test that FourierMixing preserves tensor shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim=hidden_dim)
 
         output = mixer(random_tensor)
@@ -26,7 +26,7 @@ class TestFourierMixing:
 
     def test_fourier_mixing_1d_forward_shape(self, random_tensor):
         """Test that FourierMixing1D preserves tensor shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing1D(hidden_dim=hidden_dim)
 
         output = mixer(random_tensor)
@@ -36,7 +36,7 @@ class TestFourierMixing:
 
     def test_real_fourier_mixing_forward_shape(self, random_tensor):
         """Test that RealFourierMixing preserves tensor shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = RealFourierMixing(hidden_dim=hidden_dim, use_real_fft=True)
 
         output = mixer(random_tensor)
@@ -46,7 +46,7 @@ class TestFourierMixing:
 
     def test_separable_fourier_mixing_configurations(self, random_tensor):
         """Test SeparableFourierMixing with different configurations."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         # Test sequence mixing only
         mixer_seq = SeparableFourierMixing(
@@ -71,14 +71,14 @@ class TestFourierMixing:
 
     def test_separable_fourier_mixing_invalid_config(self, random_tensor):
         """Test that invalid configuration raises error."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         with pytest.raises(ValueError):
             SeparableFourierMixing(hidden_dim=hidden_dim, mix_sequence=False, mix_features=False)
 
     def test_fourier_mixing_dropout(self, random_tensor):
         """Test dropout functionality in Fourier mixing."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim=hidden_dim, dropout=0.5)
 
         # Test training mode
@@ -99,7 +99,7 @@ class TestFourierMixing:
 
     def test_fourier_mixing_spectral_properties(self, random_tensor):
         """Test spectral properties."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim=hidden_dim)
 
         # Check spectral properties
@@ -115,7 +115,7 @@ class TestFourierMixingMathematicalProperties:
 
     def test_energy_preservation_real_fft(self, random_tensor):
         """Test energy preservation for real FFT mixing."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = RealFourierMixing(hidden_dim, use_real_fft=True)
 
         output = mixer(random_tensor)
@@ -134,7 +134,7 @@ class TestFourierMixingMathematicalProperties:
 
     def test_translation_equivariance_fourier(self, random_tensor):
         """Test translation equivariance of Fourier mixing."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim)
 
         # Apply mixing to original tensor
@@ -159,7 +159,7 @@ class TestFourierMixingMathematicalProperties:
 
     def test_spectral_norm_computation(self, random_tensor):
         """Test spectral norm computation."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         mixer = FourierMixing(hidden_dim)
 
         spectral_norm = mixer.compute_spectral_norm(random_tensor)

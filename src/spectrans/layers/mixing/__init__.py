@@ -111,19 +111,10 @@ from .afno import AFNOMixing
 from .base import FilterMixingLayer, MixingLayer, UnitaryMixingLayer
 
 # Import Fourier-based mixing layers
-from .fourier import (
-    FourierMixing,
-    FourierMixing1D,
-    RealFourierMixing,
-    SeparableFourierMixing,
-)
+from .fourier import FourierMixing, FourierMixing1D, RealFourierMixing, SeparableFourierMixing
 
 # Import global filter mixing layers
-from .global_filter import (
-    AdaptiveGlobalFilter,
-    GlobalFilterMixing,
-    GlobalFilterMixing2D,
-)
+from .global_filter import AdaptiveGlobalFilter, GlobalFilterMixing, GlobalFilterMixing2D
 from .wavelet import WaveletMixing, WaveletMixing2D
 
 # Public API - alphabetically sorted

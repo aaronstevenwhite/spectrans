@@ -229,9 +229,9 @@ def assert_shape():
     """Utility function to assert tensor shape."""
 
     def _assert_shape(tensor, expected_shape):
-        assert (
-            tensor.shape == expected_shape
-        ), f"Expected shape {expected_shape}, got {tensor.shape}"
+        assert tensor.shape == expected_shape, (
+            f"Expected shape {expected_shape}, got {tensor.shape}"
+        )
 
     return _assert_shape
 
@@ -241,9 +241,9 @@ def assert_dtype():
     """Utility function to assert tensor dtype."""
 
     def _assert_dtype(tensor, expected_dtype):
-        assert (
-            tensor.dtype == expected_dtype
-        ), f"Expected dtype {expected_dtype}, got {tensor.dtype}"
+        assert tensor.dtype == expected_dtype, (
+            f"Expected dtype {expected_dtype}, got {tensor.dtype}"
+        )
 
     return _assert_dtype
 

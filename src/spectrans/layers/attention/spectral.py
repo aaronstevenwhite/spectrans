@@ -147,9 +147,9 @@ class SpectralAttention(AttentionLayer):
 
         # Determine head dimension
         self.head_dim = head_dim or (hidden_dim // num_heads)
-        assert (
-            self.head_dim * num_heads == hidden_dim
-        ), f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        assert self.head_dim * num_heads == hidden_dim, (
+            f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        )
 
         # Number of random features
         self.num_features = num_features or self.head_dim

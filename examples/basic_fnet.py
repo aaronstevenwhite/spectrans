@@ -25,8 +25,9 @@ from torch.optim import AdamW
 from spectrans.models import FNet, FNetEncoder
 
 
-def create_sample_data(vocab_size: int = 10000, num_samples: int = 1000,
-                      seq_len: int = 128, num_classes: int = 2) -> tuple[torch.Tensor, torch.Tensor]:
+def create_sample_data(
+    vocab_size: int = 10000, num_samples: int = 1000, seq_len: int = 128, num_classes: int = 2
+) -> tuple[torch.Tensor, torch.Tensor]:
     """Create synthetic text classification data for demonstration.
 
     Args:
@@ -68,7 +69,7 @@ def basic_fnet_example():
         num_classes=num_classes,
         dropout=0.1,
         use_positional_encoding=True,
-        positional_encoding_type="sinusoidal"
+        positional_encoding_type="sinusoidal",
     )
 
     print(f"   Model parameters: {sum(p.numel() for p in model.parameters()):,}")
@@ -103,7 +104,7 @@ def basic_fnet_example():
         hidden_dim=hidden_dim,
         num_layers=num_layers,
         max_sequence_length=max_seq_length,
-        dropout=0.1
+        dropout=0.1,
     )
 
     with torch.no_grad():
@@ -128,7 +129,7 @@ def training_example():
         num_layers=4,
         max_sequence_length=64,
         num_classes=2,
-        dropout=0.1
+        dropout=0.1,
     ).to(device)
 
     # Optimizer
@@ -155,8 +156,8 @@ def training_example():
         # Simple batching (in practice, use DataLoader)
         batch_size = 16
         for i in range(0, len(train_data), batch_size):
-            batch_input = train_data[i:i+batch_size]
-            batch_labels = train_labels[i:i+batch_size]
+            batch_input = train_data[i : i + batch_size]
+            batch_labels = train_labels[i : i + batch_size]
 
             # Forward pass
             logits = model(input_ids=batch_input)
@@ -175,7 +176,7 @@ def training_example():
             num_batches += 1
 
         avg_loss = total_loss / num_batches
-        print(f"   Epoch {epoch+1}: Average loss = {avg_loss:.4f}")
+        print(f"   Epoch {epoch + 1}: Average loss = {avg_loss:.4f}")
 
     print("\nTraining completed!\n")
 
@@ -190,7 +191,7 @@ def inference_example():
         hidden_dim=256,
         num_layers=4,
         max_sequence_length=64,
-        num_classes=3  # Multi-class example
+        num_classes=3,  # Multi-class example
     )
 
     # Set to evaluation mode
@@ -209,7 +210,7 @@ def inference_example():
     print(f"Predictions: {predictions.tolist()}")
     print("Prediction probabilities (first 3 samples):")
     for i in range(3):
-        print(f"   Sample {i+1}: {probs[i].tolist()}")
+        print(f"   Sample {i + 1}: {probs[i].tolist()}")
 
     # Calculate accuracy (against random labels for demo)
     true_labels = torch.randint(0, 3, (10,))

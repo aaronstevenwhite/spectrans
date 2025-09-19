@@ -36,7 +36,7 @@ layers:
     dropout: 0.1
     fft_norm: "ortho"
     energy_tolerance: 1e-4
-    
+
   spatial_attention:
     type: "attention"
     hidden_dim: 768
@@ -44,7 +44,7 @@ layers:
     head_dim: 64
     dropout: 0.1
     use_bias: true
-    
+
   ffn:
     hidden_dim: 768
     intermediate_dim: 3072

@@ -312,7 +312,8 @@ class TestAFNOMixingEdgeCases:
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
         layer = AFNOMixing(
-            hidden_dim=hidden_dim, max_sequence_length=150  # Larger than actual sequence
+            hidden_dim=hidden_dim,
+            max_sequence_length=150,  # Larger than actual sequence
         )
 
         output = layer(x)

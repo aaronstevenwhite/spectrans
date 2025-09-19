@@ -43,7 +43,7 @@ class TestBasicKernels:
 
     def test_cosine_kernel_shapes(self, random_tensor):
         """Test cosine kernel output shapes."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        batch_size, seq_len, _hidden_dim = random_tensor.shape
         kernel = CosineKernel()
 
         output = kernel.compute(random_tensor, random_tensor)
@@ -97,7 +97,7 @@ class TestRFFKernels:
 
     def test_gaussian_rff_kernel_approximation(self, random_tensor):
         """Test that RFF approximates the true Gaussian kernel."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         sigma = 1.0
 
         # Use many features for good approximation
@@ -209,7 +209,7 @@ class TestSpectralKernels:
 
     def test_polynomial_spectral_kernel_shapes(self, random_tensor):
         """Test polynomial spectral kernel shapes."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        batch_size, seq_len, _hidden_dim = random_tensor.shape
         rank = 16
 
         kernel = PolynomialSpectralKernel(rank=rank, degree=2)
@@ -228,7 +228,7 @@ class TestSpectralKernels:
 
     def test_truncated_svd_kernel_shapes(self, random_tensor):
         """Test truncated SVD kernel shapes."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        batch_size, seq_len, _hidden_dim = random_tensor.shape
         rank = 8
 
         kernel = TruncatedSVDKernel(rank=rank, use_randomized=False)
@@ -290,7 +290,7 @@ class TestSpectralKernels:
 
     def test_learnable_spectral_kernel_training(self, random_tensor):
         """Test that learnable spectral kernel parameters can be trained."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
         kernel = LearnableSpectralKernel(
             input_dim=hidden_dim,
             rank=8,

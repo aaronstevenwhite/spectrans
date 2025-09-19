@@ -27,7 +27,7 @@ layers:
     energy_tolerance: 1e-4
     fft_norm: "ortho"
     keep_complex: true  # Keep complex values for full information preservation
-    
+
   ffn:
     hidden_dim: 768
     intermediate_dim: 3072

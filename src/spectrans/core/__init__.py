@@ -91,12 +91,7 @@ See Also
 [`spectrans.core.registry`][] : Component registration system.
 """
 
-from .base import (
-    AttentionLayer,
-    BaseModel,
-    SpectralComponent,
-    TransformerBlock,
-)
+from .base import AttentionLayer, BaseModel, SpectralComponent, TransformerBlock
 from .registry import (
     ComponentRegistry,
     create_component,

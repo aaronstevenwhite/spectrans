@@ -93,17 +93,8 @@ See Also
 [`spectrans.layers`][] : Parent module containing all layer implementations.
 """
 
-from .lst import (
-    DCTAttention,
-    HadamardAttention,
-    LSTAttention,
-    MixedSpectralAttention,
-)
-from .spectral import (
-    KernelAttention,
-    PerformerAttention,
-    SpectralAttention,
-)
+from .lst import DCTAttention, HadamardAttention, LSTAttention, MixedSpectralAttention
+from .spectral import KernelAttention, PerformerAttention, SpectralAttention
 
 # Public API - alphabetically sorted
 __all__ = [

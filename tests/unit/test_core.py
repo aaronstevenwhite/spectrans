@@ -13,12 +13,7 @@ import torch.nn as nn
 # Import modules to ensure components are registered
 import spectrans.models
 import spectrans.transforms  # noqa: F401
-from spectrans.core.base import (
-    AttentionLayer,
-    BaseModel,
-    SpectralComponent,
-    TransformerBlock,
-)
+from spectrans.core.base import AttentionLayer, BaseModel, SpectralComponent, TransformerBlock
 from spectrans.core.registry import (
     ComponentRegistry,
     create_component,
@@ -27,10 +22,7 @@ from spectrans.core.registry import (
     register_component,
     registry,
 )
-from spectrans.core.types import (
-    ComplexTensor,
-    Tensor,
-)
+from spectrans.core.types import ComplexTensor, Tensor
 from spectrans.layers.mixing.base import MixingLayer
 
 
@@ -186,7 +178,9 @@ class TestTransformerBlock:
         ffn = nn.Sequential(nn.Linear(128, 512), nn.GELU(), nn.Linear(512, 128))
 
         block = TransformerBlock(
-            mixing_layer=mixing, ffn=ffn, dropout=0.0  # Disable dropout for deterministic testing
+            mixing_layer=mixing,
+            ffn=ffn,
+            dropout=0.0,  # Disable dropout for deterministic testing
         )
 
         x = torch.randn(2, 10, 128)

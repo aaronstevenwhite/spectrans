@@ -126,20 +126,8 @@ See Also
 [`spectrans.blocks.base`][] : Base classes and interfaces.
 """
 
-from .base import (
-    FeedForwardNetwork,
-    ParallelBlock,
-    PostNormBlock,
-    PreNormBlock,
-    TransformerBlock,
-)
-from .hybrid import (
-    AdaptiveBlock,
-    AlternatingBlock,
-    CascadeBlock,
-    HybridBlock,
-    MultiscaleBlock,
-)
+from .base import FeedForwardNetwork, ParallelBlock, PostNormBlock, PreNormBlock, TransformerBlock
+from .hybrid import AdaptiveBlock, AlternatingBlock, CascadeBlock, HybridBlock, MultiscaleBlock
 from .spectral import (
     AFNOBlock,
     FNetBlock,

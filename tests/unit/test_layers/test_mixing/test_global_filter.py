@@ -15,7 +15,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_forward_shape(self, random_tensor):
         """Test that GlobalFilterMixing preserves shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
 
         output = mixer(random_tensor)
@@ -25,7 +25,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_2d_forward_shape(self, random_tensor):
         """Test that GlobalFilterMixing2D preserves shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing2D(hidden_dim=hidden_dim, sequence_length=seq_len)
 
         output = mixer(random_tensor)
@@ -35,7 +35,7 @@ class TestGlobalFilterMixing:
 
     def test_adaptive_global_filter_forward_shape(self, random_tensor):
         """Test that AdaptiveGlobalFilter preserves shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = AdaptiveGlobalFilter(
             hidden_dim=hidden_dim, sequence_length=seq_len, adaptive_initialization=True
         )
@@ -47,7 +47,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_activations(self, random_tensor):
         """Test different activation functions."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
 
         activations = ["sigmoid", "tanh", "identity"]
         for activation in activations:
@@ -59,7 +59,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_invalid_activation(self, random_tensor):
         """Test that invalid activation raises error."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
 
         with pytest.raises(ValueError):
             GlobalFilterMixing(
@@ -68,7 +68,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_learnable_parameters(self, random_tensor):
         """Test that global filters have learnable parameters."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
 
         # Check that parameters exist and are learnable
@@ -83,7 +83,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_frequency_response(self, random_tensor):
         """Test frequency response analysis."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
 
         # Get frequency response
@@ -99,7 +99,7 @@ class TestGlobalFilterMixing:
 
     def test_adaptive_global_filter_regularization(self, random_tensor):
         """Test regularization in adaptive global filter."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = AdaptiveGlobalFilter(
             hidden_dim=hidden_dim, sequence_length=seq_len, filter_regularization=0.01
         )
@@ -118,7 +118,7 @@ class TestGlobalFilterMixing:
 
     def test_global_filter_properties(self, random_tensor):
         """Test properties of global filters."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
 
         # Check properties
@@ -134,7 +134,7 @@ class TestGlobalFilterGradients:
 
     def test_global_filter_gradients(self, random_tensor):
         """Test gradient computation for global filter mixing."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         random_tensor.requires_grad_(True)
 
         mixer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
@@ -154,7 +154,7 @@ class TestGlobalFilterGradients:
 
     def test_gradient_flow_through_complex_operations(self, random_tensor):
         """Test gradient flow through complex operations."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, seq_len, hidden_dim = random_tensor.shape
         random_tensor.requires_grad_(True)
 
         mixer = AdaptiveGlobalFilter(

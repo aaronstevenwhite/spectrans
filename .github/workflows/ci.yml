@@ -14,34 +14,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      
-      - name: Run black
-        run: black --check src tests
-      
-      - name: Run isort
-        run: isort --check-only src tests
-      
-      - name: Run ruff
+
+      - name: Run ruff check
         run: ruff check src tests
-      
+
+      - name: Run ruff format
+        run: ruff format --check src tests
+
       - name: Run mypy
         run: mypy src
 
@@ -53,71 +50,72 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.13']
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      
+
       - name: Run unit tests
         run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term
-      
+
       - name: Run integration tests
         run: pytest tests/integration -v
-      
+
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   benchmark:
     name: Performance Benchmarks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      
+
       - name: Run benchmarks
         run: |
           pytest tests/benchmarks/test_performance.py --benchmark-only --benchmark-json=benchmark.json
-      
+
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -132,25 +130,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      
+
       - name: Run memory profiling tests
         run: pytest tests/benchmarks/test_memory_profile.py -v
 
@@ -159,25 +157,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
+
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[docs]"
-      
+
       - name: Build documentation
         run: |
           cd docs
@@ -190,19 +188,19 @@ jobs:
     container:
       image: pytorch/pytorch:latest
       options: --gpus all
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      
+
       - name: Run GPU tests
         run: |
           pytest tests -v -m "gpu" --tb=short
-      
+
       - name: Run GPU benchmarks
         run: |
           pytest tests/benchmarks -v -k "gpu" --benchmark-only

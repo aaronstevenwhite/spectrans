@@ -34,7 +34,7 @@ layers:
     mlp_ratio: 2.0
     activation: "gelu"
     dropout: 0.1
-    
+
   ffn:
     hidden_dim: 768
     intermediate_dim: 3072

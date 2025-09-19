@@ -150,12 +150,7 @@ from .builder import (
     build_model_from_config,
     load_yaml_config,
 )
-from .core import (
-    AttentionLayerConfig,
-    BaseLayerConfig,
-    FilterLayerConfig,
-    UnitaryLayerConfig,
-)
+from .core import AttentionLayerConfig, BaseLayerConfig, FilterLayerConfig, UnitaryLayerConfig
 from .layers import (
     AFNOMixingConfig,
     DCTAttentionConfig,

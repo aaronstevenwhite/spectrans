@@ -1,4 +1,4 @@
-# Spectral Attention Configuration  
+# Spectral Attention Configuration
 # Uses Random Fourier Features for linear complexity attention
 # Paper: "Performer: Rethinking Attention with Performers" (2021)
 
@@ -34,7 +34,7 @@ layers:
     feature_redraw: false
     dropout: 0.1
     use_bias: true
-    
+
   ffn:
     hidden_dim: 768
     intermediate_dim: 3072

@@ -92,16 +92,16 @@ for epoch in range(3):
     # Sample batch
     input_ids = torch.randint(0, 30000, (8, 128))
     labels = torch.randint(0, 2, (8,))
-    
+
     # Forward pass
     logits = model(input_ids=input_ids)
     loss = criterion(logits, labels)
-    
+
     # Backward pass
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
+
     print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
 ```
 
@@ -265,11 +265,11 @@ class MyCustomMixing(MixingLayer):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.dropout = torch.nn.Dropout(dropout)
-    
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Custom mixing implementation
         return self.dropout(x)  # Simplified example
-    
+
     @property
     def complexity(self) -> dict[str, str]:
         return {"time": "O(n)", "space": "O(1)"}

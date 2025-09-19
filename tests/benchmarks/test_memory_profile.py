@@ -47,9 +47,9 @@ class TestMemoryLeaks:
 
         # Check for significant memory growth (>10MB would be concerning)
         total_growth = sum(stat.size_diff for stat in top_stats)
-        assert (
-            total_growth < 10 * 1024 * 1024
-        ), f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        assert total_growth < 10 * 1024 * 1024, (
+            f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        )
 
         tracemalloc.stop()
 
@@ -118,9 +118,9 @@ class TestMemoryLeaks:
         total_growth = sum(stat.size_diff for stat in top_stats)
 
         # Should not continuously grow after gradient clears
-        assert (
-            total_growth < 10 * 1024 * 1024
-        ), f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        assert total_growth < 10 * 1024 * 1024, (
+            f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        )
 
         tracemalloc.stop()
 
@@ -212,9 +212,9 @@ class TestPeakMemoryUsage:
             expected = base_memory * batch_size
             actual = memory_usage[batch_size]
             ratio = actual / expected
-            assert (
-                0.3 < ratio < 2.0
-            ), f"Non-linear scaling: batch {batch_size} uses {ratio:.2f}x expected memory"
+            assert 0.3 < ratio < 2.0, (
+                f"Non-linear scaling: batch {batch_size} uses {ratio:.2f}x expected memory"
+            )
 
     def test_sequence_length_memory_scaling(self):
         """Test how memory scales with sequence length."""
@@ -364,7 +364,7 @@ class TestMemoryProfiling:
                 z = transform.inverse_transform(y)
             else:
                 z = transform.inverse_transform(y)
-            current, peak = tracemalloc.get_traced_memory()
+            _, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
             print(f"  {transform_name}: {peak / 1024 / 1024:.2f} MB peak")
@@ -398,7 +398,7 @@ class TestMemoryProfiling:
             loss = y.sum()
             loss.backward(retain_graph=True)
 
-            current, peak = tracemalloc.get_traced_memory()
+            _, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
 
             print(f"  {name}: {peak / 1024 / 1024:.2f} MB peak")
@@ -435,7 +435,7 @@ class TestMemoryProfiling:
             optimizer.step()
             optimizer.zero_grad()
 
-            current, peak = tracemalloc.get_traced_memory()
+            _, peak = tracemalloc.get_traced_memory()
             memory_history.append(peak / 1024 / 1024)
             tracemalloc.stop()
 
@@ -571,9 +571,9 @@ class TestMemoryAllocation:
         print(f"  After cleanup: {final_count}")
 
         # Should return close to initial state (allow some caching)
-        assert (
-            final_count < initial_count + 100
-        ), f"Too many tensors remain: {final_count - initial_count}"
+        assert final_count < initial_count + 100, (
+            f"Too many tensors remain: {final_count - initial_count}"
+        )
 
     def test_parameter_memory_usage(self):
         """Test memory usage of model parameters."""

@@ -121,12 +121,7 @@ See Also
 __version__ = "0.1.0"
 
 # Import core components
-from .core.base import (
-    AttentionLayer,
-    BaseModel,
-    SpectralComponent,
-    TransformerBlock,
-)
+from .core.base import AttentionLayer, BaseModel, SpectralComponent, TransformerBlock
 from .core.registry import (
     create_component,
     get_component,

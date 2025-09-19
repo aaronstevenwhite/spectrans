@@ -28,7 +28,7 @@ layers:
     energy_tolerance: 1e-4
     fft_norm: "ortho"
     keep_complex: false  # Default: takes real part as in original FNet paper
-    
+
   ffn:
     hidden_dim: 768
     intermediate_dim: 3072

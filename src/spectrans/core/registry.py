@@ -185,9 +185,7 @@ class ComponentRegistry:
 
         if name not in self._components[category]:
             available = list(self._components[category].keys())
-            raise ValueError(
-                f"Unknown {category}: '{name}'. " f"Available {category}s: {available}"
-            )
+            raise ValueError(f"Unknown {category}: '{name}'. Available {category}s: {available}")
 
         return self._components[category][name]
 

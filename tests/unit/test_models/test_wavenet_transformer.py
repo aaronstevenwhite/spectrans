@@ -2,11 +2,7 @@
 
 import torch
 
-from spectrans.models.wavenet_transformer import (
-    WaveletDecoder,
-    WaveletEncoder,
-    WaveletTransformer,
-)
+from spectrans.models.wavenet_transformer import WaveletDecoder, WaveletEncoder, WaveletTransformer
 
 
 class TestWaveletTransformer:

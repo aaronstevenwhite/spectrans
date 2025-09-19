@@ -30,7 +30,7 @@ layers:
     levels: 3
     mixing_mode: "pointwise"
     dropout: 0.1
-    
+
   ffn:
     hidden_dim: 512
     intermediate_dim: 2048

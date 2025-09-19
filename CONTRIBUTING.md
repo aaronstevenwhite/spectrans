@@ -59,6 +59,7 @@ We are committed to providing a welcoming and inclusive environment for all cont
 3. **Install pre-commit hooks**:
    ```bash
    pre-commit install
+   pre-commit install --hook-type pre-push
    ```
 
 ### Development Tools
@@ -71,20 +72,29 @@ The project uses several tools to maintain code quality:
 - **black**: Code formatter
 - **isort**: Import sorting
 
+### Running Code Quality Checks
+
 Run all checks before committing:
 ```bash
-# Format code
-black src tests
-isort src tests
+# Format code and fix imports
+ruff check --fix src tests
+ruff format src tests
 
-# Run linter
+# Check linting, imports, and formatting
 ruff check src tests
+ruff format --check src tests
 
-# Type checking
+# Type checking (main source only)
 mypy src
 
-# Run tests
-pytest
+# Run all tests
+pytest tests/unit tests/integration -v
+
+# Test coverage
+pytest tests/unit tests/integration --cov=spectrans --cov-report=html
+
+# Pre-commit hooks
+pre-commit run --all-files
 ```
 
 ## Contribution Process
@@ -171,46 +181,46 @@ import torch.nn as nn
 
 class SpectralComponent(nn.Module, ABC):
     """Base class for spectral components.
-    
+
     Parameters
     ----------
     hidden_dim : int
         Hidden dimension of the model.
     dropout : float, optional
         Dropout rate, by default 0.0.
-        
+
     Attributes
     ----------
     hidden_dim : int
         Hidden dimension of the model.
     """
-    
+
     def __init__(self, hidden_dim: int, dropout: float = 0.0):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.dropout = nn.Dropout(dropout)
-    
+
     @abstractmethod
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
-        
+
         Parameters
         ----------
         x : torch.Tensor
             Input tensor of shape (batch_size, sequence_length, hidden_dim).
-            
+
         Returns
         -------
         torch.Tensor
             Output tensor of same shape as input.
         """
         pass
-    
+
     @property
     @abstractmethod
     def complexity(self) -> dict[str, str]:
         """Computational complexity information.
-        
+
         Returns
         -------
         dict[str, str]
@@ -241,36 +251,36 @@ Use NumPy-style docstrings:
 ```python
 def spectral_transform(x: torch.Tensor, dim: int = -1) -> torch.Tensor:
     r"""Apply spectral transform to input tensor.
-    
+
     Computes the Discrete Fourier Transform along the specified dimension,
     applying the transform according to the formula:
-    
+
     $$X[k] = \sum_{n=0}^{N-1} x[n] \exp\left(-2\pi i \frac{kn}{N}\right)$$
-    
+
     Parameters
     ----------
     x : torch.Tensor
         Input tensor to transform.
     dim : int, optional
         Dimension along which to apply transform, by default -1.
-        
+
     Returns
     -------
     torch.Tensor
         Transformed tensor with same shape as input.
-        
+
     Notes
     -----
     This implementation uses PyTorch's optimized FFT operations which
     leverage CUDA acceleration when available. The complexity is
     $O(n \log n)$ where $n$ is the size along the transform dimension.
-    
+
     References
     ----------
     James W. Cooley and John W. Tukey. 1965. An algorithm for the machine
     calculation of complex Fourier series. Mathematics of Computation,
     19(90):297-301.
-    
+
     Examples
     --------
     >>> x = torch.randn(32, 128, 512)
@@ -338,38 +348,38 @@ from spectrans.transforms import FFT1D
 
 class TestFFT1D:
     """Test suite for 1D FFT transform."""
-    
+
     def test_forward_inverse_reconstruction(self):
         """Test perfect reconstruction property."""
         x = torch.randn(32, 128, 512)
         transform = FFT1D()
-        
+
         x_freq = transform.transform(x)
         x_recon = transform.inverse_transform(x_freq)
-        
+
         # Use appropriate tolerance for floating point
         torch.testing.assert_close(x, x_recon, rtol=1e-5, atol=1e-7)
-    
+
     def test_parseval_theorem(self):
         """Test energy conservation (Parseval's theorem)."""
         x = torch.randn(16, 64, 256)
         transform = FFT1D()
-        
+
         energy_spatial = torch.sum(x ** 2)
         x_freq = transform.transform(x)
         energy_freq = torch.sum(torch.abs(x_freq) ** 2) / x.shape[-1]
-        
+
         torch.testing.assert_close(energy_spatial, energy_freq, rtol=1e-5)
-    
+
     def test_gradient_flow(self):
         """Test that gradients flow through transform."""
         x = torch.randn(8, 32, 128, requires_grad=True)
         transform = FFT1D()
-        
+
         y = transform.transform(x)
         loss = y.sum()
         loss.backward()
-        
+
         assert x.grad is not None
         assert not torch.any(torch.isnan(x.grad))
 ```
@@ -387,10 +397,10 @@ def test_fourier_mixing_performance(benchmark):
     """Benchmark Fourier mixing layer."""
     layer = FourierMixing(hidden_dim=768)
     x = torch.randn(32, 512, 768)
-    
+
     # Run benchmark
     result = benchmark(layer, x)
-    
+
     # Verify output shape
     assert result.shape == x.shape
 ```

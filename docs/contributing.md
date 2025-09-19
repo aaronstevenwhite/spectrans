@@ -33,6 +33,7 @@ Thank you for your interest in contributing to Spectrans! This guide covers the 
 4. **Install pre-commit hooks**:
    ```bash
    pre-commit install
+   pre-commit install --hook-type pre-push
    ```
 
 ## Development Tools
@@ -45,26 +46,30 @@ The project uses several tools to maintain code quality:
 - **black**: Code formatter
 - **isort**: Import sorting
 
-### Running Code Quality Checks
+### Code Quality Checks
 
-Before committing, run all checks:
+For individual checks:
 
 ```bash
-# Format code
-black src tests
-isort src tests
+# Format code and fix imports
+ruff check --fix src tests
+ruff format src tests
 
-# Run linter
+# Check linting, imports, and formatting
 ruff check src tests
+ruff format --check src tests
 
-# Type checking
+# Type checking (main source only)
 mypy src
 
 # Run tests
-pytest
+pytest tests/unit tests/integration -v
 
 # Run with coverage
-pytest --cov=spectrans --cov-report=html
+pytest tests/unit tests/integration --cov=spectrans --cov-report=html
+
+# Pre-commit hooks
+pre-commit run --all-files
 ```
 
 ### Running Tests

@@ -45,6 +45,7 @@ from spectrans.models import AFNOModel, FNet, GFNet
 @dataclass
 class TrainingConfig:
     """Training configuration dataclass."""
+
     model_name: str = "fnet"
     vocab_size: int = 10000
     hidden_dim: int = 512
@@ -81,7 +82,7 @@ class SyntheticTextDataset(Dataset):
         seq_length: int = 256,
         num_samples: int = 10000,
         num_classes: int = 2,
-        seed: int = 42
+        seed: int = 42,
     ):
         torch.manual_seed(seed)
 
@@ -138,7 +139,11 @@ class ModelTrainer:
         # Setup training components
         self.optimizer = None
         self.scheduler = None
-        self.scaler = GradScaler(device='cuda') if config.mixed_precision and torch.cuda.is_available() else None
+        self.scaler = (
+            GradScaler(device="cuda")
+            if config.mixed_precision and torch.cuda.is_available()
+            else None
+        )
 
         # Tracking
         self.epoch = 0
@@ -158,7 +163,7 @@ class ModelTrainer:
                 num_layers=self.config.num_layers,
                 max_sequence_length=self.config.max_seq_length,
                 num_classes=self.config.num_classes,
-                gradient_checkpointing=self.config.gradient_checkpointing
+                gradient_checkpointing=self.config.gradient_checkpointing,
             )
         elif self.config.model_name == "gfnet":
             return GFNet(
@@ -166,7 +171,7 @@ class ModelTrainer:
                 hidden_dim=self.config.hidden_dim,
                 num_layers=self.config.num_layers,
                 max_sequence_length=self.config.max_seq_length,
-                num_classes=self.config.num_classes
+                num_classes=self.config.num_classes,
             )
         elif self.config.model_name == "afno":
             return AFNOModel(
@@ -175,7 +180,7 @@ class ModelTrainer:
                 num_layers=self.config.num_layers,
                 max_sequence_length=self.config.max_seq_length,
                 num_classes=self.config.num_classes,
-                modes_seq=min(32, self.config.max_seq_length // 8)
+                modes_seq=min(32, self.config.max_seq_length // 8),
             )
         else:
             raise ValueError(f"Unknown model: {self.config.model_name}")
@@ -188,7 +193,7 @@ class ModelTrainer:
             lr=self.config.learning_rate,
             weight_decay=self.config.weight_decay,
             betas=(0.9, 0.999),
-            eps=1e-8
+            eps=1e-8,
         )
 
         # Learning rate scheduler
@@ -198,7 +203,7 @@ class ModelTrainer:
             max_lr=self.config.learning_rate,
             total_steps=total_steps,
             pct_start=pct_start,
-            anneal_strategy='cos'
+            anneal_strategy="cos",
         )
 
     def train_epoch(self, train_loader: DataLoader) -> float:
@@ -220,7 +225,7 @@ class ModelTrainer:
 
             # Forward pass with optional mixed precision
             if self.scaler is not None:
-                with autocast(device_type='cuda'):
+                with autocast(device_type="cuda"):
                     logits = self.model(input_ids=input_ids)
                     loss = F.cross_entropy(logits, labels)
 
@@ -231,8 +236,7 @@ class ModelTrainer:
                 if self.config.max_grad_norm > 0:
                     self.scaler.unscale_(self.optimizer)
                     torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(),
-                        self.config.max_grad_norm
+                        self.model.parameters(), self.config.max_grad_norm
                     )
 
                 self.scaler.step(self.optimizer)
@@ -245,8 +249,7 @@ class ModelTrainer:
 
                 if self.config.max_grad_norm > 0:
                     torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(),
-                        self.config.max_grad_norm
+                        self.model.parameters(), self.config.max_grad_norm
                     )
 
                 self.optimizer.step()
@@ -261,10 +264,9 @@ class ModelTrainer:
             self.step += 1
 
             # Update progress bar
-            pbar.set_postfix({
-                'loss': f'{loss.item():.4f}',
-                'lr': f'{self.optimizer.param_groups[0]["lr"]:.2e}'
-            })
+            pbar.set_postfix(
+                {"loss": f"{loss.item():.4f}", "lr": f"{self.optimizer.param_groups[0]['lr']:.2e}"}
+            )
 
         return total_loss / num_batches
 
@@ -281,7 +283,7 @@ class ModelTrainer:
                 labels = labels.to(self.device)
 
                 if self.scaler is not None:
-                    with autocast(device_type='cuda'):
+                    with autocast(device_type="cuda"):
                         logits = self.model(input_ids=input_ids)
                         loss = F.cross_entropy(logits, labels)
                 else:
@@ -303,15 +305,15 @@ class ModelTrainer:
     def save_checkpoint(self, filepath: str, is_best: bool = False):
         """Save model checkpoint."""
         checkpoint = {
-            'epoch': self.epoch,
-            'step': self.step,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict() if self.optimizer else None,
-            'scheduler_state_dict': self.scheduler.state_dict() if self.scheduler else None,
-            'scaler_state_dict': self.scaler.state_dict() if self.scaler else None,
-            'best_val_acc': self.best_val_acc,
-            'config': self.config,
-            'history': self.history
+            "epoch": self.epoch,
+            "step": self.step,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict() if self.optimizer else None,
+            "scheduler_state_dict": self.scheduler.state_dict() if self.scheduler else None,
+            "scaler_state_dict": self.scaler.state_dict() if self.scaler else None,
+            "best_val_acc": self.best_val_acc,
+            "config": self.config,
+            "history": self.history,
         }
 
         torch.save(checkpoint, filepath)
@@ -324,26 +326,23 @@ class ModelTrainer:
         """Load model checkpoint."""
         checkpoint = torch.load(filepath, map_location=self.device)
 
-        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.model.load_state_dict(checkpoint["model_state_dict"])
         if self.optimizer is not None:
-            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            self.optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 
-        if self.scheduler is not None and checkpoint['scheduler_state_dict']:
-            self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        if self.scheduler is not None and checkpoint["scheduler_state_dict"]:
+            self.scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
 
-        if self.scaler and checkpoint['scaler_state_dict']:
-            self.scaler.load_state_dict(checkpoint['scaler_state_dict'])
+        if self.scaler and checkpoint["scaler_state_dict"]:
+            self.scaler.load_state_dict(checkpoint["scaler_state_dict"])
 
-        self.epoch = checkpoint['epoch']
-        self.step = checkpoint['step']
-        self.best_val_acc = checkpoint['best_val_acc']
-        self.history = checkpoint['history']
+        self.epoch = checkpoint["epoch"]
+        self.step = checkpoint["step"]
+        self.best_val_acc = checkpoint["best_val_acc"]
+        self.history = checkpoint["history"]
 
     def train(
-        self,
-        train_loader: DataLoader,
-        val_loader: DataLoader,
-        resume_from: str | None = None
+        self, train_loader: DataLoader, val_loader: DataLoader, resume_from: str | None = None
     ):
         """Complete training loop."""
         # Resume from checkpoint if specified
@@ -374,10 +373,12 @@ class ModelTrainer:
             self.history["val_acc"].append(val_acc)
 
             # Print epoch results
-            print(f"Epoch {epoch}: "
-                  f"train_loss={train_loss:.4f}, "
-                  f"val_loss={val_loss:.4f}, "
-                  f"val_acc={val_acc:.4f}")
+            print(
+                f"Epoch {epoch}: "
+                f"train_loss={train_loss:.4f}, "
+                f"val_loss={val_loss:.4f}, "
+                f"val_acc={val_acc:.4f}"
+            )
 
             # Save checkpoint
             is_best = val_acc > self.best_val_acc
@@ -397,11 +398,7 @@ def demonstrate_basic_training():
 
     # Configuration
     config = TrainingConfig(
-        model_name="fnet",
-        batch_size=16,
-        num_epochs=3,
-        learning_rate=1e-4,
-        max_seq_length=128
+        model_name="fnet", batch_size=16, num_epochs=3, learning_rate=1e-4, max_seq_length=128
     )
 
     # Create synthetic dataset
@@ -409,7 +406,7 @@ def demonstrate_basic_training():
         vocab_size=config.vocab_size,
         seq_length=config.max_seq_length,
         num_samples=1000,
-        num_classes=config.num_classes
+        num_classes=config.num_classes,
     )
 
     # Split dataset
@@ -422,14 +419,9 @@ def demonstrate_basic_training():
         train_dataset,
         batch_size=config.batch_size,
         shuffle=True,
-        num_workers=0  # Avoid multiprocessing issues in example
+        num_workers=0,  # Avoid multiprocessing issues in example
     )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=config.batch_size,
-        shuffle=False,
-        num_workers=0
-    )
+    val_loader = DataLoader(val_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
 
     print(f"Dataset: {len(train_dataset)} train, {len(val_dataset)} val samples")
 
@@ -466,7 +458,7 @@ def demonstrate_model_comparison():
             learning_rate=2e-4,
             max_seq_length=64,
             hidden_dim=256,
-            num_layers=4
+            num_layers=4,
         )
 
         trainer = ModelTrainer(config)
@@ -479,7 +471,7 @@ def demonstrate_model_comparison():
             "params": sum(p.numel() for p in trainer.model.parameters()),
             "best_acc": trainer.best_val_acc,
             "final_train_loss": trainer.history["train_loss"][-1],
-            "final_val_loss": trainer.history["val_loss"][-1]
+            "final_val_loss": trainer.history["val_loss"][-1],
         }
 
     # Print comparison
@@ -488,11 +480,13 @@ def demonstrate_model_comparison():
     print("-" * 60)
 
     for model_name, metrics in results.items():
-        print(f"{model_name.upper():<10} "
-              f"{metrics['params']:>8,} "
-              f"{metrics['best_acc']:<10.4f} "
-              f"{metrics['final_train_loss']:<12.4f} "
-              f"{metrics['final_val_loss']:<10.4f}")
+        print(
+            f"{model_name.upper():<10} "
+            f"{metrics['params']:>8,} "
+            f"{metrics['best_acc']:<10.4f} "
+            f"{metrics['final_train_loss']:<12.4f} "
+            f"{metrics['final_val_loss']:<10.4f}"
+        )
 
     print("\n✓ Model comparison completed\n")
 
@@ -519,14 +513,11 @@ def demonstrate_config_based_training():
         from spectrans.config.models import FNetModelConfig
 
         config = FNetModelConfig(
-            hidden_dim=384,
-            num_layers=6,
-            sequence_length=256,
-            vocab_size=15000,
-            num_classes=3
+            hidden_dim=384, num_layers=6, sequence_length=256, vocab_size=15000, num_classes=3
         )
 
         from spectrans.config import build_model_from_config
+
         model = build_model_from_config({"model": config.model_dump()})
 
         print("✓ Model created from programmatic configuration")
@@ -542,28 +533,32 @@ def demonstrate_production_patterns():
     # Model export/import
     print("1. Model serialization...")
 
-    model = FNet(vocab_size=5000, hidden_dim=256, num_layers=4,
-                 max_sequence_length=128, num_classes=2)
+    model = FNet(
+        vocab_size=5000, hidden_dim=256, num_layers=4, max_sequence_length=128, num_classes=2
+    )
 
     # Save for production
     save_path = "production_model.pt"
-    torch.save({
-        'model_state_dict': model.state_dict(),
-        'model_config': {
-            'vocab_size': 5000,
-            'hidden_dim': 256,
-            'num_layers': 4,
-            'max_sequence_length': 128,
-            'num_classes': 2
-        }
-    }, save_path)
+    torch.save(
+        {
+            "model_state_dict": model.state_dict(),
+            "model_config": {
+                "vocab_size": 5000,
+                "hidden_dim": 256,
+                "num_layers": 4,
+                "max_sequence_length": 128,
+                "num_classes": 2,
+            },
+        },
+        save_path,
+    )
 
     print(f"   ✓ Model saved to {save_path}")
 
     # Load in production
-    checkpoint = torch.load(save_path, map_location='cpu')
-    production_model = FNet(**checkpoint['model_config'])
-    production_model.load_state_dict(checkpoint['model_state_dict'])
+    checkpoint = torch.load(save_path, map_location="cpu")
+    production_model = FNet(**checkpoint["model_config"])
+    production_model.load_state_dict(checkpoint["model_state_dict"])
     production_model.eval()
 
     print("   ✓ Model loaded for production")

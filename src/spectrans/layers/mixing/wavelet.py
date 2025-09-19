@@ -361,7 +361,7 @@ class WaveletMixing(nn.Module):
         - Perfect reconstruction property maintained through careful padding/truncation
         - Gradient flow preserved through PyTorch-native operations
         """
-        batch_size, seq_len, hidden_dim = x.shape
+        _, seq_len, hidden_dim = x.shape
 
         # Store original input for residual connection
         residual = x
@@ -664,7 +664,9 @@ class WaveletMixing2D(nn.Module):
             # Each subband is processed per-channel with feature dimension 1 after flattening spatial dims
             # So attention operates on sequences of spatial positions with 1 feature per position
             self.cross_mixer = nn.MultiheadAttention(
-                1, num_heads=1, batch_first=True  # Feature dim=1, so only 1 head possible
+                1,
+                num_heads=1,
+                batch_first=True,  # Feature dim=1, so only 1 head possible
             )
 
         elif mixing_mode == "attention":

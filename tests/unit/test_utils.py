@@ -323,7 +323,7 @@ class TestPaddingOperations:
         """Test padding with invalid target length."""
         x = torch.tensor([1, 2, 3], device=device)
 
-        with pytest.raises(ValueError, match="Target length .* must be >= current length"):
+        with pytest.raises(ValueError, match=r"Target length .* must be >= current length"):
             pad_to_length(x, 2, dim=-1)
 
     def test_pad_to_length_invalid_mode(self, device):
@@ -345,7 +345,7 @@ class TestPaddingOperations:
         """Test unpadding with invalid target."""
         x = torch.tensor([1, 2, 3], device=device)
 
-        with pytest.raises(ValueError, match="Target length .* must be <= current length"):
+        with pytest.raises(ValueError, match=r"Target length .* must be <= current length"):
             unpad_to_length(x, 5)
 
     def test_pad_sequence(self, device):

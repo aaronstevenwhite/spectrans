@@ -11,10 +11,7 @@ from spectrans.config import (
     build_model_from_config,
     load_yaml_config,
 )
-from spectrans.config.layers.attention import (
-    LSTAttentionConfig,
-    SpectralAttentionConfig,
-)
+from spectrans.config.layers.attention import LSTAttentionConfig, SpectralAttentionConfig
 from spectrans.config.layers.mixing import (
     AFNOMixingConfig,
     FourierMixingConfig,

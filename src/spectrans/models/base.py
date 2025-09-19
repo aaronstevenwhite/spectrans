@@ -580,7 +580,7 @@ class RotaryPositionalEncoding(nn.Module):
         """
         # Handle both 3D and 4D inputs
         if x.ndim == 3:
-            batch_size, seq_len, hidden_dim = x.shape
+            _, seq_len, _ = x.shape
             # For simplicity, we'll apply RoPE directly to the hidden dimension
             # In practice, this would be applied separately to Q and K in attention
             was_3d = True
@@ -735,7 +735,7 @@ class ALiBiPositionalBias(nn.Module):
         Tensor
             Attention scores with ALiBi bias added.
         """
-        batch_size, num_heads, seq_len, _ = attention_scores.shape
+        _, _, seq_len, _ = attention_scores.shape
 
         # Rebuild cache if needed
         self._build_alibi_tensor(seq_len)

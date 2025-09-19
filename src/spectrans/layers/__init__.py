@@ -187,12 +187,7 @@ from .mixing import (
     WaveletMixing,
     WaveletMixing2D,
 )
-from .operators import (
-    FNOBlock,
-    FourierNeuralOperator,
-    SpectralConv1d,
-    SpectralConv2d,
-)
+from .operators import FNOBlock, FourierNeuralOperator, SpectralConv1d, SpectralConv2d
 
 # Public API - alphabetically sorted
 __all__ = [

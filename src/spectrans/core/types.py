@@ -91,11 +91,7 @@ import torch
 import torch.nn as nn
 
 if TYPE_CHECKING:
-    from spectrans.core.base import (
-        AttentionLayer,
-        BaseModel,
-        TransformerBlock,
-    )
+    from spectrans.core.base import AttentionLayer, BaseModel, TransformerBlock
     from spectrans.layers.mixing.base import MixingLayer
     from spectrans.transforms.base import SpectralTransform
 

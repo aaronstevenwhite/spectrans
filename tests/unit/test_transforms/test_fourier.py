@@ -3,11 +3,7 @@
 import pytest
 import torch
 
-from spectrans.transforms import (
-    FFT1D,
-    FFT2D,
-    RFFT,
-)
+from spectrans.transforms import FFT1D, FFT2D, RFFT
 
 
 class TestFFTTransforms:

@@ -18,7 +18,7 @@ class TestSpectralAttention:
 
     def test_spectral_attention_forward_shape(self, random_tensor):
         """Test SpectralAttention output shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = SpectralAttention(
             hidden_dim=hidden_dim,
@@ -31,7 +31,7 @@ class TestSpectralAttention:
 
     def test_spectral_attention_with_mask(self, random_tensor, attention_mask):
         """Test SpectralAttention with attention mask."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = SpectralAttention(
             hidden_dim=hidden_dim,
@@ -48,7 +48,7 @@ class TestSpectralAttention:
 
     def test_performer_attention_shapes(self, random_tensor):
         """Test PerformerAttention output shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         performer = PerformerAttention(
             hidden_dim=hidden_dim,
@@ -61,7 +61,7 @@ class TestSpectralAttention:
 
     def test_performer_generalized_attention(self, random_tensor):
         """Test generalized Performer attention."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         performer = PerformerAttention(
             hidden_dim=hidden_dim,
@@ -74,7 +74,7 @@ class TestSpectralAttention:
 
     def test_kernel_attention_types(self, random_tensor):
         """Test different kernel types in KernelAttention."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         # Test Gaussian kernel
         attn_gaussian = KernelAttention(
@@ -128,7 +128,7 @@ class TestLSTAttention:
 
     def test_lst_attention_shapes(self, random_tensor):
         """Test LSTAttention output shape."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = LSTAttention(
             hidden_dim=hidden_dim,
@@ -141,7 +141,7 @@ class TestLSTAttention:
 
     def test_lst_transform_types(self, random_tensor):
         """Test different transform types in LST."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         # Test DCT
         attn_dct = LSTAttention(
@@ -181,7 +181,7 @@ class TestLSTAttention:
 
     def test_dct_attention(self, random_tensor):
         """Test specialized DCT attention."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = DCTAttention(
             hidden_dim=hidden_dim,
@@ -194,7 +194,7 @@ class TestLSTAttention:
 
     def test_hadamard_attention(self, random_tensor):
         """Test specialized Hadamard attention."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = HadamardAttention(
             hidden_dim=hidden_dim,
@@ -207,7 +207,7 @@ class TestLSTAttention:
 
     def test_mixed_spectral_attention(self, random_tensor):
         """Test mixed spectral attention."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = MixedSpectralAttention(
             hidden_dim=hidden_dim,
@@ -222,7 +222,7 @@ class TestLSTAttention:
 
     def test_lst_with_mask(self, random_tensor, attention_mask):
         """Test LST attention with mask."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = LSTAttention(
             hidden_dim=hidden_dim,
@@ -256,7 +256,7 @@ class TestAttentionTraining:
 
     def test_attention_dropout(self, random_tensor):
         """Test dropout in attention layers."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         attn = SpectralAttention(
             hidden_dim=hidden_dim,
@@ -298,7 +298,7 @@ class TestAttentionTraining:
 
     def test_attention_return_weights_flag(self, random_tensor):
         """Test return_attention flag (should return None for linear attention)."""
-        batch_size, seq_len, hidden_dim = random_tensor.shape
+        _batch_size, _seq_len, hidden_dim = random_tensor.shape
 
         # SpectralAttention doesn't compute explicit weights
         attn = SpectralAttention(hidden_dim=hidden_dim, num_heads=4)

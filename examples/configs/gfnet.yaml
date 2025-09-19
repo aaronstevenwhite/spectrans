@@ -29,7 +29,7 @@ layers:
     learnable_filters: true
     fft_norm: "ortho"
     filter_init_std: 0.02
-    
+
   ffn:
     hidden_dim: 512
     intermediate_dim: 2048

@@ -7,12 +7,7 @@ mixing strategies including alternating, adaptive, multiscale, and cascade block
 import torch
 import torch.nn as nn
 
-from spectrans.blocks.hybrid import (
-    AdaptiveBlock,
-    AlternatingBlock,
-    CascadeBlock,
-    MultiscaleBlock,
-)
+from spectrans.blocks.hybrid import AdaptiveBlock, AlternatingBlock, CascadeBlock, MultiscaleBlock
 from spectrans.layers.attention.spectral import SpectralAttention
 from spectrans.layers.mixing.fourier import FourierMixing
 from spectrans.layers.mixing.global_filter import GlobalFilterMixing

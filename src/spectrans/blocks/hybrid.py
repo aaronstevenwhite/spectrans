@@ -425,9 +425,9 @@ class MultiscaleBlock(HybridBlock):
         if self.fusion_type == "add":
             mixed = sum(outputs) / self.num_scales
         elif self.fusion_type == "weighted":
-            assert (
-                self.fusion_weights is not None
-            ), "fusion_weights should not be None for weighted fusion"
+            assert self.fusion_weights is not None, (
+                "fusion_weights should not be None for weighted fusion"
+            )
             weights = F.softmax(self.fusion_weights, dim=0)
             mixed = sum(w * out for w, out in zip(weights, outputs, strict=False))
         elif self.fusion_type == "concat":

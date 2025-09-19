@@ -2,11 +2,7 @@
 
 import torch
 
-from spectrans.models.hybrid import (
-    AlternatingTransformer,
-    HybridEncoder,
-    HybridTransformer,
-)
+from spectrans.models.hybrid import AlternatingTransformer, HybridEncoder, HybridTransformer
 
 
 class TestHybridTransformer:
