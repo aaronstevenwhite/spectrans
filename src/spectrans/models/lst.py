@@ -271,7 +271,6 @@ class LSTTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "LSTModelConfig") -> "LSTTransformer":  # type: ignore[override]
         """Create model from configuration.
@@ -413,7 +412,6 @@ class LSTEncoder(BaseModel):
             blocks.append(block)
 
         return nn.ModuleList(blocks)
-
 
 
 @register_component("model", "lst_decoder")
@@ -582,4 +580,3 @@ class LSTDecoder(BaseModel):
         # Apply LM head
         logits = self.lm_head(hidden_states)
         return logits  # type: ignore[no-any-return]
-

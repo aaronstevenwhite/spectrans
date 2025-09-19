@@ -50,27 +50,21 @@ class TestFourierMixing:
 
         # Test sequence mixing only
         mixer_seq = SeparableFourierMixing(
-            hidden_dim=hidden_dim,
-            mix_sequence=True,
-            mix_features=False
+            hidden_dim=hidden_dim, mix_sequence=True, mix_features=False
         )
         output_seq = mixer_seq(random_tensor)
         assert output_seq.shape == random_tensor.shape
 
         # Test feature mixing only
         mixer_feat = SeparableFourierMixing(
-            hidden_dim=hidden_dim,
-            mix_sequence=False,
-            mix_features=True
+            hidden_dim=hidden_dim, mix_sequence=False, mix_features=True
         )
         output_feat = mixer_feat(random_tensor)
         assert output_feat.shape == random_tensor.shape
 
         # Test both dimensions
         mixer_both = SeparableFourierMixing(
-            hidden_dim=hidden_dim,
-            mix_sequence=True,
-            mix_features=True
+            hidden_dim=hidden_dim, mix_sequence=True, mix_features=True
         )
         output_both = mixer_both(random_tensor)
         assert output_both.shape == random_tensor.shape
@@ -80,11 +74,7 @@ class TestFourierMixing:
         batch_size, seq_len, hidden_dim = random_tensor.shape
 
         with pytest.raises(ValueError):
-            SeparableFourierMixing(
-                hidden_dim=hidden_dim,
-                mix_sequence=False,
-                mix_features=False
-            )
+            SeparableFourierMixing(hidden_dim=hidden_dim, mix_sequence=False, mix_features=False)
 
     def test_fourier_mixing_dropout(self, random_tensor):
         """Test dropout functionality in Fourier mixing."""
@@ -114,10 +104,10 @@ class TestFourierMixing:
 
         # Check spectral properties
         props = mixer.get_spectral_properties()
-        assert props['real_output'] is True
-        assert props['frequency_domain'] is True
-        assert props['learnable_parameters'] is False
-        assert props['translation_equivariant'] is True
+        assert props["real_output"] is True
+        assert props["frequency_domain"] is True
+        assert props["learnable_parameters"] is False
+        assert props["translation_equivariant"] is True
 
 
 class TestFourierMixingMathematicalProperties:
@@ -287,12 +277,7 @@ class TestFourierMixingComplexMode:
         output_complex = layer_complex(x)
 
         # Real output should match real part of complex output
-        torch.testing.assert_close(
-            output_real,
-            output_complex.real,
-            rtol=1e-5,
-            atol=1e-6
-        )
+        torch.testing.assert_close(output_real, output_complex.real, rtol=1e-5, atol=1e-6)
 
         # Complex output should have non-zero imaginary part
         assert not torch.allclose(output_complex.imag, torch.zeros_like(output_complex.imag))

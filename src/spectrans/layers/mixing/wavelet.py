@@ -277,9 +277,9 @@ class WaveletMixing(nn.Module):
     def __init__(
         self,
         hidden_dim: int,
-        wavelet: WaveletType = 'db4',
+        wavelet: WaveletType = "db4",
         levels: int = 3,
-        mixing_mode: str = 'pointwise',
+        mixing_mode: str = "pointwise",
         dropout: float = 0.0,
     ):
         super().__init__()
@@ -290,36 +290,33 @@ class WaveletMixing(nn.Module):
         self.mixing_mode = mixing_mode
 
         # Initialize wavelet transform
-        self.dwt = DWT1D(wavelet=wavelet, levels=levels, mode='symmetric')
+        self.dwt = DWT1D(wavelet=wavelet, levels=levels, mode="symmetric")
 
         # Initialize mixing weights based on mode
         self.mixing_weights = nn.ParameterDict()
 
-        if mixing_mode == 'pointwise':
+        if mixing_mode == "pointwise":
             # Simple pointwise multiplication for each level
-            self.mixing_weights['approx'] = nn.Parameter(
-                torch.ones(1, 1, hidden_dim)
-            )
+            self.mixing_weights["approx"] = nn.Parameter(torch.ones(1, 1, hidden_dim))
             for level in range(levels):
-                self.mixing_weights[f'detail_{level}'] = nn.Parameter(
-                    torch.ones(1, 1, hidden_dim)
-                )
+                self.mixing_weights[f"detail_{level}"] = nn.Parameter(torch.ones(1, 1, hidden_dim))
 
-        elif mixing_mode == 'channel':
+        elif mixing_mode == "channel":
             # Channel-wise mixing matrices
-            self.mixing_weights['approx'] = nn.Parameter(
-                torch.eye(hidden_dim).unsqueeze(0)
-            )
+            self.mixing_weights["approx"] = nn.Parameter(torch.eye(hidden_dim).unsqueeze(0))
             for level in range(levels):
-                self.mixing_weights[f'detail_{level}'] = nn.Parameter(
+                self.mixing_weights[f"detail_{level}"] = nn.Parameter(
                     torch.eye(hidden_dim).unsqueeze(0)
                 )
 
-        elif mixing_mode == 'level':
+        elif mixing_mode == "level":
             # Cross-level mixing with attention-like mechanism
             # Use 1 as embedding dim since we process each channel independently
             self.level_mixer = nn.MultiheadAttention(
-                1, num_heads=1, dropout=dropout, batch_first=True  # Feature dim=1, so only 1 head possible
+                1,
+                num_heads=1,
+                dropout=dropout,
+                batch_first=True,  # Feature dim=1, so only 1 head possible
             )
         else:
             raise ValueError(f"Unknown mixing mode: {mixing_mode}")
@@ -379,28 +376,28 @@ class WaveletMixing(nn.Module):
             approx, details = self.dwt.decompose(x_channel, dim=-1)
 
             # Apply mixing based on mode
-            if self.mixing_mode == 'pointwise':
+            if self.mixing_mode == "pointwise":
                 # Apply pointwise scaling - need to handle the shape correctly
                 # approx shape is [batch, approx_len], weight needs to match
                 approx_len = approx.shape[-1]
-                approx_weight = self.mixing_weights['approx'][:, :approx_len, h]
+                approx_weight = self.mixing_weights["approx"][:, :approx_len, h]
                 approx_mixed = approx * approx_weight
 
                 details_mixed = []
                 for level, detail in enumerate(details):
                     detail_len = detail.shape[-1]
-                    weight = self.mixing_weights[f'detail_{level}'][:, :detail_len, h]
+                    weight = self.mixing_weights[f"detail_{level}"][:, :detail_len, h]
                     details_mixed.append(detail * weight)
 
-            elif self.mixing_mode == 'channel':
+            elif self.mixing_mode == "channel":
                 # Apply channel mixing (simplified for single channel processing)
-                approx_mixed = approx * self.mixing_weights['approx'][:, h, h]
+                approx_mixed = approx * self.mixing_weights["approx"][:, h, h]
                 details_mixed = []
                 for level, detail in enumerate(details):
-                    weight = self.mixing_weights[f'detail_{level}'][:, h, h]
+                    weight = self.mixing_weights[f"detail_{level}"][:, h, h]
                     details_mixed.append(detail * weight)
 
-            elif self.mixing_mode == 'level':
+            elif self.mixing_mode == "level":
                 # Stack all coefficients for cross-level mixing
                 all_coeffs = [approx, *details]
                 max_len = max(c.shape[-1] for c in all_coeffs)  # Use -1 for last dimension
@@ -422,20 +419,28 @@ class WaveletMixing(nn.Module):
                 seq_len_coeff = stacked.shape[2]
 
                 # Flatten batch and levels, then add feature dimension
-                stacked_flat = stacked.view(batch_size_coeff * num_levels, seq_len_coeff, 1)  # (batch * levels, seq_len, 1)
+                stacked_flat = stacked.view(
+                    batch_size_coeff * num_levels, seq_len_coeff, 1
+                )  # (batch * levels, seq_len, 1)
 
                 # Apply self-attention across sequence positions for each level independently
                 mixed_flat, _ = self.level_mixer(stacked_flat, stacked_flat, stacked_flat)
 
                 # Reshape back to separate batch and levels
-                mixed = mixed_flat.view(batch_size_coeff, num_levels, seq_len_coeff, 1)  # Feature dim is 1, not hidden_dim
+                mixed = mixed_flat.view(
+                    batch_size_coeff, num_levels, seq_len_coeff, 1
+                )  # Feature dim is 1, not hidden_dim
 
                 # Extract mixed coefficients
-                approx_mixed = mixed[:, 0, :approx.shape[-1], 0]  # Extract approx coeffs for current channel
+                approx_mixed = mixed[
+                    :, 0, : approx.shape[-1], 0
+                ]  # Extract approx coeffs for current channel
                 details_mixed = []
                 for level in range(self.levels):
                     detail_len = details[level].shape[-1]
-                    detail_mixed = mixed[:, level+1, :detail_len, 0]  # Extract detail coeffs for current channel
+                    detail_mixed = mixed[
+                        :, level + 1, :detail_len, 0
+                    ]  # Extract detail coeffs for current channel
                     details_mixed.append(detail_mixed)
 
             # Reconstruct signal
@@ -461,7 +466,6 @@ class WaveletMixing(nn.Module):
 
         result: Tensor = output
         return result
-
 
     @classmethod
     def from_config(cls, config: "WaveletMixingConfig") -> "WaveletMixing":
@@ -620,9 +624,9 @@ class WaveletMixing2D(nn.Module):
     def __init__(
         self,
         channels: int,
-        wavelet: WaveletType = 'db4',
+        wavelet: WaveletType = "db4",
         levels: int = 2,
-        mixing_mode: str = 'subband',
+        mixing_mode: str = "subband",
     ):
         super().__init__()
 
@@ -632,10 +636,10 @@ class WaveletMixing2D(nn.Module):
         self.mixing_mode = mixing_mode
 
         # Initialize 2D wavelet transform
-        self.dwt = DWT2D(wavelet=wavelet, levels=levels, mode='symmetric')
+        self.dwt = DWT2D(wavelet=wavelet, levels=levels, mode="symmetric")
 
         # Initialize mixing layers based on mode
-        if mixing_mode == 'subband':
+        if mixing_mode == "subband":
             # Independent processing of each subband
             # Each subband from DWT has 1 channel, so conv layers should expect 1 channel input
             self.ll_mixer = nn.Sequential(
@@ -646,14 +650,16 @@ class WaveletMixing2D(nn.Module):
 
             self.detail_mixers = nn.ModuleList()
             for _ in range(levels):
-                detail_mixer = nn.ModuleDict({
-                    'lh': nn.Conv2d(1, 1, 3, padding=1),  # 1 channel in/out per detail subband
-                    'hl': nn.Conv2d(1, 1, 3, padding=1),
-                    'hh': nn.Conv2d(1, 1, 3, padding=1),
-                })
+                detail_mixer = nn.ModuleDict(
+                    {
+                        "lh": nn.Conv2d(1, 1, 3, padding=1),  # 1 channel in/out per detail subband
+                        "hl": nn.Conv2d(1, 1, 3, padding=1),
+                        "hh": nn.Conv2d(1, 1, 3, padding=1),
+                    }
+                )
                 self.detail_mixers.append(detail_mixer)
 
-        elif mixing_mode == 'cross':
+        elif mixing_mode == "cross":
             # Cross-subband interaction
             # Each subband is processed per-channel with feature dimension 1 after flattening spatial dims
             # So attention operates on sequences of spatial positions with 1 feature per position
@@ -661,13 +667,13 @@ class WaveletMixing2D(nn.Module):
                 1, num_heads=1, batch_first=True  # Feature dim=1, so only 1 head possible
             )
 
-        elif mixing_mode == 'attention':
+        elif mixing_mode == "attention":
             # Attention-based mixing across all subbands
             # Same as cross mode - feature dimension is 1 after spatial flattening
             self.subband_attention = nn.TransformerEncoder(
                 nn.TransformerEncoderLayer(
                     d_model=1,  # Feature dimension is 1 after flattening spatial dimensions
-                    nhead=1,    # Only 1 head possible with d_model=1
+                    nhead=1,  # Only 1 head possible with d_model=1
                     dim_feedforward=4,  # Minimal FFN since d_model=1
                     batch_first=True,
                 ),
@@ -721,13 +727,13 @@ class WaveletMixing2D(nn.Module):
         # Process each channel
         outputs = []
         for c in range(channels):
-            x_channel = x[:, c:c+1, :, :]
+            x_channel = x[:, c : c + 1, :, :]
 
             # Decompose using 2D DWT
             ll, details = self.dwt.decompose(x_channel, dim=(-2, -1))
 
             # Apply mixing based on mode
-            if self.mixing_mode == 'subband':
+            if self.mixing_mode == "subband":
                 # Process LL subband
                 ll_mixed = self.ll_mixer(ll)
 
@@ -735,21 +741,23 @@ class WaveletMixing2D(nn.Module):
                 details_mixed = []
                 for level, (lh, hl, hh) in enumerate(details):
                     mixer = self.detail_mixers[level]
-                    lh_mixed = mixer['lh'](lh)  # type: ignore
-                    hl_mixed = mixer['hl'](hl)  # type: ignore
-                    hh_mixed = mixer['hh'](hh)  # type: ignore
+                    lh_mixed = mixer["lh"](lh)  # type: ignore
+                    hl_mixed = mixer["hl"](hl)  # type: ignore
+                    hh_mixed = mixer["hh"](hh)  # type: ignore
                     details_mixed.append((lh_mixed, hl_mixed, hh_mixed))
 
-            elif self.mixing_mode == 'cross':
+            elif self.mixing_mode == "cross":
                 # Flatten spatial dimensions for attention
                 ll_flat = ll.flatten(2).transpose(1, 2)
                 details_flat = []
                 for lh, hl, hh in details:
-                    details_flat.extend([
-                        lh.flatten(2).transpose(1, 2),
-                        hl.flatten(2).transpose(1, 2),
-                        hh.flatten(2).transpose(1, 2),
-                    ])
+                    details_flat.extend(
+                        [
+                            lh.flatten(2).transpose(1, 2),
+                            hl.flatten(2).transpose(1, 2),
+                            hh.flatten(2).transpose(1, 2),
+                        ]
+                    )
 
                 # Apply cross-attention
                 all_subbands = torch.cat([ll_flat, *details_flat], dim=1)
@@ -766,11 +774,11 @@ class WaveletMixing2D(nn.Module):
                     hl_size = hl.shape[2] * hl.shape[3]
                     hh_size = hh.shape[2] * hh.shape[3]
 
-                    lh_mixed = mixed[:, offset:offset+lh_size, :].transpose(1, 2).reshape_as(lh)
+                    lh_mixed = mixed[:, offset : offset + lh_size, :].transpose(1, 2).reshape_as(lh)
                     offset += lh_size
-                    hl_mixed = mixed[:, offset:offset+hl_size, :].transpose(1, 2).reshape_as(hl)
+                    hl_mixed = mixed[:, offset : offset + hl_size, :].transpose(1, 2).reshape_as(hl)
                     offset += hl_size
-                    hh_mixed = mixed[:, offset:offset+hh_size, :].transpose(1, 2).reshape_as(hh)
+                    hh_mixed = mixed[:, offset : offset + hh_size, :].transpose(1, 2).reshape_as(hh)
                     offset += hh_size
 
                     details_mixed.append((lh_mixed, hl_mixed, hh_mixed))
@@ -796,7 +804,6 @@ class WaveletMixing2D(nn.Module):
         output = output + residual
 
         return output
-
 
     @classmethod
     def from_config(cls, config: "WaveletMixing2DConfig") -> "WaveletMixing2D":

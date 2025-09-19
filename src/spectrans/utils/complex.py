@@ -182,7 +182,9 @@ def complex_polar(magnitude: Tensor, phase: Tensor) -> Tensor:
     try:
         return torch.polar(magnitude, phase)
     except RuntimeError as e:
-        raise RuntimeError(f"Cannot broadcast tensors with shapes {magnitude.shape} and {phase.shape}") from e
+        raise RuntimeError(
+            f"Cannot broadcast tensors with shapes {magnitude.shape} and {phase.shape}"
+        ) from e
 
 
 def complex_exp(x: Tensor) -> Tensor:
@@ -311,7 +313,9 @@ def make_complex(real: Tensor, imag: Tensor) -> Tensor:
     try:
         return torch.complex(real, imag)
     except RuntimeError as e:
-        raise RuntimeError(f"Cannot broadcast tensors with shapes {real.shape} and {imag.shape}") from e
+        raise RuntimeError(
+            f"Cannot broadcast tensors with shapes {real.shape} and {imag.shape}"
+        ) from e
 
 
 def split_complex(x: Tensor) -> tuple[Tensor, Tensor]:

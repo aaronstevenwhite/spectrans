@@ -104,13 +104,13 @@ class ComponentRegistry:
 
     def __init__(self) -> None:
         self._components: RegistryDict = {
-            'transform': {},
-            'mixing': {},
-            'attention': {},
-            'block': {},
-            'model': {},
-            'kernel': {},
-            'operator': {},
+            "transform": {},
+            "mixing": {},
+            "attention": {},
+            "block": {},
+            "model": {},
+            "kernel": {},
+            "operator": {},
         }
 
         # Store metadata about components
@@ -150,9 +150,7 @@ class ComponentRegistry:
             )
 
         if name in self._components[category]:
-            raise ValueError(
-                f"Component '{name}' already registered in category '{category}'"
-            )
+            raise ValueError(f"Component '{name}' already registered in category '{category}'")
 
         self._components[category][name] = component
 
@@ -188,8 +186,7 @@ class ComponentRegistry:
         if name not in self._components[category]:
             available = list(self._components[category].keys())
             raise ValueError(
-                f"Unknown {category}: '{name}'. "
-                f"Available {category}s: {available}"
+                f"Unknown {category}: '{name}'. " f"Available {category}s: {available}"
             )
 
         return self._components[category][name]
@@ -216,10 +213,7 @@ class ComponentRegistry:
                 )
             return list(self._components[category].keys())
 
-        return {
-            cat: list(comps.keys())
-            for cat, comps in self._components.items()
-        }
+        return {cat: list(comps.keys()) for cat, comps in self._components.items()}
 
     def get_metadata(
         self,
@@ -291,13 +285,22 @@ class ComponentRegistry:
         ValueError
             If 'type' key is missing from config.
         """
-        if 'type' not in config:
+        if "type" not in config:
             raise ValueError("Configuration must contain 'type' key")
 
-        name = config['type']
-        raw_params: int | float | str | bool | list[int | float | str | bool] | dict[str, int | float | str | bool | list[int | float | str | bool]] = config.get('params', {})
+        name = config["type"]
+        raw_params: (
+            int
+            | float
+            | str
+            | bool
+            | list[int | float | str | bool]
+            | dict[str, int | float | str | bool | list[int | float | str | bool]]
+        ) = config.get("params", {})
         if isinstance(raw_params, dict):
-            params: dict[str, int | float | str | bool | list[int | float | str | bool]] = raw_params
+            params: dict[str, int | float | str | bool | list[int | float | str | bool]] = (
+                raw_params
+            )
         else:
             params = {}
 
@@ -317,10 +320,7 @@ class ComponentRegistry:
             True if the component is registered.
         """
         category, name = item
-        return (
-            category in self._components and
-            name in self._components[category]
-        )
+        return category in self._components and name in self._components[category]
 
     def clear(self, category: ComponentType | None = None) -> None:
         """Clear registered components.
@@ -372,9 +372,11 @@ def register_component(
     ... class MyFFT(SpectralTransform):
     ...     pass
     """
+
     def decorator(cls: ComponentClass) -> ComponentClass:
         registry.register(category, name, cls, metadata)
         return cls
+
     return decorator
 
 
@@ -440,10 +442,10 @@ def list_components(
 
 # Export public API
 __all__: list[str] = [
-    'ComponentRegistry',
-    'create_component',
-    'get_component',
-    'list_components',
-    'register_component',
-    'registry',
+    "ComponentRegistry",
+    "create_component",
+    "get_component",
+    "list_components",
+    "register_component",
+    "registry",
 ]

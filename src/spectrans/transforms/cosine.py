@@ -587,13 +587,17 @@ class MDCT(OrthogonalTransform):
             out_end = out_start + self.half_block
 
             if dim == -1:
-                output[..., out_start:out_end] = block_dct[..., :self.half_block]
+                output[..., out_start:out_end] = block_dct[..., : self.half_block]
             else:
                 # Handle arbitrary dimension
                 indices = torch.arange(out_start, out_end, device=x.device)
-                output.index_copy_(dim, indices,
-                                 torch.index_select(block_dct, dim,
-                                                  torch.arange(self.half_block, device=x.device)))
+                output.index_copy_(
+                    dim,
+                    indices,
+                    torch.index_select(
+                        block_dct, dim, torch.arange(self.half_block, device=x.device)
+                    ),
+                )
 
         return output
 

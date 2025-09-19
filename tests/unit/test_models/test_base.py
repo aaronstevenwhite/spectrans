@@ -21,15 +21,17 @@ class ConcreteModel(BaseModel):
 
     def build_blocks(self) -> nn.ModuleList:
         """Build transformer blocks for testing."""
-        return nn.ModuleList([
-            PreNormBlock(
-                mixing_layer=FourierMixing(hidden_dim=self.hidden_dim),
-                hidden_dim=self.hidden_dim,
-                ffn_hidden_dim=self.ffn_hidden_dim,
-                dropout=0.1,
-            )
-            for _ in range(self.num_layers)
-        ])
+        return nn.ModuleList(
+            [
+                PreNormBlock(
+                    mixing_layer=FourierMixing(hidden_dim=self.hidden_dim),
+                    hidden_dim=self.hidden_dim,
+                    ffn_hidden_dim=self.ffn_hidden_dim,
+                    dropout=0.1,
+                )
+                for _ in range(self.num_layers)
+            ]
+        )
 
 
 class TestPositionalEncoding:
@@ -99,7 +101,7 @@ class TestOutputHeads:
 
             # Test with mask
             mask = torch.ones(batch_size, seq_length)
-            mask[:, seq_length//2:] = 0  # Mask second half
+            mask[:, seq_length // 2 :] = 0  # Mask second half
             output_masked = head(x, mask)
             assert output_masked.shape == (batch_size, num_classes)
 
@@ -121,7 +123,7 @@ class TestOutputHeads:
 
             # Test with mask
             mask = torch.ones(batch_size, seq_length)
-            mask[:, seq_length//2:] = 0
+            mask[:, seq_length // 2 :] = 0
             output_masked = head(x, mask)
             assert output_masked.shape == (batch_size, 1)
 
@@ -289,7 +291,6 @@ class TestBaseModel:
         for param in model.parameters():
             if param.requires_grad:
                 assert param.grad is not None
-
 
     def test_invalid_inputs(self):
         """Test error handling for invalid inputs."""

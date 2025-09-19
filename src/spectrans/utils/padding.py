@@ -190,7 +190,9 @@ def pad_to_length(x: Tensor, target_length: int, dim: int = -1, mode: str = "zer
     current_length = x.shape[dim]
 
     if target_length < current_length:
-        raise ValueError(f"Target length {target_length} must be >= current length {current_length}")
+        raise ValueError(
+            f"Target length {target_length} must be >= current length {current_length}"
+        )
 
     if target_length == current_length:
         return x
@@ -207,7 +209,9 @@ def pad_to_length(x: Tensor, target_length: int, dim: int = -1, mode: str = "zer
     elif mode == "symmetric":
         return symmetric_pad(x, pad_amount, dim)
     else:
-        raise ValueError(f"Invalid padding mode: {mode}. Must be one of: zero, circular, reflect, symmetric")
+        raise ValueError(
+            f"Invalid padding mode: {mode}. Must be one of: zero, circular, reflect, symmetric"
+        )
 
 
 def unpad_to_length(x: Tensor, target_length: int, dim: int = -1) -> Tensor:
@@ -242,7 +246,9 @@ def unpad_to_length(x: Tensor, target_length: int, dim: int = -1) -> Tensor:
     current_length = x.shape[dim]
 
     if target_length > current_length:
-        raise ValueError(f"Target length {target_length} must be <= current length {current_length}")
+        raise ValueError(
+            f"Target length {target_length} must be <= current length {current_length}"
+        )
 
     if target_length == current_length:
         return x
@@ -295,14 +301,18 @@ def pad_sequence(sequences: list[Tensor], padding_value: float = 0.0, dim: int =
     ref_shape = list(sequences[0].shape)
     for i, seq in enumerate(sequences[1:], 1):
         if seq.ndim != ndim:
-            raise ValueError(f"All sequences must have same number of dimensions. "
-                           f"Sequence 0 has {ndim}, sequence {i} has {seq.ndim}")
+            raise ValueError(
+                f"All sequences must have same number of dimensions. "
+                f"Sequence 0 has {ndim}, sequence {i} has {seq.ndim}"
+            )
 
         seq_shape = list(seq.shape)
         for d in range(ndim):
             if d != dim and seq_shape[d] != ref_shape[d]:
-                raise ValueError(f"All sequences must have same shape except in padding dimension. "
-                               f"Mismatch in dimension {d}: {ref_shape[d]} vs {seq_shape[d]}")
+                raise ValueError(
+                    f"All sequences must have same shape except in padding dimension. "
+                    f"Mismatch in dimension {d}: {ref_shape[d]} vs {seq_shape[d]}"
+                )
 
     # Find maximum length
     max_length = max(seq.shape[dim] for seq in sequences)
@@ -358,7 +368,9 @@ def unpad_sequence(padded_tensor: Tensor, lengths: list[int], dim: int = -1) -> 
         batch_dim += 1  # Account for batch dimension
 
     if batch_dim >= padded_tensor.ndim or batch_dim < -padded_tensor.ndim:
-        raise IndexError(f"Dimension {batch_dim} out of bounds for tensor with {padded_tensor.ndim} dimensions")
+        raise IndexError(
+            f"Dimension {batch_dim} out of bounds for tensor with {padded_tensor.ndim} dimensions"
+        )
 
     sequences = []
     for i, length in enumerate(lengths):
@@ -459,7 +471,7 @@ def reflect_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
     # Reflect last pad_amount elements (excluding the edge)
     # For [1,2,3,4] with pad=2, we take elements [-3:-1] = [2,3] and flip to get [3,2]
     slices = [slice(None)] * x.ndim
-    slices[dim] = slice(seq_len-pad_amount-1, seq_len-1)
+    slices[dim] = slice(seq_len - pad_amount - 1, seq_len - 1)
     padding = torch.flip(x[tuple(slices)], dims=[dim])
 
     return torch.cat([x, padding], dim=dim)
@@ -507,7 +519,7 @@ def symmetric_pad(x: Tensor, pad_amount: int, dim: int = -1) -> Tensor:
     # Symmetric: mirror including the edge
     # For [1,2,3,4] with pad=2, we take last 2 elements [3,4] and flip to get [4,3]
     slices = [slice(None)] * x.ndim
-    slices[dim] = slice(seq_len-pad_amount, seq_len)
+    slices[dim] = slice(seq_len - pad_amount, seq_len)
     padding = torch.flip(x[tuple(slices)], dims=[dim])
 
     return torch.cat([x, padding], dim=dim)
@@ -814,7 +826,9 @@ def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = 
         # Apply reflection padding on both sides
         seq_len = x.shape[dim]
         if 2 * pad_amount >= seq_len:
-            raise ValueError(f"Reflect pad amount {2 * pad_amount} too large for tensor size {seq_len}")
+            raise ValueError(
+                f"Reflect pad amount {2 * pad_amount} too large for tensor size {seq_len}"
+            )
 
         # Left padding: reflect first pad_amount elements (excluding edges)
         left_slices = [slice(None)] * x.ndim
@@ -832,7 +846,9 @@ def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = 
         # Apply symmetric padding on both sides
         seq_len = x.shape[dim]
         if 2 * pad_amount > seq_len:
-            raise ValueError(f"Symmetric pad amount {2 * pad_amount} too large for tensor size {seq_len}")
+            raise ValueError(
+                f"Symmetric pad amount {2 * pad_amount} too large for tensor size {seq_len}"
+            )
 
         # Left padding: reflect first pad_amount elements (including edges)
         left_slices = [slice(None)] * x.ndim
@@ -847,4 +863,6 @@ def pad_for_convolution(x: Tensor, kernel_size: int, dim: int = -1, mode: str = 
         return torch.cat([left_padding, x, right_padding], dim=dim)
 
     else:
-        raise ValueError(f"Invalid padding mode: {mode}. Must be one of: zero, circular, reflect, symmetric")
+        raise ValueError(
+            f"Invalid padding mode: {mode}. Must be one of: zero, circular, reflect, symmetric"
+        )

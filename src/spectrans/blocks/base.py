@@ -49,7 +49,6 @@ architecture. In Proceedings of the 37th International Conference on Machine Lea
 (ICML 2020), pages 10524-10533.
 """
 
-
 import torch
 import torch.nn as nn
 
@@ -167,7 +166,6 @@ class TransformerBlock(SpectralComponent):
         return output
 
 
-
 class FeedForwardNetwork(nn.Module):
     """Standard feedforward network for transformer blocks.
 
@@ -246,7 +244,6 @@ class FeedForwardNetwork(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
         return x
-
 
 
 @register_component("block", "pre_norm")
@@ -425,4 +422,3 @@ class ParallelBlock(SpectralComponent):
         output: torch.Tensor = x + self.dropout(mixed + ffn_out)
 
         return output
-

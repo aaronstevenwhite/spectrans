@@ -122,8 +122,8 @@ class SpectralKernel(KernelFunction):
         eigenvalues, eigenvectors = torch.linalg.eigh(gram)
 
         # Keep top-k eigenvalues/vectors
-        eigenvalues = eigenvalues[..., -self.rank:]
-        eigenvectors = eigenvectors[..., -self.rank:]
+        eigenvalues = eigenvalues[..., -self.rank :]
+        eigenvectors = eigenvectors[..., -self.rank :]
 
         if self.normalize:
             # Normalize by trace
@@ -259,7 +259,7 @@ class PolynomialSpectralKernel(SpectralKernel):
         _, eigenvectors = torch.linalg.eigh(cov)
 
         # Keep top-r components
-        top_components = eigenvectors[..., -self.rank:]
+        top_components = eigenvectors[..., -self.rank :]
 
         # Project data
         x_reduced = torch.matmul(x_centered, top_components)
@@ -323,9 +323,9 @@ class TruncatedSVDKernel(SpectralKernel):
             U, S, Vt = torch.linalg.svd(kernel_full, full_matrices=False)
 
             # Truncate to rank
-            U_r = U[..., :self.rank]
-            S_r = S[..., :self.rank]
-            Vt_r = Vt[..., :self.rank, :]
+            U_r = U[..., : self.rank]
+            S_r = S[..., : self.rank]
+            Vt_r = Vt[..., : self.rank, :]
 
             # Reconstruct
             kernel_approx = torch.matmul(U_r * S_r.unsqueeze(-2), Vt_r)
@@ -360,7 +360,7 @@ class TruncatedSVDKernel(SpectralKernel):
 
         # Orthogonalize
         Q, _ = torch.linalg.qr(Y)
-        Q = Q[..., :self.rank]
+        Q = Q[..., : self.rank]
 
         # Project and compute SVD of smaller matrix
         B = torch.matmul(Q.transpose(-2, -1), matrix)
@@ -421,7 +421,7 @@ class LearnableSpectralKernel(nn.Module, SpectralKernel):
         if trainable_eigenvectors:
             self.eigenvectors = nn.Parameter(eigenvectors)
         else:
-            self.register_buffer('eigenvectors', eigenvectors)
+            self.register_buffer("eigenvectors", eigenvectors)
 
         # Initialize eigenvalues (positive, decreasing)
         eigenvalues = torch.linspace(1.0, 0.1, rank) * init_scale
@@ -557,7 +557,7 @@ class FourierKernel(nn.Module, SpectralKernel):
         if learnable_filter:
             self.filter = nn.Parameter(filter_vals)
         else:
-            self.register_buffer('filter', filter_vals)
+            self.register_buffer("filter", filter_vals)
 
     def _init_filter(self) -> Tensor:
         """Initialize spectral filter."""
@@ -565,7 +565,7 @@ class FourierKernel(nn.Module, SpectralKernel):
 
         if self.filter_type == "gaussian":
             # Gaussian low-pass
-            filter_vals = torch.exp(-(freqs / self.cutoff_freq) ** 2)
+            filter_vals = torch.exp(-((freqs / self.cutoff_freq) ** 2))
 
         elif self.filter_type == "butterworth":
             # Butterworth filter
@@ -598,8 +598,8 @@ class FourierKernel(nn.Module, SpectralKernel):
         y_freq = torch.fft.rfft(y, dim=-1)
 
         # Truncate to rank modes
-        x_freq = x_freq[..., :self.rank]
-        y_freq = y_freq[..., :self.rank]
+        x_freq = x_freq[..., : self.rank]
+        y_freq = y_freq[..., : self.rank]
 
         # Apply spectral filter
         x_filtered = x_freq * self.filter

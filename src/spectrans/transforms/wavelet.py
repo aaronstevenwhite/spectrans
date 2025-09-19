@@ -227,17 +227,12 @@ class DWT1D(MultiResolutionTransform):
     rec_lo: Tensor
     rec_hi: Tensor
 
-    def __init__(
-        self,
-        wavelet: WaveletType = 'db4',
-        levels: int = 1,
-        mode: str = 'symmetric'
-    ):
+    def __init__(self, wavelet: WaveletType = "db4", levels: int = 1, mode: str = "symmetric"):
         super().__init__(levels=levels)
         self.wavelet = wavelet
         self.mode = mode
 
-        if mode != 'symmetric':
+        if mode != "symmetric":
             msg = f"Mode '{mode}' not yet supported. Only 'symmetric' is implemented."
             raise NotImplementedError(msg)
 
@@ -246,10 +241,10 @@ class DWT1D(MultiResolutionTransform):
 
         # Register as buffers (not parameters) since they're fixed
         # Convert to float32 for efficiency in neural networks
-        self.register_buffer('dec_lo', dec_lo.float())
-        self.register_buffer('dec_hi', dec_hi.float())
-        self.register_buffer('rec_lo', rec_lo.float())
-        self.register_buffer('rec_hi', rec_hi.float())
+        self.register_buffer("dec_lo", dec_lo.float())
+        self.register_buffer("dec_hi", dec_hi.float())
+        self.register_buffer("rec_lo", rec_lo.float())
+        self.register_buffer("rec_hi", rec_hi.float())
 
         self.filter_length = len(dec_lo)
 
@@ -414,7 +409,9 @@ class DWT1D(MultiResolutionTransform):
         """
         # Ensure tensors have same shape
         if cA.shape != cD.shape:
-            raise ValueError(f"Coefficients must have same shape. Got cA: {cA.shape}, cD: {cD.shape}")
+            raise ValueError(
+                f"Coefficients must have same shape. Got cA: {cA.shape}, cD: {cD.shape}"
+            )
 
         # Move dimension to last for processing
         if dim != -1 and dim != cA.ndim - 1:
@@ -593,10 +590,7 @@ class DWT1D(MultiResolutionTransform):
         return reconstructed
 
     def decompose(
-        self,
-        x: Tensor,
-        levels: int | None = None,
-        dim: int = -1
+        self, x: Tensor, levels: int | None = None, dim: int = -1
     ) -> tuple[Tensor, list[Tensor]]:
         """Multi-level DWT decomposition.
 
@@ -632,10 +626,7 @@ class DWT1D(MultiResolutionTransform):
         return current, details
 
     def reconstruct(
-        self,
-        coeffs: tuple[Tensor, list[Tensor]],
-        dim: int = -1,
-        output_len: int | None = None
+        self, coeffs: tuple[Tensor, list[Tensor]], dim: int = -1, output_len: int | None = None
     ) -> Tensor:
         """Multi-level DWT reconstruction.
 
@@ -739,12 +730,7 @@ class DWT2D(MultiResolutionTransform2D):
     >>> reconstructed = dwt2d.reconstruct((ll, detail_bands))
     """
 
-    def __init__(
-        self,
-        wavelet: WaveletType = 'db4',
-        levels: int = 1,
-        mode: str = 'symmetric'
-    ):
+    def __init__(self, wavelet: WaveletType = "db4", levels: int = 1, mode: str = "symmetric"):
         super().__init__(levels=levels)
         self.wavelet = wavelet
         self.mode = mode
@@ -753,9 +739,7 @@ class DWT2D(MultiResolutionTransform2D):
         self.dwt1d = DWT1D(wavelet=wavelet, levels=1, mode=mode)
 
     def _single_level_2d(
-        self,
-        x: Tensor,
-        dim: tuple[int, int] = (-2, -1)
+        self, x: Tensor, dim: tuple[int, int] = (-2, -1)
     ) -> tuple[Tensor, Tensor, Tensor, Tensor]:
         """Single-level 2D DWT decomposition.
 
@@ -792,12 +776,7 @@ class DWT2D(MultiResolutionTransform2D):
         return ll, lh, hl, hh
 
     def _single_level_2d_reconstruct(
-        self,
-        ll: Tensor,
-        lh: Tensor,
-        hl: Tensor,
-        hh: Tensor,
-        dim: tuple[int, int] = (-2, -1)
+        self, ll: Tensor, lh: Tensor, hl: Tensor, hh: Tensor, dim: tuple[int, int] = (-2, -1)
     ) -> Tensor:
         """Single-level 2D DWT reconstruction.
 
@@ -877,10 +856,7 @@ class DWT2D(MultiResolutionTransform2D):
         return reconstructed
 
     def decompose(
-        self,
-        x: Tensor,
-        levels: int | None = None,
-        dim: tuple[int, int] = (-2, -1)
+        self, x: Tensor, levels: int | None = None, dim: tuple[int, int] = (-2, -1)
     ) -> tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]]:
         """Multi-level 2D DWT decomposition.
 
@@ -917,7 +893,7 @@ class DWT2D(MultiResolutionTransform2D):
     def reconstruct(
         self,
         coeffs: tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]],
-        dim: tuple[int, int] = (-2, -1)
+        dim: tuple[int, int] = (-2, -1),
     ) -> Tensor:
         """Multi-level 2D DWT reconstruction.
 

@@ -51,11 +51,7 @@ class TestBaseLayerConfigurations:
 
     def test_global_filter_mixing_config(self):
         """Test GlobalFilterMixingConfig validation."""
-        config = GlobalFilterMixingConfig(
-            hidden_dim=512,
-            sequence_length=256,
-            activation="sigmoid"
-        )
+        config = GlobalFilterMixingConfig(hidden_dim=512, sequence_length=256, activation="sigmoid")
         assert config.hidden_dim == 512
         assert config.sequence_length == 256
         assert config.activation == "sigmoid"
@@ -63,10 +59,7 @@ class TestBaseLayerConfigurations:
     def test_afno_mixing_config(self):
         """Test AFNOMixingConfig validation."""
         config = AFNOMixingConfig(
-            hidden_dim=768,
-            max_sequence_length=512,
-            modes_seq=256,
-            modes_hidden=384
+            hidden_dim=768, max_sequence_length=512, modes_seq=256, modes_hidden=384
         )
         assert config.hidden_dim == 768
         assert config.max_sequence_length == 512
@@ -76,11 +69,7 @@ class TestBaseLayerConfigurations:
 
     def test_spectral_attention_config(self):
         """Test SpectralAttentionConfig validation."""
-        config = SpectralAttentionConfig(
-            hidden_dim=768,
-            num_heads=8,
-            num_features=256
-        )
+        config = SpectralAttentionConfig(hidden_dim=768, num_heads=8, num_features=256)
         assert config.hidden_dim == 768
         assert config.num_heads == 8
         assert config.num_features == 256
@@ -88,11 +77,7 @@ class TestBaseLayerConfigurations:
 
     def test_lst_attention_config(self):
         """Test LSTAttentionConfig validation."""
-        config = LSTAttentionConfig(
-            hidden_dim=512,
-            num_heads=8,
-            transform_type="dct"
-        )
+        config = LSTAttentionConfig(hidden_dim=512, num_heads=8, transform_type="dct")
         assert config.hidden_dim == 512
         assert config.num_heads == 8
         assert config.transform_type == "dct"
@@ -105,10 +90,7 @@ class TestModelConfigurations:
     def test_fnet_model_config(self):
         """Test FNetModelConfig validation."""
         config = FNetModelConfig(
-            hidden_dim=768,
-            num_layers=12,
-            sequence_length=512,
-            use_real_fft=True
+            hidden_dim=768, num_layers=12, sequence_length=512, use_real_fft=True
         )
         assert config.model_type == "fnet"
         assert config.hidden_dim == 768
@@ -119,22 +101,14 @@ class TestModelConfigurations:
     def test_gfnet_model_config(self):
         """Test GFNetModelConfig validation."""
         config = GFNetModelConfig(
-            hidden_dim=512,
-            num_layers=8,
-            sequence_length=224,
-            filter_activation="sigmoid"
+            hidden_dim=512, num_layers=8, sequence_length=224, filter_activation="sigmoid"
         )
         assert config.model_type == "gfnet"
         assert config.filter_activation == "sigmoid"
 
     def test_afno_model_config(self):
         """Test AFNOModelConfig validation."""
-        config = AFNOModelConfig(
-            hidden_dim=768,
-            num_layers=12,
-            sequence_length=512,
-            n_modes=256
-        )
+        config = AFNOModelConfig(hidden_dim=768, num_layers=12, sequence_length=512, n_modes=256)
         assert config.model_type == "afno"
         assert config.n_modes == 256
         assert config.compression_ratio == 0.5  # default
@@ -142,10 +116,7 @@ class TestModelConfigurations:
     def test_lst_model_config(self):
         """Test LSTModelConfig validation."""
         config = LSTModelConfig(
-            hidden_dim=512,
-            num_layers=6,
-            sequence_length=1024,
-            transform_type="dct"
+            hidden_dim=512, num_layers=6, sequence_length=1024, transform_type="dct"
         )
         assert config.model_type == "lst"
         assert config.transform_type == "dct"
@@ -158,7 +129,7 @@ class TestModelConfigurations:
             num_layers=12,
             sequence_length=2048,
             num_features=768,
-            kernel_type="gaussian"
+            kernel_type="gaussian",
         )
         assert config.model_type == "spectral_attention"
         assert config.num_features == 768
@@ -167,11 +138,7 @@ class TestModelConfigurations:
     def test_wavelet_transformer_config(self):
         """Test WaveletTransformerConfig validation."""
         config = WaveletTransformerConfig(
-            hidden_dim=512,
-            num_layers=8,
-            sequence_length=512,
-            wavelet="db4",
-            levels=3
+            hidden_dim=512, num_layers=8, sequence_length=512, wavelet="db4", levels=3
         )
         assert config.model_type == "wavelet_transformer"
         assert config.wavelet == "db4"
@@ -184,7 +151,7 @@ class TestModelConfigurations:
             num_layers=12,
             sequence_length=1024,
             spectral_type="fourier",
-            spatial_type="attention"
+            spatial_type="attention",
         )
         assert config.model_type == "hybrid"
         assert config.spectral_type == "fourier"
@@ -204,7 +171,7 @@ class TestConfigBuilder:
                 "model_type": "fnet",
                 "hidden_dim": 768,
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
 
@@ -230,7 +197,7 @@ class TestConfigBuilder:
                 "model_type": "fnet",
                 "hidden_dim": -1,  # Invalid
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
 
@@ -240,13 +207,7 @@ class TestConfigBuilder:
     def test_validate_config_missing_model_type(self):
         """Test validation with missing model type."""
         builder = ConfigBuilder()
-        invalid_config = {
-            "model": {
-                "hidden_dim": 768,
-                "num_layers": 12,
-                "sequence_length": 512
-            }
-        }
+        invalid_config = {"model": {"hidden_dim": 768, "num_layers": 12, "sequence_length": 512}}
 
         with pytest.raises(ConfigurationError, match="must specify 'model_type'"):
             builder.validate_config(invalid_config)
@@ -259,14 +220,19 @@ class TestConfigBuilder:
                 "model_type": "unknown_model",
                 "hidden_dim": 768,
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
 
         with pytest.raises(ConfigurationError, match="Unknown model type"):
             builder.validate_config(invalid_config)
 
-    @patch("builtins.open", mock_open(read_data="model:\n  model_type: fnet\n  hidden_dim: 768\n  num_layers: 12\n  sequence_length: 512"))
+    @patch(
+        "builtins.open",
+        mock_open(
+            read_data="model:\n  model_type: fnet\n  hidden_dim: 768\n  num_layers: 12\n  sequence_length: 512"
+        ),
+    )
     @patch("pathlib.Path.exists", return_value=True)
     def test_load_yaml(self, mock_exists):
         """Test YAML file loading."""
@@ -306,7 +272,12 @@ class TestConfigBuilder:
 class TestConvenienceFunctions:
     """Test convenience functions."""
 
-    @patch("builtins.open", mock_open(read_data="model:\n  model_type: fnet\n  hidden_dim: 768\n  num_layers: 12\n  sequence_length: 512"))
+    @patch(
+        "builtins.open",
+        mock_open(
+            read_data="model:\n  model_type: fnet\n  hidden_dim: 768\n  num_layers: 12\n  sequence_length: 512"
+        ),
+    )
     @patch("pathlib.Path.exists", return_value=True)
     def test_load_yaml_config(self, mock_exists):
         """Test load_yaml_config convenience function."""
@@ -324,7 +295,7 @@ class TestConvenienceFunctions:
                 "model_type": "fnet",
                 "hidden_dim": 768,
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
 
@@ -345,7 +316,7 @@ class TestConvenienceFunctions:
                 "model_type": "nonexistent_model",
                 "hidden_dim": 768,
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
         with pytest.raises(ConfigurationError, match="Unknown model type"):
@@ -364,8 +335,8 @@ class TestConfigurationIntegration:
                     "hidden_dim": 768,
                     "num_layers": 12,
                     "sequence_length": 512,
-                    "use_real_fft": True
-                }
+                    "use_real_fft": True,
+                },
             },
             {
                 "model_type": "gfnet",
@@ -373,8 +344,8 @@ class TestConfigurationIntegration:
                     "hidden_dim": 512,
                     "num_layers": 8,
                     "sequence_length": 224,
-                    "filter_activation": "sigmoid"
-                }
+                    "filter_activation": "sigmoid",
+                },
             },
             {
                 "model_type": "afno",
@@ -382,20 +353,15 @@ class TestConfigurationIntegration:
                     "hidden_dim": 768,
                     "num_layers": 12,
                     "sequence_length": 512,
-                    "n_modes": 256
-                }
-            }
+                    "n_modes": 256,
+                },
+            },
         ]
 
         builder = ConfigBuilder()
 
         for test_case in configs_to_test:
-            model_config = {
-                "model": {
-                    "model_type": test_case["model_type"],
-                    **test_case["config"]
-                }
-            }
+            model_config = {"model": {"model_type": test_case["model_type"], **test_case["config"]}}
 
             # Should validate without errors
             validated = builder.validate_config(model_config)
@@ -407,12 +373,7 @@ class TestConfigurationIntegration:
 
         # Test minimum valid configuration
         minimal_config = {
-            "model": {
-                "model_type": "fnet",
-                "hidden_dim": 1,
-                "num_layers": 1,
-                "sequence_length": 1
-            }
+            "model": {"model_type": "fnet", "hidden_dim": 1, "num_layers": 1, "sequence_length": 1}
         }
 
         validated = builder.validate_config(minimal_config)
@@ -437,7 +398,7 @@ class TestConfigurationIntegration:
                 "num_features": 2048,
                 "kernel_type": "gaussian",
                 "use_orthogonal": False,
-                "num_heads": 16
+                "num_heads": 16,
             }
         }
 

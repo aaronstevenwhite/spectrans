@@ -147,8 +147,9 @@ class SpectralAttention(AttentionLayer):
 
         # Determine head dimension
         self.head_dim = head_dim or (hidden_dim // num_heads)
-        assert self.head_dim * num_heads == hidden_dim, \
-            f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        assert (
+            self.head_dim * num_heads == hidden_dim
+        ), f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
 
         # Number of random features
         self.num_features = num_features or self.head_dim
@@ -254,7 +255,6 @@ class SpectralAttention(AttentionLayer):
             # Attention weights not directly available in linear attention
             return out, None  # type: ignore[return-value]
         return out
-
 
 
 @register_component("attention", "performer")
@@ -437,6 +437,7 @@ class KernelAttention(AttentionLayer):
         # Initialize kernel - using union type to handle different kernel types
         if kernel_type == "gaussian":
             from ...kernels import GaussianRFFKernel
+
             self.kernel = GaussianRFFKernel(
                 input_dim=self.head_dim,
                 num_features=num_features or self.head_dim,
@@ -446,6 +447,7 @@ class KernelAttention(AttentionLayer):
 
         elif kernel_type == "polynomial":
             from ...kernels import PolynomialSpectralKernel
+
             self.kernel = PolynomialSpectralKernel(
                 rank=self.rank,
                 degree=2,
@@ -454,6 +456,7 @@ class KernelAttention(AttentionLayer):
 
         else:  # spectral
             from ...kernels import LearnableSpectralKernel
+
             self.kernel = LearnableSpectralKernel(
                 input_dim=self.head_dim,
                 rank=self.rank,
@@ -496,7 +499,7 @@ class KernelAttention(AttentionLayer):
 
         if self.use_features:
             # Use feature-based approximation - kernel should be a callable (RandomFeatureMap)
-            if hasattr(self.kernel, 'extract_features'):
+            if hasattr(self.kernel, "extract_features"):
                 Q_feat = self.kernel.extract_features(Q)  # type: ignore[operator]
                 K_feat = self.kernel.extract_features(K)  # type: ignore[operator]
             else:
@@ -528,9 +531,7 @@ class KernelAttention(AttentionLayer):
 
             # Compute kernel matrix
             attention_weights = self.kernel.compute(Q_flat, K_flat)  # type: ignore[operator]
-            attention_weights = attention_weights.view(
-                batch_size, self.num_heads, seq_len, seq_len
-            )
+            attention_weights = attention_weights.view(batch_size, self.num_heads, seq_len, seq_len)
 
             if mask is not None:
                 mask_exp = mask.unsqueeze(1).unsqueeze(2)
@@ -552,7 +553,6 @@ class KernelAttention(AttentionLayer):
         if return_attention:
             return out, attention_weights  # type: ignore[return-value]
         return out
-
 
 
 __all__ = [

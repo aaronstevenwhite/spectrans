@@ -294,10 +294,7 @@ class RFFT2D(SpectralTransform2D):
         return torch.fft.rfft2(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
 
     def inverse_transform(
-        self,
-        x: ComplexTensor,
-        dim: tuple[int, int] = (-2, -1),
-        s: tuple[int, int] | None = None
+        self, x: ComplexTensor, dim: tuple[int, int] = (-2, -1), s: tuple[int, int] | None = None
     ) -> Tensor:
         """Apply inverse 2D real FFT.
 
@@ -360,7 +357,7 @@ class SpectralPooling(UnitaryTransform):
 
         # Truncate frequencies
         if isinstance(dim, int):
-            truncated = x_freq[..., :self.output_size[0] // 2 + 1]
+            truncated = x_freq[..., : self.output_size[0] // 2 + 1]
         else:
             # Handle multi-dimensional truncation
             slices = [slice(None)] * x_freq.ndim

@@ -81,15 +81,17 @@ class TestAlternatingBlock:
         layer2 = SpectralAttention(hidden_dim=hidden_dim, num_heads=8)
 
         # Create alternating blocks
-        blocks = nn.ModuleList([
-            AlternatingBlock(
-                layer1=layer1,
-                layer2=layer2,
-                hidden_dim=hidden_dim,
-                use_layer1=(i % 2 == 0),
-            )
-            for i in range(4)
-        ])
+        blocks = nn.ModuleList(
+            [
+                AlternatingBlock(
+                    layer1=layer1,
+                    layer2=layer2,
+                    hidden_dim=hidden_dim,
+                    use_layer1=(i % 2 == 0),
+                )
+                for i in range(4)
+            ]
+        )
 
         h = x
         for block in blocks:
@@ -390,8 +392,6 @@ class TestGradientFlow:
             assert x_copy.grad is not None
             assert not torch.isnan(x_copy.grad).any()
             assert not torch.isinf(x_copy.grad).any()
-
-
 
 
 class TestHybridComposition:

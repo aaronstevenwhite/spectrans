@@ -52,8 +52,7 @@ class WaveletMixingConfig(BaseLayerConfig):
     wavelet: WaveletType = Field(default="db4", description="Wavelet family name")
     levels: int = Field(default=3, ge=1, le=6, description="Number of decomposition levels")
     mixing_mode: Literal["pointwise", "subband"] = Field(
-        default="pointwise",
-        description="Mixing operation mode"
+        default="pointwise", description="Mixing operation mode"
     )
 
     @field_validator("wavelet")
@@ -84,8 +83,7 @@ class WaveletMixing2DConfig(BaseModel):
     wavelet: WaveletType = Field(default="db4", description="Wavelet family name")
     levels: int = Field(default=2, ge=1, le=6, description="Number of decomposition levels")
     mixing_mode: Literal["subband", "channel"] = Field(
-        default="subband",
-        description="2D mixing operation mode"
+        default="subband", description="2D mixing operation mode"
     )
 
     @field_validator("wavelet")
@@ -109,7 +107,7 @@ class FourierMixingConfig(UnitaryLayerConfig):
 
     keep_complex: bool = Field(
         default=False,
-        description="Keep complex values from FFT (True) or extract real part only (False)"
+        description="Keep complex values from FFT (True) or extract real part only (False)",
     )
 
 
@@ -122,10 +120,7 @@ class GlobalFilterMixingConfig(FilterLayerConfig):
         Activation function for filters, defaults to "sigmoid".
     """
 
-    activation: ActivationType = Field(
-        default="sigmoid",
-        description="Filter activation function"
-    )
+    activation: ActivationType = Field(default="sigmoid", description="Filter activation function")
 
 
 class AFNOMixingConfig(BaseLayerConfig):
@@ -146,7 +141,11 @@ class AFNOMixingConfig(BaseLayerConfig):
     """
 
     max_sequence_length: int = Field(gt=0, description="Maximum sequence length")
-    modes_seq: int | None = Field(default=None, ge=1, description="Fourier modes in sequence dimension")
-    modes_hidden: int | None = Field(default=None, ge=1, description="Fourier modes in hidden dimension")
+    modes_seq: int | None = Field(
+        default=None, ge=1, description="Fourier modes in sequence dimension"
+    )
+    modes_hidden: int | None = Field(
+        default=None, ge=1, description="Fourier modes in hidden dimension"
+    )
     mlp_ratio: float = Field(default=2.0, gt=0.0, description="MLP expansion ratio")
     activation: ActivationType = Field(default="gelu", description="MLP activation function")

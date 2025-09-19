@@ -136,8 +136,9 @@ class LSTAttention(AttentionLayer):
         super().__init__(hidden_dim, num_heads, dropout)
 
         self.head_dim = hidden_dim // num_heads
-        assert self.head_dim * num_heads == hidden_dim, \
-            f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
+        assert (
+            self.head_dim * num_heads == hidden_dim
+        ), f"hidden_dim {hidden_dim} must be divisible by num_heads {num_heads}"
 
         self.transform_type = transform_type
         self.normalize = normalize
@@ -165,14 +166,9 @@ class LSTAttention(AttentionLayer):
         # Learnable diagonal scaling
         if learnable_scale:
             # Different scale per head and position
-            self.scale = nn.Parameter(
-                torch.ones(num_heads, 1, self.head_dim)
-            )
+            self.scale = nn.Parameter(torch.ones(num_heads, 1, self.head_dim))
         else:
-            self.register_buffer(
-                'scale',
-                torch.ones(num_heads, 1, self.head_dim)
-            )
+            self.register_buffer("scale", torch.ones(num_heads, 1, self.head_dim))
 
     def _create_transform(
         self,
@@ -276,9 +272,7 @@ class LSTAttention(AttentionLayer):
             # Normalize if requested
             if self.normalize:
                 # Compute normalization factor
-                norm_factor = torch.abs(attention_transformed).sum(
-                    dim=-1, keepdim=True
-                ) + 1e-6
+                norm_factor = torch.abs(attention_transformed).sum(dim=-1, keepdim=True) + 1e-6
                 output_transformed = output_transformed / norm_factor
 
             # Inverse transform
@@ -306,7 +300,6 @@ class LSTAttention(AttentionLayer):
             # Attention weights not available in LST
             return output, None  # type: ignore[return-value]
         return output
-
 
 
 @register_component("attention", "dct")
@@ -474,10 +467,9 @@ class MixedSpectralAttention(AttentionLayer):
         self.hadamard = HadamardTransform(normalized=True) if use_hadamard else None
 
         # Learnable scales per transform type
-        self.scales = nn.ParameterDict({
-            t: nn.Parameter(torch.ones(1, 1, self.head_dim))
-            for t in enabled_transforms
-        })
+        self.scales = nn.ParameterDict(
+            {t: nn.Parameter(torch.ones(1, 1, self.head_dim)) for t in enabled_transforms}
+        )
 
     def forward(
         self,
@@ -576,7 +568,6 @@ class MixedSpectralAttention(AttentionLayer):
         if return_attention:
             return output, None  # type: ignore[return-value]
         return output
-
 
 
 __all__ = [

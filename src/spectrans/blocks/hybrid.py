@@ -124,7 +124,6 @@ class HybridBlock(SpectralComponent):
         self.dropout = nn.Dropout(dropout)
 
 
-
 @register_component("block", "alternating")
 class AlternatingBlock(HybridBlock):
     """Transformer block that alternates between two mixing strategies.
@@ -218,7 +217,6 @@ class AlternatingBlock(HybridBlock):
         self.use_layer1 = use_layer1
 
 
-
 @register_component("block", "adaptive")
 class AdaptiveBlock(HybridBlock):
     """Transformer block that adaptively selects between mixing strategies.
@@ -309,7 +307,7 @@ class AdaptiveBlock(HybridBlock):
             # Apply each layer and combine
             mixed = torch.zeros_like(x)
             for i, layer in enumerate(self.layers):
-                weight = gate_weights[:, i:i+1].unsqueeze(1)  # (batch_size, 1, 1)
+                weight = gate_weights[:, i : i + 1].unsqueeze(1)  # (batch_size, 1, 1)
                 mixed = mixed + weight * layer(normed)
         else:  # hard gating
             # Hard gating: select single layer
@@ -319,7 +317,7 @@ class AdaptiveBlock(HybridBlock):
             mixed = torch.zeros_like(x)
             for i in range(x.shape[0]):
                 idx = int(gate_idx[i].item())
-                mixed[i] = self.layers[idx](normed[i:i+1])
+                mixed[i] = self.layers[idx](normed[i : i + 1])
 
         # Add residual
         h = x + self.dropout(mixed)
@@ -328,7 +326,6 @@ class AdaptiveBlock(HybridBlock):
         output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
-
 
 
 @register_component("block", "multiscale")
@@ -428,7 +425,9 @@ class MultiscaleBlock(HybridBlock):
         if self.fusion_type == "add":
             mixed = sum(outputs) / self.num_scales
         elif self.fusion_type == "weighted":
-            assert self.fusion_weights is not None, "fusion_weights should not be None for weighted fusion"
+            assert (
+                self.fusion_weights is not None
+            ), "fusion_weights should not be None for weighted fusion"
             weights = F.softmax(self.fusion_weights, dim=0)
             mixed = sum(w * out for w, out in zip(weights, outputs, strict=False))
         elif self.fusion_type == "concat":
@@ -445,7 +444,6 @@ class MultiscaleBlock(HybridBlock):
         output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
-
 
 
 @register_component("block", "cascade")
@@ -508,9 +506,7 @@ class CascadeBlock(HybridBlock):
             self.norms = nn.ModuleList([self.norm1] * len(layers))
         else:
             # Create separate norms for each layer
-            self.norms = nn.ModuleList([
-                nn.LayerNorm(hidden_dim, eps=norm_eps) for _ in layers
-            ])
+            self.norms = nn.ModuleList([nn.LayerNorm(hidden_dim, eps=norm_eps) for _ in layers])
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass through the cascade block.
@@ -534,4 +530,3 @@ class CascadeBlock(HybridBlock):
         output: Tensor = h + self.dropout(self.ffn(self.norm2(h)))
 
         return output
-

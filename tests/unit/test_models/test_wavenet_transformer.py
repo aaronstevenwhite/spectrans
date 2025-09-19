@@ -120,7 +120,6 @@ class TestWaveletTransformer:
         output = decoder(input_ids=input_ids)
         assert output.shape == (batch_size, seq_length, vocab_size)
 
-
     def test_different_wavelets(self):
         """Test WaveletTransformer with different wavelet families."""
         batch_size, seq_length, hidden_dim = 2, 64, 128
@@ -302,4 +301,3 @@ class TestWaveletTransformer:
         assert model_reg(input_ids=input_ids).shape == (batch_size, 1)
         assert model_seq(input_ids=input_ids).shape == (batch_size, seq_length, num_classes)
         assert model_none(input_ids=input_ids).shape == (batch_size, seq_length, hidden_dim)
-

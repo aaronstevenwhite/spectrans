@@ -57,8 +57,12 @@ class SpectralAttentionConfig(AttentionLayerConfig):
         Whether to use bias in projections, defaults to True.
     """
 
-    num_features: int | None = Field(default=None, ge=1, description="Number of random Fourier features")
-    kernel_type: KernelType = Field(default="softmax", description="Kernel type for RFF approximation")
+    num_features: int | None = Field(
+        default=None, ge=1, description="Number of random Fourier features"
+    )
+    kernel_type: KernelType = Field(
+        default="softmax", description="Kernel type for RFF approximation"
+    )
     use_orthogonal: bool = Field(default=True, description="Use orthogonal random features")
     feature_redraw: bool = Field(default=False, description="Redraw features during training")
     use_bias: bool = Field(default=True, description="Use bias in projections")
@@ -79,7 +83,9 @@ class LSTAttentionConfig(AttentionLayerConfig):
         Whether to use bias in projections, defaults to True.
     """
 
-    transform_type: TransformLSTType = Field(default="dct", description="Type of spectral transform")
+    transform_type: TransformLSTType = Field(
+        default="dct", description="Type of spectral transform"
+    )
     learnable_scale: bool = Field(default=True, description="Learnable diagonal scaling")
     normalize: bool = Field(default=True, description="Normalize transform output")
     use_bias: bool = Field(default=True, description="Use bias in projections")
@@ -146,6 +152,10 @@ class SpectralKernelAttentionConfig(AttentionLayerConfig):
         Number of features for approximation, defaults to None.
     """
 
-    kernel_type: SpectralKernelType = Field(default="gaussian", description="Type of spectral kernel")
+    kernel_type: SpectralKernelType = Field(
+        default="gaussian", description="Type of spectral kernel"
+    )
     rank: int | None = Field(default=None, ge=1, description="Rank for low-rank approximation")
-    num_features: int | None = Field(default=None, ge=1, description="Number of approximation features")
+    num_features: int | None = Field(
+        default=None, ge=1, description="Number of approximation features"
+    )

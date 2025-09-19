@@ -24,7 +24,7 @@ class TestMemoryLeaks:
 
     def test_transform_memory_leak(self):
         """Test that transforms don't leak memory over iterations."""
-        transform = create_component('transform', 'fft1d', norm='ortho')
+        transform = create_component("transform", "fft1d", norm="ortho")
         x = torch.randn(4, 256, 512)
 
         # Get initial memory snapshot
@@ -43,21 +43,20 @@ class TestMemoryLeaks:
         snapshot2 = tracemalloc.take_snapshot()
 
         # Compare memory usage
-        top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+        top_stats = snapshot2.compare_to(snapshot1, "lineno")
 
         # Check for significant memory growth (>10MB would be concerning)
         total_growth = sum(stat.size_diff for stat in top_stats)
-        assert total_growth < 10 * 1024 * 1024, f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        assert (
+            total_growth < 10 * 1024 * 1024
+        ), f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
 
         tracemalloc.stop()
 
     def test_model_memory_leak(self):
         """Test that models don't leak memory during forward passes."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512
+            "model", "fnet", hidden_dim=256, num_layers=4, max_sequence_length=512
         )
         model.eval()
 
@@ -78,7 +77,7 @@ class TestMemoryLeaks:
         gc.collect()
         snapshot2 = tracemalloc.take_snapshot()
 
-        top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+        top_stats = snapshot2.compare_to(snapshot1, "lineno")
         total_growth = sum(stat.size_diff for stat in top_stats)
 
         # Allow small growth for caching but not continuous leaking
@@ -89,10 +88,7 @@ class TestMemoryLeaks:
     def test_gradient_accumulation_memory(self):
         """Test memory behavior during gradient accumulation."""
         model = create_component(
-            'model', 'gfnet',
-            hidden_dim=256,
-            num_layers=4,
-            max_sequence_length=512
+            "model", "gfnet", hidden_dim=256, num_layers=4, max_sequence_length=512
         )
 
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
@@ -118,11 +114,13 @@ class TestMemoryLeaks:
         gc.collect()
         snapshot2 = tracemalloc.take_snapshot()
 
-        top_stats = snapshot2.compare_to(snapshot1, 'lineno')
+        top_stats = snapshot2.compare_to(snapshot1, "lineno")
         total_growth = sum(stat.size_diff for stat in top_stats)
 
         # Should not continuously grow after gradient clears
-        assert total_growth < 10 * 1024 * 1024, f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
+        assert (
+            total_growth < 10 * 1024 * 1024
+        ), f"Memory grew by {total_growth / 1024 / 1024:.2f} MB"
 
         tracemalloc.stop()
 
@@ -130,21 +128,25 @@ class TestMemoryLeaks:
 class TestPeakMemoryUsage:
     """Test peak memory usage for different configurations."""
 
-    @pytest.mark.parametrize("model_type,hidden_dim,num_layers", [
-        ("fnet", 256, 4),
-        ("fnet", 512, 8),
-        ("gfnet", 256, 4),
-        ("afno", 256, 4),
-    ])
+    @pytest.mark.parametrize(
+        "model_type,hidden_dim,num_layers",
+        [
+            ("fnet", 256, 4),
+            ("fnet", 512, 8),
+            ("gfnet", 256, 4),
+            ("afno", 256, 4),
+        ],
+    )
     def test_model_peak_memory(self, model_type, hidden_dim, num_layers):
         """Profile peak memory usage for different model configurations."""
         tracemalloc.start()
 
         model = create_component(
-            'model', model_type,
+            "model",
+            model_type,
             hidden_dim=hidden_dim,
             num_layers=num_layers,
-            max_sequence_length=512
+            max_sequence_length=512,
         )
 
         x = torch.randn(4, 256, hidden_dim)
@@ -171,10 +173,7 @@ class TestPeakMemoryUsage:
     def test_batch_size_memory_scaling(self):
         """Test how memory scales with batch size."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=512,
-            num_layers=6,
-            max_sequence_length=512
+            "model", "fnet", hidden_dim=512, num_layers=6, max_sequence_length=512
         )
 
         memory_usage: dict[int, float] = {}
@@ -213,15 +212,14 @@ class TestPeakMemoryUsage:
             expected = base_memory * batch_size
             actual = memory_usage[batch_size]
             ratio = actual / expected
-            assert 0.3 < ratio < 2.0, f"Non-linear scaling: batch {batch_size} uses {ratio:.2f}x expected memory"
+            assert (
+                0.3 < ratio < 2.0
+            ), f"Non-linear scaling: batch {batch_size} uses {ratio:.2f}x expected memory"
 
     def test_sequence_length_memory_scaling(self):
         """Test how memory scales with sequence length."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=512,
-            num_layers=6,
-            max_sequence_length=2048
+            "model", "fnet", hidden_dim=512, num_layers=6, max_sequence_length=2048
         )
 
         memory_usage: dict[int, float] = {}
@@ -252,7 +250,7 @@ class TestPeakMemoryUsage:
         # For FFT-based models, expect O(n log n) scaling
         # Check that doubling sequence length doesn't more than triple memory
         for i in range(len([128, 256, 512]) - 1):
-            seq1, seq2 = [128, 256, 512][i:i+2]
+            seq1, seq2 = [128, 256, 512][i : i + 2]
             ratio = memory_usage[seq2] / memory_usage[seq1]
             assert ratio < 3.0, f"Memory scaling too steep: {seq1}->{seq2} increased {ratio:.2f}x"
 
@@ -269,20 +267,22 @@ class TestMemoryOptimizations:
 
         # Model without checkpointing
         model_no_checkpoint = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=hidden_dim,
             num_layers=num_layers,
             max_sequence_length=1024,
-            gradient_checkpointing=False
+            gradient_checkpointing=False,
         )
 
         # Model with checkpointing
         model_checkpoint = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=hidden_dim,
             num_layers=num_layers,
             max_sequence_length=1024,
-            gradient_checkpointing=True
+            gradient_checkpointing=True,
         )
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
@@ -348,19 +348,19 @@ class TestMemoryProfiling:
 
     def test_transform_memory_breakdown(self):
         """Profile memory usage of different transform types."""
-        transforms = ['fft1d', 'dct', 'dst', 'hadamard']
+        transforms = ["fft1d", "dct", "dst", "hadamard"]
         x = torch.randn(4, 512, 512)
 
         print("\nTransform memory usage:")
         for transform_name in transforms:
             # Hadamard needs power-of-2 dimensions
-            x_test = torch.randn(4, 512, 512) if transform_name == 'hadamard' else x.clone()
+            x_test = torch.randn(4, 512, 512) if transform_name == "hadamard" else x.clone()
 
-            transform = create_component('transform', transform_name)
+            transform = create_component("transform", transform_name)
 
             tracemalloc.start()
             y = transform.transform(x_test)
-            if hasattr(y, 'real'):  # Complex output
+            if hasattr(y, "real"):  # Complex output
                 z = transform.inverse_transform(y)
             else:
                 z = transform.inverse_transform(y)
@@ -380,10 +380,10 @@ class TestMemoryProfiling:
         from spectrans.layers.mixing.global_filter import GlobalFilterMixing
 
         layers: list[tuple[str, nn.Module]] = [
-            ('FourierMixing', FourierMixing(hidden_dim=512)),
-            ('GlobalFilterMixing', GlobalFilterMixing(hidden_dim=512, sequence_length=256)),
-            ('AFNOMixing', AFNOMixing(hidden_dim=512, max_sequence_length=256)),
-            ('SpectralAttention', SpectralAttention(hidden_dim=512, num_heads=8)),
+            ("FourierMixing", FourierMixing(hidden_dim=512)),
+            ("GlobalFilterMixing", GlobalFilterMixing(hidden_dim=512, sequence_length=256)),
+            ("AFNOMixing", AFNOMixing(hidden_dim=512, max_sequence_length=256)),
+            ("SpectralAttention", SpectralAttention(hidden_dim=512, num_heads=8)),
         ]
 
         x = torch.randn(4, 256, 512, requires_grad=True)
@@ -405,17 +405,14 @@ class TestMemoryProfiling:
 
             # Clean up
             del y, loss
-            if hasattr(layer, 'zero_grad'):
+            if hasattr(layer, "zero_grad"):
                 layer.zero_grad()
             gc.collect()
 
     def test_training_loop_memory_profile(self):
         """Profile memory usage during a simulated training loop."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=512,
-            num_layers=6,
-            max_sequence_length=512
+            "model", "fnet", hidden_dim=512, num_layers=6, max_sequence_length=512
         )
 
         optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
@@ -463,13 +460,10 @@ class TestGPUMemoryProfiling:
 
     def test_gpu_memory_tracking(self):
         """Track GPU memory usage for models."""
-        device = torch.device('cuda')
+        device = torch.device("cuda")
 
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=768,
-            num_layers=12,
-            max_sequence_length=512
+            "model", "fnet", hidden_dim=768, num_layers=12, max_sequence_length=512
         ).to(device)
 
         x = torch.randn(8, 512, 768, device=device)
@@ -497,13 +491,10 @@ class TestGPUMemoryProfiling:
 
     def test_gpu_memory_efficiency(self):
         """Test GPU memory efficiency with different batch sizes."""
-        device = torch.device('cuda')
+        device = torch.device("cuda")
 
         model = create_component(
-            'model', 'gfnet',
-            hidden_dim=512,
-            num_layers=8,
-            max_sequence_length=512
+            "model", "gfnet", hidden_dim=512, num_layers=8, max_sequence_length=512
         ).to(device)
 
         memory_per_batch: dict[int, float] = {}
@@ -523,7 +514,9 @@ class TestGPUMemoryProfiling:
             memory_per_sample = peak_memory / batch_size
             memory_per_batch[batch_size] = memory_per_sample
 
-            print(f"\nBatch {batch_size}: {peak_memory:.2f} MB total, {memory_per_sample:.2f} MB/sample")
+            print(
+                f"\nBatch {batch_size}: {peak_memory:.2f} MB total, {memory_per_sample:.2f} MB/sample"
+            )
 
             # Clean up
             del output, loss, x
@@ -558,10 +551,7 @@ class TestMemoryAllocation:
 
         # Create and destroy tensors
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=256,
-            num_layers=2,
-            max_sequence_length=256
+            "model", "fnet", hidden_dim=256, num_layers=2, max_sequence_length=256
         )
 
         x = torch.randn(2, 128, 256)
@@ -581,23 +571,21 @@ class TestMemoryAllocation:
         print(f"  After cleanup: {final_count}")
 
         # Should return close to initial state (allow some caching)
-        assert final_count < initial_count + 100, f"Too many tensors remain: {final_count - initial_count}"
+        assert (
+            final_count < initial_count + 100
+        ), f"Too many tensors remain: {final_count - initial_count}"
 
     def test_parameter_memory_usage(self):
         """Test memory usage of model parameters."""
         models: list[tuple[str, dict[str, Any]]] = [
-            ('fnet', {'hidden_dim': 256, 'num_layers': 4}),
-            ('fnet', {'hidden_dim': 512, 'num_layers': 8}),
-            ('fnet', {'hidden_dim': 768, 'num_layers': 12}),
+            ("fnet", {"hidden_dim": 256, "num_layers": 4}),
+            ("fnet", {"hidden_dim": 512, "num_layers": 8}),
+            ("fnet", {"hidden_dim": 768, "num_layers": 12}),
         ]
 
         print("\nModel parameter memory:")
         for model_type, kwargs in models:
-            model = create_component(
-                'model', model_type,
-                max_sequence_length=512,
-                **kwargs
-            )
+            model = create_component("model", model_type, max_sequence_length=512, **kwargs)
 
             # Calculate parameter memory
             total_params = sum(p.numel() for p in model.parameters())

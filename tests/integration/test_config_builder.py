@@ -36,7 +36,7 @@ training:
   learning_rate: 1e-4
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(content)
             temp_file = Path(f.name)
 
@@ -54,7 +54,7 @@ model:
   sequence_length: 512
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(content)
             temp_file = Path(f.name)
 
@@ -99,7 +99,7 @@ training:
   weight_decay: 0.01
 """
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(content)
             temp_file = Path(f.name)
 
@@ -148,7 +148,7 @@ training:
         assert validated["model"]["spatial_type"] == "attention"
         assert validated["model"]["num_heads"] == 12
 
-    @patch('spectrans.core.registry.registry.get')
+    @patch("spectrans.core.registry.registry.get")
     def test_model_building_integration(self, mock_registry_get, temp_config_file):
         """Test integration with model building (mocked)."""
         # Mock a model class
@@ -191,11 +191,7 @@ training:
         builder = ConfigBuilder()
 
         # Test building a mixing layer
-        layer_config = {
-            "hidden_dim": 768,
-            "dropout": 0.1,
-            "fft_norm": "ortho"
-        }
+        layer_config = {"hidden_dim": 768, "dropout": 0.1, "fft_norm": "ortho"}
 
         # This should succeed because the fourier mixing layer is registered
         layer = builder.build_layer("fourier_mixing", layer_config)
@@ -243,7 +239,7 @@ training:
                     "hidden_dim": 768,
                     "num_layers": 12,
                     "sequence_length": 512,
-                    "use_real_fft": True
+                    "use_real_fft": True,
                 }
             },
             {
@@ -252,7 +248,7 @@ training:
                     "hidden_dim": 512,
                     "num_layers": 8,
                     "sequence_length": 224,
-                    "filter_activation": "sigmoid"
+                    "filter_activation": "sigmoid",
                 }
             },
             {
@@ -261,7 +257,7 @@ training:
                     "hidden_dim": 768,
                     "num_layers": 12,
                     "sequence_length": 512,
-                    "n_modes": 256
+                    "n_modes": 256,
                 }
             },
         ]
@@ -281,7 +277,7 @@ training:
                 "model_type": "fnet",
                 "hidden_dim": 768,
                 "num_layers": 12,
-                "sequence_length": 512
+                "sequence_length": 512,
             }
         }
 
@@ -304,7 +300,7 @@ training:
                 "num_features": 768,
                 "kernel_type": "gaussian",
                 "use_orthogonal": True,
-                "num_heads": 8
+                "num_heads": 8,
             }
         }
 

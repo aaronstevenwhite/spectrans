@@ -26,10 +26,7 @@ class TestFFTTransforms:
         reconstructed = transform.inverse_transform(freq)
 
         # Check reconstruction
-        torch.testing.assert_close(
-            reconstructed.real, random_tensor,
-            rtol=1e-4, atol=1e-6
-        )
+        torch.testing.assert_close(reconstructed.real, random_tensor, rtol=1e-4, atol=1e-6)
 
     def test_fft2d_forward_inverse(self, random_tensor):
         """Test FFT2D forward and inverse transforms."""
@@ -44,10 +41,7 @@ class TestFFTTransforms:
         reconstructed = transform.inverse_transform(freq)
 
         # Check reconstruction
-        torch.testing.assert_close(
-            reconstructed.real, random_tensor,
-            rtol=1e-4, atol=1e-6
-        )
+        torch.testing.assert_close(reconstructed.real, random_tensor, rtol=1e-4, atol=1e-6)
 
     def test_rfft_real_input(self, random_tensor):
         """Test RFFT with real input."""
@@ -64,10 +58,7 @@ class TestFFTTransforms:
         reconstructed = transform.inverse_transform(freq, n=random_tensor.shape[-1])
 
         # Check reconstruction
-        torch.testing.assert_close(
-            reconstructed, random_tensor,
-            rtol=1e-4, atol=1e-6
-        )
+        torch.testing.assert_close(reconstructed, random_tensor, rtol=1e-4, atol=1e-6)
 
     def test_fft_parseval_theorem(self, random_tensor):
         """Test Parseval's theorem (energy conservation)."""
@@ -193,10 +184,10 @@ class TestFFTTransforms:
         """Test FFT with various batch dimensions."""
         # Test with different batch shapes
         shapes = [
-            (32,),           # 1D
-            (4, 32),         # 2D with batch
-            (4, 8, 32),      # 3D with batch
-            (2, 4, 8, 32),   # 4D with batch
+            (32,),  # 1D
+            (4, 32),  # 2D with batch
+            (4, 8, 32),  # 3D with batch
+            (2, 4, 8, 32),  # 4D with batch
         ]
 
         transform = FFT1D(norm="ortho")

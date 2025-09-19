@@ -176,7 +176,6 @@ class TestLSTTransformer:
         )
         assert decoder_non_causal.causal is False
 
-
     def test_lst_gradient_flow(self):
         """Test gradient flow through the model."""
         model = LSTTransformer(
@@ -349,7 +348,6 @@ class TestLSTTransformer:
 class TestLSTEncoder:
     """Test LSTEncoder model."""
 
-
     def test_encoder_gradient_flow(self):
         """Test gradient flow through encoder."""
         encoder = LSTEncoder(
@@ -378,7 +376,6 @@ class TestLSTEncoder:
 
 class TestLSTDecoder:
     """Test LSTDecoder model."""
-
 
     def test_decoder_gradient_flow(self):
         """Test gradient flow through decoder."""

@@ -575,14 +575,18 @@ class SlantTransform(OrthogonalTransform):
             return torch.ones(1, 1, device=device, dtype=dtype)
 
         # Recursive construction (simplified)
-        h_half = self._simple_hadamard_matrix(n // 2, device, dtype) if n > 2 else torch.ones(1, 1, device=device, dtype=dtype)
+        h_half = (
+            self._simple_hadamard_matrix(n // 2, device, dtype)
+            if n > 2
+            else torch.ones(1, 1, device=device, dtype=dtype)
+        )
         h_n = torch.zeros(n, n, device=device, dtype=dtype)
 
         # Fill quadrants
-        h_n[:n//2, :n//2] = h_half
-        h_n[:n//2, n//2:] = h_half
-        h_n[n//2:, :n//2] = h_half
-        h_n[n//2:, n//2:] = -h_half
+        h_n[: n // 2, : n // 2] = h_half
+        h_n[: n // 2, n // 2 :] = h_half
+        h_n[n // 2 :, : n // 2] = h_half
+        h_n[n // 2 :, n // 2 :] = -h_half
 
         return h_n / math.sqrt(2)
 

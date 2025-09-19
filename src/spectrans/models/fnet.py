@@ -243,7 +243,6 @@ class FNet(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "FNetModelConfig") -> "FNet":  # type: ignore[override]
         """Create FNet model from configuration.

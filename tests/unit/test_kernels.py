@@ -1,6 +1,5 @@
 """Unit tests for kernel functions and feature maps."""
 
-
 import torch
 import torch.nn.functional as F
 
@@ -449,5 +448,3 @@ class TestKernelProperties:
         # With 512 features, should have reasonable approximation
         # Note: RFF approximation quality varies, allow higher tolerance
         assert errors[-1] < 0.3
-
-

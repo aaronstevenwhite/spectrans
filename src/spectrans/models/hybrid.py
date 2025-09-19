@@ -438,13 +438,13 @@ class HybridTransformer(BaseModel):
             # Determine which mixing layer to use based on pattern
             if self.alternation_pattern == "even_spectral":
                 # Even layers use spectral, odd use spatial
-                use_spectral = (layer_idx % 2 == 0)
+                use_spectral = layer_idx % 2 == 0
             elif self.alternation_pattern == "alternate":
                 # Strictly alternate starting with spectral
-                use_spectral = (layer_idx % 2 == 0)
+                use_spectral = layer_idx % 2 == 0
             else:  # custom or other patterns
                 # Default to alternating
-                use_spectral = (layer_idx % 2 == 0)
+                use_spectral = layer_idx % 2 == 0
 
             # Create appropriate mixing layer
             if use_spectral:
@@ -464,7 +464,6 @@ class HybridTransformer(BaseModel):
             blocks.append(block)
 
         return nn.ModuleList(blocks)
-
 
     @classmethod
     def from_config(cls, config: "HybridModelConfig") -> "HybridTransformer":  # type: ignore[override]
@@ -702,7 +701,7 @@ class AlternatingTransformer(BaseModel):
 
         for layer_idx in range(self.num_layers):
             # Alternate between layer types
-            use_layer1 = (layer_idx % 2 == 0)
+            use_layer1 = layer_idx % 2 == 0
             mixing_layer: RealFourierMixing | FourierMixing | StandardAttention
 
             if use_layer1:
@@ -710,9 +709,13 @@ class AlternatingTransformer(BaseModel):
                 if self.layer1_type == "fourier":
                     use_real_fft = self.layer1_config.get("use_real_fft", True)
                     if use_real_fft:
-                        mixing_layer = RealFourierMixing(hidden_dim=self.hidden_dim, dropout=self._dropout_rate)
+                        mixing_layer = RealFourierMixing(
+                            hidden_dim=self.hidden_dim, dropout=self._dropout_rate
+                        )
                     else:
-                        mixing_layer = FourierMixing(hidden_dim=self.hidden_dim, dropout=self._dropout_rate)
+                        mixing_layer = FourierMixing(
+                            hidden_dim=self.hidden_dim, dropout=self._dropout_rate
+                        )
                 elif self.layer1_type == "attention":
                     mixing_layer = StandardAttention(
                         hidden_dim=self.hidden_dim,
@@ -735,9 +738,13 @@ class AlternatingTransformer(BaseModel):
                 elif self.layer2_type == "fourier":
                     use_real_fft = self.layer2_config.get("use_real_fft", True)
                     if use_real_fft:
-                        mixing_layer = RealFourierMixing(hidden_dim=self.hidden_dim, dropout=self._dropout_rate)
+                        mixing_layer = RealFourierMixing(
+                            hidden_dim=self.hidden_dim, dropout=self._dropout_rate
+                        )
                     else:
-                        mixing_layer = FourierMixing(hidden_dim=self.hidden_dim, dropout=self._dropout_rate)
+                        mixing_layer = FourierMixing(
+                            hidden_dim=self.hidden_dim, dropout=self._dropout_rate
+                        )
                 else:
                     raise ValueError(
                         f"Invalid layer2_type '{self.layer2_type}'. "
@@ -756,5 +763,3 @@ class AlternatingTransformer(BaseModel):
             blocks.append(block)
 
         return nn.ModuleList(blocks)
-
-

@@ -292,7 +292,6 @@ class WaveletTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "WaveletTransformerConfig") -> "WaveletTransformer":  # type: ignore[override]
         """Create wavelet transformer from configuration.
@@ -466,4 +465,3 @@ class WaveletDecoder(WaveletTransformer):
             output_type="lm",  # Language modeling head
             gradient_checkpointing=gradient_checkpointing,
         )
-

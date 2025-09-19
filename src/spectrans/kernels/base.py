@@ -113,7 +113,6 @@ class KernelFunction(ABC):
         """
         pass
 
-
     def gram_matrix(self, x: Tensor) -> Tensor:
         r"""Compute Gram matrix $K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$.
 
@@ -231,7 +230,6 @@ class RandomFeatureMap(nn.Module, ABC):
         phi_x = self.forward(x)  # (..., n, D)
         phi_y = self.forward(y)  # (..., m, D)
         return torch.matmul(phi_x, phi_y.transpose(-2, -1))
-
 
 
 class ShiftInvariantKernel(KernelFunction):

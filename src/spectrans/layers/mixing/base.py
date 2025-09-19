@@ -107,7 +107,6 @@ class MixingLayer(SpectralComponent):
         self.dropout = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
         self.norm_eps = norm_eps
 
-
     @abstractmethod
     def get_spectral_properties(self) -> dict[str, Any]:
         """Get mathematical properties of the spectral operation.
@@ -123,7 +122,9 @@ class MixingLayer(SpectralComponent):
         """
         pass
 
-    def verify_shape_consistency(self, input_tensor: torch.Tensor, output_tensor: torch.Tensor) -> bool:
+    def verify_shape_consistency(
+        self, input_tensor: torch.Tensor, output_tensor: torch.Tensor
+    ) -> bool:
         """Verify that input and output shapes are consistent.
 
         Parameters
@@ -219,14 +220,16 @@ class UnitaryMixingLayer(MixingLayer):
             Dictionary containing unitary transform properties.
         """
         return {
-            'unitary': True,
-            'energy_preserving': True,
-            'invertible': True,
-            'orthogonal': True,
-            'spectrum_preserving': True,
+            "unitary": True,
+            "energy_preserving": True,
+            "invertible": True,
+            "orthogonal": True,
+            "spectrum_preserving": True,
         }
 
-    def verify_energy_preservation(self, input_tensor: torch.Tensor, output_tensor: torch.Tensor) -> bool:
+    def verify_energy_preservation(
+        self, input_tensor: torch.Tensor, output_tensor: torch.Tensor
+    ) -> bool:
         r"""Verify energy preservation (Parseval's theorem).
 
         Checks that $||\mathbf{output}||^2 \approx ||\mathbf{input}||^2$ within tolerance.
@@ -273,10 +276,12 @@ class UnitaryMixingLayer(MixingLayer):
         product = torch.matmul(transform_matrix, transform_matrix.conj().transpose(-2, -1))
 
         # Expected identity matrix
-        identity = torch.eye(transform_matrix.size(-1), device=transform_matrix.device, dtype=transform_matrix.dtype)
+        identity = torch.eye(
+            transform_matrix.size(-1), device=transform_matrix.device, dtype=transform_matrix.dtype
+        )
 
         # Check deviation from identity
-        deviation = torch.norm(product - identity, p='fro')
+        deviation = torch.norm(product - identity, p="fro")
 
         return bool(deviation < self.energy_tolerance)
 
@@ -330,11 +335,11 @@ class FilterMixingLayer(MixingLayer):
             Dictionary containing filter-specific properties.
         """
         return {
-            'frequency_domain': True,
-            'learnable_filters': self.learnable_filters,
-            'selective_filtering': True,
-            'complex_valued': True,
-            'energy_preserving': False,  # Filtering can change energy
+            "frequency_domain": True,
+            "learnable_filters": self.learnable_filters,
+            "selective_filtering": True,
+            "complex_valued": True,
+            "energy_preserving": False,  # Filtering can change energy
         }
 
     @abstractmethod
@@ -372,16 +377,20 @@ class FilterMixingLayer(MixingLayer):
 
         # Analyze energy in different frequency bands
         total_energy = torch.sum(magnitude**2, dim=-1, keepdim=True)
-        low_freq_energy = torch.sum(magnitude[..., :magnitude.size(-1)//4]**2, dim=-1, keepdim=True)
-        high_freq_energy = torch.sum(magnitude[..., 3*magnitude.size(-1)//4:]**2, dim=-1, keepdim=True)
+        low_freq_energy = torch.sum(
+            magnitude[..., : magnitude.size(-1) // 4] ** 2, dim=-1, keepdim=True
+        )
+        high_freq_energy = torch.sum(
+            magnitude[..., 3 * magnitude.size(-1) // 4 :] ** 2, dim=-1, keepdim=True
+        )
 
         return {
-            'magnitude': magnitude,
-            'phase': phase,
-            'group_delay': group_delay,
-            'total_energy': total_energy,
-            'low_freq_energy': low_freq_energy / (total_energy + self.norm_eps),
-            'high_freq_energy': high_freq_energy / (total_energy + self.norm_eps),
+            "magnitude": magnitude,
+            "phase": phase,
+            "group_delay": group_delay,
+            "total_energy": total_energy,
+            "low_freq_energy": low_freq_energy / (total_energy + self.norm_eps),
+            "high_freq_energy": high_freq_energy / (total_energy + self.norm_eps),
         }
 
 

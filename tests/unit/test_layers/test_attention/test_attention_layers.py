@@ -251,8 +251,6 @@ class TestLSTAttention:
         assert not torch.all(random_tensor.grad == 0)
 
 
-
-
 class TestAttentionTraining:
     """Test attention layers in training scenarios."""
 

@@ -29,9 +29,10 @@ class TestCosineTransforms:
         expected_error_factor = max(10, n * 3.0)  # Scale with matrix size, minimum 10x
 
         torch.testing.assert_close(
-            reconstructed, random_tensor,
+            reconstructed,
+            random_tensor,
             rtol=expected_error_factor * machine_eps,
-            atol=expected_error_factor * machine_eps
+            atol=expected_error_factor * machine_eps,
         )
 
     def test_dct_mathematical_properties(self, device):
@@ -55,10 +56,11 @@ class TestCosineTransforms:
         expected_error_factor = max(10, n * 0.5)  # Conservative estimate
 
         torch.testing.assert_close(
-            gram_matrix, identity,
+            gram_matrix,
+            identity,
             rtol=expected_error_factor * machine_eps,
             atol=expected_error_factor * machine_eps,
-            msg="DCT matrix should be orthogonal"
+            msg="DCT matrix should be orthogonal",
         )
 
     def test_dct_energy_conservation(self, random_tensor):
@@ -66,17 +68,19 @@ class TestCosineTransforms:
         transform = DCT(normalized=True)
 
         # Compute energy in original domain
-        energy_original = torch.sum(random_tensor ** 2)
+        energy_original = torch.sum(random_tensor**2)
 
         # Transform and compute energy in DCT domain
         dct_coeffs = transform.transform(random_tensor)
-        energy_dct = torch.sum(dct_coeffs ** 2)
+        energy_dct = torch.sum(dct_coeffs**2)
 
         # Energy should be conserved for orthogonal transform
         torch.testing.assert_close(
-            energy_original, energy_dct,
-            rtol=1e-5, atol=1e-7,
-            msg="DCT should conserve energy (Parseval's theorem)"
+            energy_original,
+            energy_dct,
+            rtol=1e-5,
+            atol=1e-7,
+            msg="DCT should conserve energy (Parseval's theorem)",
         )
 
     def test_dst_forward_inverse(self, random_tensor):
@@ -97,9 +101,10 @@ class TestCosineTransforms:
         expected_error_factor = max(15, n * 3.0)  # Scale with matrix size, minimum 15x
 
         torch.testing.assert_close(
-            reconstructed, random_tensor,
+            reconstructed,
+            random_tensor,
             rtol=expected_error_factor * machine_eps,
-            atol=expected_error_factor * machine_eps
+            atol=expected_error_factor * machine_eps,
         )
 
     def test_dst_mathematical_properties(self, device):
@@ -122,10 +127,11 @@ class TestCosineTransforms:
         expected_error_factor = max(10, n * 0.5)  # Conservative estimate
 
         torch.testing.assert_close(
-            gram_matrix, identity,
+            gram_matrix,
+            identity,
             rtol=expected_error_factor * machine_eps,
             atol=expected_error_factor * machine_eps,
-            msg="DST matrix should be orthogonal"
+            msg="DST matrix should be orthogonal",
         )
 
     def test_dst_energy_conservation(self, random_tensor):
@@ -133,17 +139,15 @@ class TestCosineTransforms:
         transform = DST(normalized=True)
 
         # Compute energy in original domain
-        energy_original = torch.sum(random_tensor ** 2)
+        energy_original = torch.sum(random_tensor**2)
 
         # Transform and compute energy in DST domain
         dst_coeffs = transform.transform(random_tensor)
-        energy_dst = torch.sum(dst_coeffs ** 2)
+        energy_dst = torch.sum(dst_coeffs**2)
 
         # Energy should be conserved for orthogonal transform
         torch.testing.assert_close(
-            energy_original, energy_dst,
-            rtol=1e-5, atol=1e-7,
-            msg="DST should conserve energy"
+            energy_original, energy_dst, rtol=1e-5, atol=1e-7, msg="DST should conserve energy"
         )
 
     def test_dct_orthogonality(self, hidden_dim, device):
@@ -175,9 +179,10 @@ class TestCosineTransforms:
             machine_eps = torch.finfo(x.dtype).eps
             expected_error_factor = max(10, n * 3.0)
             torch.testing.assert_close(
-                reconstructed, x,
+                reconstructed,
+                x,
                 rtol=expected_error_factor * machine_eps,
-                atol=expected_error_factor * machine_eps
+                atol=expected_error_factor * machine_eps,
             )
         else:
             # Relaxed tolerances for unnormalized transforms
@@ -198,9 +203,10 @@ class TestCosineTransforms:
             machine_eps = torch.finfo(x.dtype).eps
             expected_error_factor = max(15, n * 3.0)
             torch.testing.assert_close(
-                reconstructed, x,
+                reconstructed,
+                x,
                 rtol=expected_error_factor * machine_eps,
-                atol=expected_error_factor * machine_eps
+                atol=expected_error_factor * machine_eps,
             )
         else:
             # Relaxed tolerances for unnormalized transforms
@@ -236,7 +242,7 @@ class TestCosineTransforms:
 
         # Forward pass
         dst_coeffs = transform.transform(x)
-        loss = torch.sum(dst_coeffs ** 2)
+        loss = torch.sum(dst_coeffs**2)
 
         # Backward pass
         loss.backward()
@@ -258,9 +264,10 @@ class TestCosineTransforms:
         expected_error_factor = max(10, size * 3.0)
 
         torch.testing.assert_close(
-            reconstructed, x,
+            reconstructed,
+            x,
             rtol=expected_error_factor * machine_eps,
-            atol=expected_error_factor * machine_eps
+            atol=expected_error_factor * machine_eps,
         )
 
     @pytest.mark.parametrize("size", [8, 16, 32, 64, 128, 256])
@@ -277,18 +284,19 @@ class TestCosineTransforms:
         expected_error_factor = max(15, size * 3.0)
 
         torch.testing.assert_close(
-            reconstructed, x,
+            reconstructed,
+            x,
             rtol=expected_error_factor * machine_eps,
-            atol=expected_error_factor * machine_eps
+            atol=expected_error_factor * machine_eps,
         )
 
     def test_dct_batch_dimensions(self, device):
         """Test DCT with various batch dimensions."""
         shapes = [
-            (64,),           # 1D
-            (4, 64),         # 2D with batch
-            (4, 8, 64),      # 3D with batch
-            (2, 4, 8, 64),   # 4D with batch
+            (64,),  # 1D
+            (4, 64),  # 2D with batch
+            (4, 8, 64),  # 3D with batch
+            (2, 4, 8, 64),  # 4D with batch
         ]
 
         transform = DCT(normalized=True)
@@ -306,17 +314,18 @@ class TestCosineTransforms:
             expected_error_factor = max(10, n * 3.0)
 
             torch.testing.assert_close(
-                reconstructed, x,
+                reconstructed,
+                x,
                 rtol=expected_error_factor * machine_eps,
-                atol=expected_error_factor * machine_eps
+                atol=expected_error_factor * machine_eps,
             )
 
     def test_dst_batch_dimensions(self, device):
         """Test DST with various batch dimensions."""
         shapes = [
-            (64,),           # 1D
-            (4, 64),         # 2D with batch
-            (4, 8, 64),      # 3D with batch
+            (64,),  # 1D
+            (4, 64),  # 2D with batch
+            (4, 8, 64),  # 3D with batch
         ]
 
         transform = DST(normalized=True)
@@ -334,9 +343,10 @@ class TestCosineTransforms:
             expected_error_factor = max(15, n * 3.0)
 
             torch.testing.assert_close(
-                reconstructed, x,
+                reconstructed,
+                x,
                 rtol=expected_error_factor * machine_eps,
-                atol=expected_error_factor * machine_eps
+                atol=expected_error_factor * machine_eps,
             )
 
     def test_dct_dst_relationship(self, device):
@@ -374,7 +384,7 @@ class TestCosineTransforms:
 
         # Scipy reference
         x_numpy = x.cpu().numpy()
-        norm_mode = 'ortho' if normalized else None
+        norm_mode = "ortho" if normalized else None
         dct_coeffs_scipy = scipy.fft.dct(x_numpy, type=2, norm=norm_mode)
         dct_coeffs_ref = torch.from_numpy(dct_coeffs_scipy).float().to(device)
 
@@ -401,7 +411,7 @@ class TestCosineTransforms:
 
         # Scipy reference
         x_numpy = x.cpu().numpy()
-        norm_mode = 'ortho' if normalized else None
+        norm_mode = "ortho" if normalized else None
         dst_coeffs_scipy = scipy.fft.dst(x_numpy, type=2, norm=norm_mode)
         dst_coeffs_ref = torch.from_numpy(dst_coeffs_scipy).float().to(device)
 
@@ -428,7 +438,7 @@ class TestCosineTransforms:
 
             # Compare with scipy
             x_numpy = x.cpu().numpy()
-            norm_mode = 'ortho' if normalized else None
+            norm_mode = "ortho" if normalized else None
             dct_coeffs_scipy = scipy.fft.dct(x_numpy, type=2, norm=norm_mode)
             dct_coeffs_ref = torch.from_numpy(dct_coeffs_scipy).float().to(device)
 
@@ -449,7 +459,7 @@ class TestCosineTransforms:
 
             # Compare with scipy
             x_numpy = x.cpu().numpy()
-            norm_mode = 'ortho' if normalized else None
+            norm_mode = "ortho" if normalized else None
             dst_coeffs_scipy = scipy.fft.dst(x_numpy, type=2, norm=norm_mode)
             dst_coeffs_ref = torch.from_numpy(dst_coeffs_scipy).float().to(device)
 

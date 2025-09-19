@@ -86,8 +86,7 @@ def attention_mask(batch_size, sequence_length, device):
 def causal_mask(sequence_length, device):
     """Create a causal attention mask."""
     mask = torch.triu(
-        torch.ones(sequence_length, sequence_length, device=device, dtype=torch.bool),
-        diagonal=1
+        torch.ones(sequence_length, sequence_length, device=device, dtype=torch.bool), diagonal=1
     )
     return ~mask  # Invert to get lower triangular
 
@@ -97,13 +96,13 @@ def causal_mask(sequence_length, device):
 def simple_config():
     """Simple model configuration for testing."""
     return {
-        'type': 'test_model',
-        'params': {
-            'num_layers': 2,
-            'hidden_dim': 256,
-            'sequence_length': 128,
-            'dropout': 0.1,
-        }
+        "type": "test_model",
+        "params": {
+            "num_layers": 2,
+            "hidden_dim": 256,
+            "sequence_length": 128,
+            "dropout": 0.1,
+        },
     }
 
 
@@ -111,11 +110,11 @@ def simple_config():
 def layer_config():
     """Layer configuration for testing."""
     return {
-        'type': 'test_layer',
-        'params': {
-            'hidden_dim': 256,
-            'dropout': 0.1,
-        }
+        "type": "test_layer",
+        "params": {
+            "hidden_dim": 256,
+            "dropout": 0.1,
+        },
     }
 
 
@@ -134,21 +133,21 @@ def config_file(test_data_dir):
     import yaml
 
     config = {
-        'model': {
-            'type': 'test_model',
-            'params': {
-                'num_layers': 4,
-                'hidden_dim': 512,
-            }
+        "model": {
+            "type": "test_model",
+            "params": {
+                "num_layers": 4,
+                "hidden_dim": 512,
+            },
         },
-        'training': {
-            'batch_size': 32,
-            'learning_rate': 1e-4,
-        }
+        "training": {
+            "batch_size": 32,
+            "learning_rate": 1e-4,
+        },
     }
 
     config_path = test_data_dir / "test_config.yaml"
-    with open(config_path, 'w') as f:
+    with open(config_path, "w") as f:
         yaml.dump(config, f)
 
     return config_path
@@ -208,36 +207,44 @@ def mock_mixing_layer_class():
 def benchmark_sizes():
     """Different sizes for benchmarking."""
     return [
-        (2, 128, 256),   # Small
-        (4, 512, 512),   # Medium
+        (2, 128, 256),  # Small
+        (4, 512, 512),  # Medium
         (8, 1024, 768),  # Large
     ]
-
-
 
 
 # Utility fixtures
 @pytest.fixture
 def assert_tensor_equal():
     """Utility function to assert tensor equality."""
+
     def _assert_equal(tensor1, tensor2, rtol=1e-5, atol=1e-7):
         assert torch.allclose(tensor1, tensor2, rtol=rtol, atol=atol)
+
     return _assert_equal
 
 
 @pytest.fixture
 def assert_shape():
     """Utility function to assert tensor shape."""
+
     def _assert_shape(tensor, expected_shape):
-        assert tensor.shape == expected_shape, f"Expected shape {expected_shape}, got {tensor.shape}"
+        assert (
+            tensor.shape == expected_shape
+        ), f"Expected shape {expected_shape}, got {tensor.shape}"
+
     return _assert_shape
 
 
 @pytest.fixture
 def assert_dtype():
     """Utility function to assert tensor dtype."""
+
     def _assert_dtype(tensor, expected_dtype):
-        assert tensor.dtype == expected_dtype, f"Expected dtype {expected_dtype}, got {tensor.dtype}"
+        assert (
+            tensor.dtype == expected_dtype
+        ), f"Expected dtype {expected_dtype}, got {tensor.dtype}"
+
     return _assert_dtype
 
 
@@ -247,12 +254,6 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
     )
-    config.addinivalue_line(
-        "markers", "gpu: marks tests that require GPU"
-    )
-    config.addinivalue_line(
-        "markers", "integration: marks integration tests"
-    )
-    config.addinivalue_line(
-        "markers", "benchmark: marks performance benchmark tests"
-    )
+    config.addinivalue_line("markers", "gpu: marks tests that require GPU")
+    config.addinivalue_line("markers", "integration: marks integration tests")
+    config.addinivalue_line("markers", "benchmark: marks performance benchmark tests")

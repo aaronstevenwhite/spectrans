@@ -134,6 +134,7 @@ class Transform(nn.Module, ABC):
     without forcing incompatible mathematical operations into the
     same interface signatures.
     """
+
     pass
 
 
@@ -284,10 +285,7 @@ class MultiResolutionTransform(Transform):
 
     @abstractmethod
     def decompose(
-        self,
-        x: Tensor,
-        levels: int | None = None,
-        dim: int = -1
+        self, x: Tensor, levels: int | None = None, dim: int = -1
     ) -> tuple[Tensor, list[Tensor]]:
         """Decompose signal into multiple resolution levels.
 
@@ -310,11 +308,7 @@ class MultiResolutionTransform(Transform):
         pass
 
     @abstractmethod
-    def reconstruct(
-        self,
-        coeffs: tuple[Tensor, list[Tensor]],
-        dim: int = -1
-    ) -> Tensor:
+    def reconstruct(self, coeffs: tuple[Tensor, list[Tensor]], dim: int = -1) -> Tensor:
         """Reconstruct signal from multi-resolution coefficients.
 
         Parameters
@@ -351,10 +345,7 @@ class MultiResolutionTransform2D(Transform):
 
     @abstractmethod
     def decompose(
-        self,
-        x: Tensor,
-        levels: int | None = None,
-        dim: tuple[int, int] = (-2, -1)
+        self, x: Tensor, levels: int | None = None, dim: tuple[int, int] = (-2, -1)
     ) -> tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]]:
         """Decompose 2D signal into multiple resolution levels.
 
@@ -379,7 +370,7 @@ class MultiResolutionTransform2D(Transform):
     def reconstruct(
         self,
         coeffs: tuple[Tensor, list[tuple[Tensor, Tensor, Tensor]]],
-        dim: tuple[int, int] = (-2, -1)
+        dim: tuple[int, int] = (-2, -1),
     ) -> Tensor:
         """Reconstruct 2D signal from multi-resolution coefficients.
 
@@ -461,11 +452,7 @@ class InvertibleTransform(SpectralTransform):
     """
 
     def check_invertibility(
-        self,
-        x: Tensor,
-        dim: int = -1,
-        rtol: float = 1e-5,
-        atol: float = 1e-8
+        self, x: Tensor, dim: int = -1, rtol: float = 1e-5, atol: float = 1e-8
     ) -> bool:
         """Check if transform is invertible for given input.
 

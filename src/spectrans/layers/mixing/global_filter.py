@@ -167,16 +167,12 @@ class GlobalFilterMixing(FilterMixingLayer):
         self.activation = activation
 
         # Initialize complex filter parameters
-        self.filter_real = nn.Parameter(
-            torch.randn(sequence_length, hidden_dim) * filter_init_std
-        )
-        self.filter_imag = nn.Parameter(
-            torch.randn(sequence_length, hidden_dim) * filter_init_std
-        )
+        self.filter_real = nn.Parameter(torch.randn(sequence_length, hidden_dim) * filter_init_std)
+        self.filter_imag = nn.Parameter(torch.randn(sequence_length, hidden_dim) * filter_init_std)
 
         # Store FFT transform as non-module attribute
         self.fft1d: FFT1D  # Type annotation for mypy
-        object.__setattr__(self, 'fft1d', FFT1D(norm=fft_norm))
+        object.__setattr__(self, "fft1d", FFT1D(norm=fft_norm))
 
         # Activation function
         if activation == "sigmoid":
@@ -211,27 +207,34 @@ class GlobalFilterMixing(FilterMixingLayer):
         if seq_len != self.sequence_length:
             # Use interpolation to adapt filters to the actual sequence length
             # This preserves the learned frequency patterns at different resolutions
-            filter_real = nn.functional.interpolate(
-                self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
-                size=seq_len,
-                mode='linear',
-                align_corners=False
-            ).squeeze(0).T  # (seq_len, hidden_dim)
+            filter_real = (
+                nn.functional.interpolate(
+                    self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                    size=seq_len,
+                    mode="linear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .T
+            )  # (seq_len, hidden_dim)
 
-            filter_imag = nn.functional.interpolate(
-                self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
-                size=seq_len,
-                mode='linear',
-                align_corners=False
-            ).squeeze(0).T  # (seq_len, hidden_dim)
+            filter_imag = (
+                nn.functional.interpolate(
+                    self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                    size=seq_len,
+                    mode="linear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .T
+            )  # (seq_len, hidden_dim)
         else:
             filter_real = self.filter_real
             filter_imag = self.filter_imag
 
         # Create complex filter
         filter_complex = make_complex(
-            self.activation_fn(filter_real),
-            self.activation_fn(filter_imag)
+            self.activation_fn(filter_real), self.activation_fn(filter_imag)
         )
 
         # Apply filter in frequency domain (element-wise multiplication)
@@ -257,10 +260,8 @@ class GlobalFilterMixing(FilterMixingLayer):
             Complex-valued frequency response of shape (sequence_length, hidden_dim).
         """
         return make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(self.filter_real), self.activation_fn(self.filter_imag)
         )
-
 
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get spectral properties of global filtering.
@@ -271,13 +272,13 @@ class GlobalFilterMixing(FilterMixingLayer):
             Properties including filter characteristics.
         """
         return {
-            'frequency_domain': True,
-            'learnable_filters': True,
-            'complex_valued': True,
-            'selective_filtering': True,
-            'energy_preserving': False,  # Filtering can change energy
-            'activation': self.activation,
-            'parameter_count': 2 * self.sequence_length * self.hidden_dim,
+            "frequency_domain": True,
+            "learnable_filters": True,
+            "complex_valued": True,
+            "selective_filtering": True,
+            "energy_preserving": False,  # Filtering can change energy
+            "activation": self.activation,
+            "parameter_count": 2 * self.sequence_length * self.hidden_dim,
         }
 
     @classmethod
@@ -358,16 +359,12 @@ class GlobalFilterMixing2D(FilterMixingLayer):
         self.activation = activation
 
         # Initialize 2D complex filter parameters
-        self.filter_real = nn.Parameter(
-            torch.randn(sequence_length, hidden_dim) * filter_init_std
-        )
-        self.filter_imag = nn.Parameter(
-            torch.randn(sequence_length, hidden_dim) * filter_init_std
-        )
+        self.filter_real = nn.Parameter(torch.randn(sequence_length, hidden_dim) * filter_init_std)
+        self.filter_imag = nn.Parameter(torch.randn(sequence_length, hidden_dim) * filter_init_std)
 
         # Store 2D FFT transform as non-module attribute
         self.fft2d: FFT2D  # Type annotation for mypy
-        object.__setattr__(self, 'fft2d', FFT2D(norm=fft_norm))
+        object.__setattr__(self, "fft2d", FFT2D(norm=fft_norm))
 
         # Activation function
         if activation == "sigmoid":
@@ -402,27 +399,34 @@ class GlobalFilterMixing2D(FilterMixingLayer):
         # Adapt filter to actual dimensions using bilinear interpolation
         if seq_len != self.sequence_length or hidden != self.hidden_dim:
             # Reshape for 2D interpolation
-            filter_real = nn.functional.interpolate(
-                self.filter_real.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
-                size=(seq_len, hidden),
-                mode='bilinear',
-                align_corners=False
-            ).squeeze(0).squeeze(0)  # (seq_len, hidden)
+            filter_real = (
+                nn.functional.interpolate(
+                    self.filter_real.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
+                    size=(seq_len, hidden),
+                    mode="bilinear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .squeeze(0)
+            )  # (seq_len, hidden)
 
-            filter_imag = nn.functional.interpolate(
-                self.filter_imag.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
-                size=(seq_len, hidden),
-                mode='bilinear',
-                align_corners=False
-            ).squeeze(0).squeeze(0)  # (seq_len, hidden)
+            filter_imag = (
+                nn.functional.interpolate(
+                    self.filter_imag.unsqueeze(0).unsqueeze(0),  # (1, 1, seq_length, hidden_dim)
+                    size=(seq_len, hidden),
+                    mode="bilinear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .squeeze(0)
+            )  # (seq_len, hidden)
         else:
             filter_real = self.filter_real
             filter_imag = self.filter_imag
 
         # Create complex filter
         filter_complex = make_complex(
-            self.activation_fn(filter_real),
-            self.activation_fn(filter_imag)
+            self.activation_fn(filter_real), self.activation_fn(filter_imag)
         )
 
         # Apply 2D filter
@@ -448,10 +452,8 @@ class GlobalFilterMixing2D(FilterMixingLayer):
             Complex 2D frequency response.
         """
         return make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(self.filter_real), self.activation_fn(self.filter_imag)
         )
-
 
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get 2D filter properties.
@@ -462,14 +464,14 @@ class GlobalFilterMixing2D(FilterMixingLayer):
             2D filtering characteristics.
         """
         return {
-            'frequency_domain': True,
-            'learnable_filters': True,
-            'complex_valued': True,
-            'selective_filtering': True,
-            'energy_preserving': False,
-            'two_dimensional': True,
-            'activation': self.activation,
-            'parameter_count': 2 * self.sequence_length * self.hidden_dim,
+            "frequency_domain": True,
+            "learnable_filters": True,
+            "complex_valued": True,
+            "selective_filtering": True,
+            "energy_preserving": False,
+            "two_dimensional": True,
+            "activation": self.activation,
+            "parameter_count": 2 * self.sequence_length * self.hidden_dim,
         }
 
 
@@ -546,10 +548,14 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
             freq_weights = freq_weights / freq_weights.mean()
 
             self.filter_real = nn.Parameter(
-                torch.randn(sequence_length, hidden_dim) * filter_init_std * freq_weights.unsqueeze(-1)
+                torch.randn(sequence_length, hidden_dim)
+                * filter_init_std
+                * freq_weights.unsqueeze(-1)
             )
             self.filter_imag = nn.Parameter(
-                torch.randn(sequence_length, hidden_dim) * filter_init_std * freq_weights.unsqueeze(-1)
+                torch.randn(sequence_length, hidden_dim)
+                * filter_init_std
+                * freq_weights.unsqueeze(-1)
             )
         else:
             # Standard initialization
@@ -562,7 +568,7 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
 
         # Store FFT transform as non-module attribute
         self.fft1d: FFT1D  # Type annotation for mypy
-        object.__setattr__(self, 'fft1d', FFT1D(norm=fft_norm))
+        object.__setattr__(self, "fft1d", FFT1D(norm=fft_norm))
 
         self.activation_fn: Callable[[Tensor], Tensor]
         if activation == "sigmoid":
@@ -602,27 +608,34 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
         # Adapt filter to actual sequence length using interpolation
         if seq_len != self.sequence_length:
             # Use interpolation to adapt filters to the actual sequence length
-            filter_real = nn.functional.interpolate(
-                self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
-                size=seq_len,
-                mode='linear',
-                align_corners=False
-            ).squeeze(0).T  # (seq_len, hidden_dim)
+            filter_real = (
+                nn.functional.interpolate(
+                    self.filter_real.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                    size=seq_len,
+                    mode="linear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .T
+            )  # (seq_len, hidden_dim)
 
-            filter_imag = nn.functional.interpolate(
-                self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
-                size=seq_len,
-                mode='linear',
-                align_corners=False
-            ).squeeze(0).T  # (seq_len, hidden_dim)
+            filter_imag = (
+                nn.functional.interpolate(
+                    self.filter_imag.T.unsqueeze(0),  # (1, hidden_dim, sequence_length)
+                    size=seq_len,
+                    mode="linear",
+                    align_corners=False,
+                )
+                .squeeze(0)
+                .T
+            )  # (seq_len, hidden_dim)
         else:
             filter_real = self.filter_real
             filter_imag = self.filter_imag
 
         # Create complex filter with activation
         filter_complex = make_complex(
-            self.activation_fn(filter_real),
-            self.activation_fn(filter_imag)
+            self.activation_fn(filter_real), self.activation_fn(filter_imag)
         )
 
         # Apply spectral dropout to filter (not input)
@@ -652,8 +665,7 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
             Complex frequency response with current parameters.
         """
         return make_complex(
-            self.activation_fn(self.filter_real),
-            self.activation_fn(self.filter_imag)
+            self.activation_fn(self.filter_real), self.activation_fn(self.filter_imag)
         )
 
     def get_regularization_loss(self) -> Tensor:
@@ -672,7 +684,6 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
 
         return self.filter_regularization * (real_loss + imag_loss)  # type: ignore[no-any-return]
 
-
     def get_spectral_properties(self) -> dict[str, str | bool | int]:
         """Get adaptive filter properties.
 
@@ -682,16 +693,16 @@ class AdaptiveGlobalFilter(FilterMixingLayer):
             Comprehensive properties including adaptive features.
         """
         return {
-            'frequency_domain': True,
-            'learnable_filters': True,
-            'complex_valued': True,
-            'selective_filtering': True,
-            'energy_preserving': False,
-            'adaptive_initialization': self.adaptive_initialization,
-            'regularization': self.filter_regularization > 0,
-            'spectral_dropout': self.spectral_dropout_p > 0,
-            'activation': self.activation,
-            'parameter_count': 2 * self.sequence_length * self.hidden_dim,
+            "frequency_domain": True,
+            "learnable_filters": True,
+            "complex_valued": True,
+            "selective_filtering": True,
+            "energy_preserving": False,
+            "adaptive_initialization": self.adaptive_initialization,
+            "regularization": self.filter_regularization > 0,
+            "spectral_dropout": self.spectral_dropout_p > 0,
+            "activation": self.activation,
+            "parameter_count": 2 * self.sequence_length * self.hidden_dim,
         }
 
 

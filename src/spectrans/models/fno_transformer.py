@@ -249,7 +249,6 @@ class FNOTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "FNOTransformerConfig") -> "FNOTransformer":  # type: ignore[override]
         """Create model from configuration.
@@ -378,7 +377,6 @@ class FNOEncoder(BaseModel):
             blocks.append(fno_block)
 
         return nn.ModuleList(blocks)
-
 
 
 @register_component("model", "fno_decoder")
@@ -523,4 +521,3 @@ class FNODecoder(BaseModel):
         # Apply LM head
         logits = self.lm_head(hidden_states)
         return logits  # type: ignore[no-any-return]
-

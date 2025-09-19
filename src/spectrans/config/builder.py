@@ -96,6 +96,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigurationError(Exception):
     """Exception raised for configuration-related errors."""
+
     pass
 
 
@@ -176,7 +177,7 @@ class ConfigBuilder:
             if not config_path.exists():
                 raise ConfigurationError(f"Configuration file not found: {config_path}")
 
-            with open(config_path, encoding='utf-8') as f:
+            with open(config_path, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
             if not isinstance(config, dict):
@@ -252,7 +253,9 @@ class ConfigBuilder:
             try:
                 validated_config = config_class.model_validate(model_config_dict)  # type: ignore
             except ValidationError as e:
-                raise ConfigurationError(f"Invalid configuration for model type '{model_type}': {e}") from e
+                raise ConfigurationError(
+                    f"Invalid configuration for model type '{model_type}': {e}"
+                ) from e
 
             # Get model class from registry
             try:
@@ -262,7 +265,9 @@ class ConfigBuilder:
 
             # Build the model using the validated configuration
             model = model_class.from_config(validated_config)  # type: ignore
-            logger.info(f"Built {model_type} model with configuration: {validated_config.model_dump_json()}")
+            logger.info(
+                f"Built {model_type} model with configuration: {validated_config.model_dump_json()}"
+            )
 
             return model
 
@@ -304,7 +309,9 @@ class ConfigBuilder:
             try:
                 validated_config = config_class.model_validate(config_dict)  # type: ignore
             except ValidationError as e:
-                raise ConfigurationError(f"Invalid configuration for layer type '{layer_type}': {e}") from e
+                raise ConfigurationError(
+                    f"Invalid configuration for layer type '{layer_type}': {e}"
+                ) from e
 
             # Map layer type to registry category and name
             layer_mapping = {
@@ -327,13 +334,15 @@ class ConfigBuilder:
                 raise ConfigurationError(f"Layer type '{layer_type}' not registered: {e}") from e
 
             # Build the layer using the validated configuration
-            if hasattr(layer_class, 'from_config'):
+            if hasattr(layer_class, "from_config"):
                 layer = layer_class.from_config(validated_config)
             else:
                 # Fallback to direct instantiation using config attributes
                 layer = layer_class(**validated_config.model_dump())
 
-            logger.info(f"Built {layer_type} layer with configuration: {validated_config.model_dump_json()}")
+            logger.info(
+                f"Built {layer_type} layer with configuration: {validated_config.model_dump_json()}"
+            )
             return layer
 
         except Exception as e:

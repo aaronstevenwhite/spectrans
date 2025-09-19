@@ -129,9 +129,7 @@ class SpectralConv1d(nn.Module):
         # Complex weights for Fourier modes
         # Scale initialization for stability
         scale = 1 / (in_channels * out_channels)
-        self.weights = nn.Parameter(
-            torch.randn(in_channels, out_channels, modes, 2) * scale
-        )
+        self.weights = nn.Parameter(torch.randn(in_channels, out_channels, modes, 2) * scale)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         r"""Apply spectral convolution.
@@ -152,12 +150,11 @@ class SpectralConv1d(nn.Module):
         x_ft = torch.fft.rfft(x, dim=-1)
 
         # Truncate to retained modes
-        x_ft_truncated = x_ft[..., :self.modes]
+        x_ft_truncated = x_ft[..., : self.modes]
 
         # Prepare output in Fourier domain
         out_ft = torch.zeros(
-            batch_size, self.out_channels, seq_len // 2 + 1,
-            dtype=x_ft.dtype, device=x.device
+            batch_size, self.out_channels, seq_len // 2 + 1, dtype=x_ft.dtype, device=x.device
         )
 
         # Apply spectral convolution via complex multiplication
@@ -167,11 +164,7 @@ class SpectralConv1d(nn.Module):
         # Perform einsum for channel mixing with mode-wise multiplication
         # Shape: (batch, in_channels, modes) x (in_channels, out_channels, modes)
         # -> (batch, out_channels, modes)
-        out_ft[:, :, :self.modes] = torch.einsum(
-            "bim,iom->bom",
-            x_ft_truncated,
-            weights_complex
-        )
+        out_ft[:, :, : self.modes] = torch.einsum("bim,iom->bom", x_ft_truncated, weights_complex)
 
         # Inverse FFT to get back to spatial domain
         out = torch.fft.irfft(out_ft, n=seq_len, dim=-1)
@@ -248,18 +241,15 @@ class SpectralConv2d(nn.Module):
 
         # Prepare output
         out_ft = torch.zeros(
-            batch_size, self.out_channels, h, w // 2 + 1,
-            dtype=x_ft.dtype, device=x.device
+            batch_size, self.out_channels, h, w // 2 + 1, dtype=x_ft.dtype, device=x.device
         )
 
         # Truncate and apply convolution
         weights_complex = torch.view_as_complex(self.weights.to(x.dtype))
 
         # Apply convolution on truncated modes
-        out_ft[:, :, :self.modes1, :self.modes2] = torch.einsum(
-            "bihw,iohw->bohw",
-            x_ft[:, :, :self.modes1, :self.modes2],
-            weights_complex
+        out_ft[:, :, : self.modes1, : self.modes2] = torch.einsum(
+            "bihw,iohw->bohw", x_ft[:, :, : self.modes1, : self.modes2], weights_complex
         )
 
         # Inverse FFT
@@ -317,9 +307,9 @@ class FourierNeuralOperator(SpectralComponent):
         self,
         hidden_dim: int,
         modes: int | tuple[int, ...] = 16,
-        activation: ActivationType = 'gelu',
+        activation: ActivationType = "gelu",
         use_spectral_conv: bool = True,
-        use_linear: bool = True
+        use_linear: bool = True,
     ):
         super().__init__()
 
@@ -363,17 +353,17 @@ class FourierNeuralOperator(SpectralComponent):
 
         # Activation function
         activation_fn: nn.Module
-        if activation == 'gelu':
+        if activation == "gelu":
             activation_fn = nn.GELU()
-        elif activation == 'relu':
+        elif activation == "relu":
             activation_fn = nn.ReLU()
-        elif activation == 'silu' or activation == 'swish':
+        elif activation == "silu" or activation == "swish":
             activation_fn = nn.SiLU()
-        elif activation == 'tanh':
+        elif activation == "tanh":
             activation_fn = nn.Tanh()
-        elif activation == 'sigmoid':
+        elif activation == "sigmoid":
             activation_fn = nn.Sigmoid()
-        elif activation == 'identity':
+        elif activation == "identity":
             activation_fn = nn.Identity()
         else:
             raise ValueError(f"Unsupported activation: {activation}")
@@ -448,7 +438,6 @@ class FourierNeuralOperator(SpectralComponent):
         return out
 
 
-
 class FNOBlock(SpectralComponent):
     r"""Complete FNO block with spectral convolution and feedforward network.
 
@@ -499,32 +488,28 @@ class FNOBlock(SpectralComponent):
         hidden_dim: int,
         modes: int | tuple[int, ...] = 16,
         mlp_ratio: float = 2.0,
-        activation: ActivationType = 'gelu',
+        activation: ActivationType = "gelu",
         dropout: float = 0.0,
-        norm_type: NormType = 'layernorm'
+        norm_type: NormType = "layernorm",
     ):
         super().__init__()
 
         self.hidden_dim = hidden_dim
 
         # FNO layer
-        self.fno = FourierNeuralOperator(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            activation=activation
-        )
+        self.fno = FourierNeuralOperator(hidden_dim=hidden_dim, modes=modes, activation=activation)
 
         # Normalization
         self.norm1: nn.Module | None
         self.norm2: nn.Module | None
         self.ffn: nn.Sequential | None
-        if norm_type == 'layernorm':
+        if norm_type == "layernorm":
             self.norm1 = nn.LayerNorm(hidden_dim)
             self.norm2 = nn.LayerNorm(hidden_dim) if mlp_ratio > 0 else None
-        elif norm_type == 'batchnorm':
+        elif norm_type == "batchnorm":
             self.norm1 = nn.BatchNorm1d(hidden_dim)
             self.norm2 = nn.BatchNorm1d(hidden_dim) if mlp_ratio > 0 else None
-        elif norm_type == 'none':
+        elif norm_type == "none":
             self.norm1 = None
             self.norm2 = None
         else:
@@ -534,17 +519,17 @@ class FNOBlock(SpectralComponent):
         if mlp_ratio > 0:
             mlp_hidden = int(hidden_dim * mlp_ratio)
             activation_fn: nn.Module
-            if activation == 'gelu':
+            if activation == "gelu":
                 activation_fn = nn.GELU()
-            elif activation == 'relu':
+            elif activation == "relu":
                 activation_fn = nn.ReLU()
-            elif activation == 'silu' or activation == 'swish':
+            elif activation == "silu" or activation == "swish":
                 activation_fn = nn.SiLU()
-            elif activation == 'tanh':
+            elif activation == "tanh":
                 activation_fn = nn.Tanh()
-            elif activation == 'sigmoid':
+            elif activation == "sigmoid":
                 activation_fn = nn.Sigmoid()
-            elif activation == 'identity':
+            elif activation == "identity":
                 activation_fn = nn.Identity()
             else:
                 raise ValueError(f"Unsupported activation: {activation}")
@@ -554,7 +539,7 @@ class FNOBlock(SpectralComponent):
                 activation_fn,
                 nn.Dropout(dropout),
                 nn.Linear(mlp_hidden, hidden_dim),
-                nn.Dropout(dropout)
+                nn.Dropout(dropout),
             )
         else:
             self.ffn = None
@@ -604,4 +589,3 @@ class FNOBlock(SpectralComponent):
             x = x + self.ffn(x_norm)
 
         return x
-

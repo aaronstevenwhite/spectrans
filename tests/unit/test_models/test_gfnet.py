@@ -81,7 +81,6 @@ class TestGFNet:
         output = encoder(inputs_embeds=inputs)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-
     def test_gfnet_gradient_flow(self):
         """Test gradient flow through GFNet."""
         batch_size, seq_length = 2, 50

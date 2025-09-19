@@ -294,7 +294,6 @@ class AFNOModel(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "AFNOModelConfig") -> "AFNOModel":  # type: ignore[override]
         """Create AFNO model from configuration.

@@ -103,9 +103,15 @@ class TestHybridTransformer:
             )
 
             # Test forward pass with appropriate sequence length
-            inputs = torch.randn(batch_size, test_seq_length if spectral_type == "gfnet" else seq_length, hidden_dim)
+            inputs = torch.randn(
+                batch_size, test_seq_length if spectral_type == "gfnet" else seq_length, hidden_dim
+            )
             output = model(inputs_embeds=inputs)
-            assert output.shape == (batch_size, test_seq_length if spectral_type == "gfnet" else seq_length, hidden_dim)
+            assert output.shape == (
+                batch_size,
+                test_seq_length if spectral_type == "gfnet" else seq_length,
+                hidden_dim,
+            )
 
     def test_different_spatial_types(self):
         """Test HybridTransformer with different spatial mixing types."""
@@ -258,7 +264,6 @@ class TestHybridTransformer:
         assert model.num_heads == 8
         assert len(model.blocks) == 8
 
-
     def test_mixed_configurations(self):
         """Test various mixed configurations."""
         batch_size, seq_length, hidden_dim = 2, 64, 128
@@ -297,7 +302,7 @@ class TestHybridTransformer:
                 num_layers=4,
                 max_sequence_length=128 if is_gfnet else 512,
                 num_heads=4,
-                **config_dict
+                **config_dict,
             )
 
             # Test forward pass with appropriate sequence length
@@ -330,4 +335,3 @@ class TestHybridTransformer:
             input_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
             output = model(input_ids=input_ids)
             assert output.shape == expected_shape
-

@@ -37,9 +37,7 @@ class TestGlobalFilterMixing:
         """Test that AdaptiveGlobalFilter preserves shape."""
         batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = AdaptiveGlobalFilter(
-            hidden_dim=hidden_dim,
-            sequence_length=seq_len,
-            adaptive_initialization=True
+            hidden_dim=hidden_dim, sequence_length=seq_len, adaptive_initialization=True
         )
 
         output = mixer(random_tensor)
@@ -54,9 +52,7 @@ class TestGlobalFilterMixing:
         activations = ["sigmoid", "tanh", "identity"]
         for activation in activations:
             mixer = GlobalFilterMixing(
-                hidden_dim=hidden_dim,
-                sequence_length=seq_len,
-                activation=activation
+                hidden_dim=hidden_dim, sequence_length=seq_len, activation=activation
             )
             output = mixer(random_tensor)
             assert output.shape == random_tensor.shape
@@ -67,9 +63,7 @@ class TestGlobalFilterMixing:
 
         with pytest.raises(ValueError):
             GlobalFilterMixing(
-                hidden_dim=hidden_dim,
-                sequence_length=seq_len,
-                activation="invalid_activation"
+                hidden_dim=hidden_dim, sequence_length=seq_len, activation="invalid_activation"
             )
 
     def test_global_filter_learnable_parameters(self, random_tensor):
@@ -99,17 +93,15 @@ class TestGlobalFilterMixing:
 
         # Analyze frequency response
         analysis = mixer.analyze_frequency_response()
-        assert 'magnitude' in analysis
-        assert 'phase' in analysis
-        assert 'total_energy' in analysis
+        assert "magnitude" in analysis
+        assert "phase" in analysis
+        assert "total_energy" in analysis
 
     def test_adaptive_global_filter_regularization(self, random_tensor):
         """Test regularization in adaptive global filter."""
         batch_size, seq_len, hidden_dim = random_tensor.shape
         mixer = AdaptiveGlobalFilter(
-            hidden_dim=hidden_dim,
-            sequence_length=seq_len,
-            filter_regularization=0.01
+            hidden_dim=hidden_dim, sequence_length=seq_len, filter_regularization=0.01
         )
 
         # Test regularization loss
@@ -119,9 +111,7 @@ class TestGlobalFilterMixing:
 
         # Test without regularization
         mixer_no_reg = AdaptiveGlobalFilter(
-            hidden_dim=hidden_dim,
-            sequence_length=seq_len,
-            filter_regularization=0.0
+            hidden_dim=hidden_dim, sequence_length=seq_len, filter_regularization=0.0
         )
         reg_loss_none = mixer_no_reg.get_regularization_loss()
         assert reg_loss_none.item() == 0.0
@@ -133,10 +123,10 @@ class TestGlobalFilterMixing:
 
         # Check properties
         props = mixer.get_spectral_properties()
-        assert props['frequency_domain'] is True
-        assert props['learnable_filters'] is True
-        assert props['selective_filtering'] is True
-        assert props['complex_valued'] is True
+        assert props["frequency_domain"] is True
+        assert props["learnable_filters"] is True
+        assert props["selective_filtering"] is True
+        assert props["complex_valued"] is True
 
 
 class TestGlobalFilterGradients:
@@ -168,9 +158,7 @@ class TestGlobalFilterGradients:
         random_tensor.requires_grad_(True)
 
         mixer = AdaptiveGlobalFilter(
-            hidden_dim=hidden_dim,
-            sequence_length=seq_len,
-            filter_regularization=0.01
+            hidden_dim=hidden_dim, sequence_length=seq_len, filter_regularization=0.01
         )
 
         output = mixer(random_tensor)

@@ -35,7 +35,7 @@ class TestAFNOMixing:
             hidden_dim=hidden_dim,
             max_sequence_length=seq_len,
             modes_seq=64,  # 25% of 256
-            modes_hidden=128  # 25% of 512
+            modes_hidden=128,  # 25% of 512
         )
 
         output = layer(x)
@@ -81,9 +81,7 @@ class TestAFNOMixing:
         for mlp_ratio in [1.0, 2.0, 4.0]:
             x = torch.randn(batch_size, seq_len, hidden_dim)
             layer = AFNOMixing(
-                hidden_dim=hidden_dim,
-                max_sequence_length=seq_len,
-                mlp_ratio=mlp_ratio
+                hidden_dim=hidden_dim, max_sequence_length=seq_len, mlp_ratio=mlp_ratio
             )
 
             output = layer(x)
@@ -95,14 +93,12 @@ class TestAFNOMixing:
         seq_len = 64
         hidden_dim = 128
 
-        activations = ['gelu', 'relu', 'silu', 'tanh']
+        activations = ["gelu", "relu", "silu", "tanh"]
 
         for activation in activations:
             x = torch.randn(batch_size, seq_len, hidden_dim)
             layer = AFNOMixing(
-                hidden_dim=hidden_dim,
-                max_sequence_length=seq_len,
-                activation=activation
+                hidden_dim=hidden_dim, max_sequence_length=seq_len, activation=activation
             )
 
             output = layer(x)
@@ -116,11 +112,7 @@ class TestAFNOMixing:
         dropout = 0.5
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len,
-            dropout=dropout
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len, dropout=dropout)
 
         # Test training mode
         layer.train()
@@ -139,7 +131,6 @@ class TestAFNOMixing:
         assert torch.allclose(output_eval1, output_eval2)
 
 
-
 class TestAFNOMixingGradients:
     """Test gradient flow through AFNO mixing layer."""
 
@@ -150,10 +141,7 @@ class TestAFNOMixingGradients:
         hidden_dim = 128
 
         x = torch.randn(batch_size, seq_len, hidden_dim, requires_grad=True)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
 
         output = layer(x)
         loss = output.sum()
@@ -184,7 +172,7 @@ class TestAFNOMixingGradients:
             hidden_dim=hidden_dim,
             max_sequence_length=seq_len,
             modes_seq=8,  # Very few modes
-            modes_hidden=16
+            modes_hidden=16,
         )
 
         output = layer(x)
@@ -208,10 +196,7 @@ class TestAFNOMixingMathematicalProperties:
         hidden_dim = 128
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
 
         output = layer(x)
 
@@ -234,7 +219,7 @@ class TestAFNOMixingMathematicalProperties:
         layer = AFNOMixing(
             hidden_dim=hidden_dim,
             max_sequence_length=seq_len,
-            modes_seq=32  # Keep enough modes to preserve signal
+            modes_seq=32,  # Keep enough modes to preserve signal
         )
 
         output = layer(x)
@@ -256,15 +241,12 @@ class TestAFNOMixingMathematicalProperties:
             hidden_dim=hidden_dim,
             max_sequence_length=seq_len,
             modes_seq=seq_len // 2,
-            modes_hidden=hidden_dim // 2
+            modes_hidden=hidden_dim // 2,
         )
 
         # Layer with few modes (more truncation)
         layer_few = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len,
-            modes_seq=8,
-            modes_hidden=16
+            hidden_dim=hidden_dim, max_sequence_length=seq_len, modes_seq=8, modes_hidden=16
         )
 
         output_many = layer_many(x)
@@ -289,10 +271,7 @@ class TestAFNOMixingEdgeCases:
         hidden_dim = 128
 
         x = torch.zeros(batch_size, seq_len, hidden_dim)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
 
         output = layer(x)
 
@@ -308,10 +287,7 @@ class TestAFNOMixingEdgeCases:
         hidden_dim = 128
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
 
         output = layer(x)
         assert output.shape == x.shape
@@ -323,10 +299,7 @@ class TestAFNOMixingEdgeCases:
         hidden_dim = 256  # Power of 2
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
 
         output = layer(x)
         assert output.shape == x.shape
@@ -339,8 +312,7 @@ class TestAFNOMixingEdgeCases:
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
         layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=150  # Larger than actual sequence
+            hidden_dim=hidden_dim, max_sequence_length=150  # Larger than actual sequence
         )
 
         output = layer(x)
@@ -354,10 +326,7 @@ class TestAFNOMixingEdgeCases:
 
         # Test float32
         x_f32 = torch.randn(batch_size, seq_len, hidden_dim, dtype=torch.float32)
-        layer = AFNOMixing(
-            hidden_dim=hidden_dim,
-            max_sequence_length=seq_len
-        )
+        layer = AFNOMixing(hidden_dim=hidden_dim, max_sequence_length=seq_len)
         output_f32 = layer(x_f32)
         assert output_f32.dtype == torch.float32
 

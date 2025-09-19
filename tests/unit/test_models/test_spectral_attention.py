@@ -147,7 +147,6 @@ class TestSpectralAttentionTransformer:
         output = encoder(input_ids)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-
     def test_spectral_attention_gradient_flow(self):
         """Test gradient flow through the model."""
         model = SpectralAttentionTransformer(
@@ -372,7 +371,6 @@ class TestPerformerTransformer:
 
         logits = model(inputs_embeds=inputs)
         assert logits.shape == (batch_size, 10)
-
 
     def test_performer_gradient_flow(self):
         """Test gradient flow through Performer model."""

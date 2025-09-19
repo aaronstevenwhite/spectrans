@@ -160,9 +160,7 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         """Initialize random frequencies and biases."""
         if self.orthogonal:
             # Orthogonal random features
-            omega = self._sample_orthogonal_gaussian(
-                self.input_dim, self.num_features
-            ) / self.sigma
+            omega = self._sample_orthogonal_gaussian(self.input_dim, self.num_features) / self.sigma
         else:
             # Standard Gaussian random features
             omega = torch.randn(self.input_dim, self.num_features) / self.sigma
@@ -174,8 +172,8 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
             self.omega = nn.Parameter(omega)
             self.bias = nn.Parameter(bias)
         else:
-            self.register_buffer('omega', omega)
-            self.register_buffer('bias', bias)
+            self.register_buffer("omega", omega)
+            self.register_buffer("bias", bias)
 
     def _sample_orthogonal_gaussian(self, n: int, m: int) -> Tensor:
         """Sample from orthogonal Gaussian distribution.
@@ -261,8 +259,8 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         Tensor
             Kernel values of shape (...).
         """
-        squared_norm = torch.sum(diff ** 2, dim=-1)
-        return torch.exp(-squared_norm / (2 * self.sigma ** 2))
+        squared_norm = torch.sum(diff**2, dim=-1)
+        return torch.exp(-squared_norm / (2 * self.sigma**2))
 
     def spectral_density(self, omega: Tensor) -> Tensor:
         """Spectral density for Gaussian kernel (Gaussian distribution).
@@ -278,10 +276,11 @@ class GaussianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
             Spectral density values of shape (...).
         """
         d = omega.shape[-1]
-        norm_squared = torch.sum(omega ** 2, dim=-1)
+        norm_squared = torch.sum(omega**2, dim=-1)
         # Gaussian spectral density
-        result: Tensor = ((2 * math.pi * self.sigma ** 2) ** (d / 2) *
-                          torch.exp(-0.5 * self.sigma ** 2 * norm_squared))
+        result: Tensor = (2 * math.pi * self.sigma**2) ** (d / 2) * torch.exp(
+            -0.5 * self.sigma**2 * norm_squared
+        )
         return result
 
 
@@ -343,8 +342,8 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
             self.omega = nn.Parameter(omega)
             self.bias = nn.Parameter(bias)
         else:
-            self.register_buffer('omega', omega)
-            self.register_buffer('bias', bias)
+            self.register_buffer("omega", omega)
+            self.register_buffer("bias", bias)
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply random Fourier feature map.
@@ -405,8 +404,9 @@ class LaplacianRFFKernel(ShiftInvariantKernel, RandomFeatureMap):
         # Product of 1D Cauchy densities
         density = torch.ones_like(omega[..., 0])
         for i in range(d):
-            density = density * (2 * self.sigma /
-                                (math.pi * (1 + (self.sigma * omega[..., i]) ** 2)))
+            density = density * (
+                2 * self.sigma / (math.pi * (1 + (self.sigma * omega[..., i]) ** 2))
+            )
         return density
 
 
@@ -468,7 +468,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
         if self.trainable:
             self.bias = nn.Parameter(bias)
         else:
-            self.register_buffer('bias', bias)
+            self.register_buffer("bias", bias)
 
     def _setup_qr_features(self) -> None:
         """Setup orthogonal features using QR decomposition."""
@@ -486,7 +486,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
             Q, _ = torch.linalg.qr(G)
             blocks.append(Q)
 
-        W = torch.cat(blocks, dim=1)[:, :self.num_features]
+        W = torch.cat(blocks, dim=1)[:, : self.num_features]
 
         # Scale based on kernel type
         if self.kernel_type == "gaussian":
@@ -497,7 +497,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
         if self.trainable:
             self.projection = nn.Parameter(W)
         else:
-            self.register_buffer('projection', W)
+            self.register_buffer("projection", W)
 
     def _setup_hadamard_features(self) -> None:
         """Setup features using fast Hadamard transform."""
@@ -522,7 +522,7 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
             self.diagonals = nn.ParameterList([nn.Parameter(d) for d in diagonals])
         else:
             for i, diag in enumerate(diagonals):
-                self.register_buffer(f'diagonal_{i}', diag)
+                self.register_buffer(f"diagonal_{i}", diag)
 
         self.d_padded = d_padded
 
@@ -557,15 +557,15 @@ class OrthogonalRandomFeatures(RandomFeatureMap):
             # Apply HD HD HD structure
             z = x
             for i in range(3):
-                if hasattr(self, 'diagonals'):
+                if hasattr(self, "diagonals"):
                     diag = self.diagonals[i]
                 else:
-                    diag = getattr(self, f'diagonal_{i}')
+                    diag = getattr(self, f"diagonal_{i}")
                 z = z * diag
                 z = self._hadamard_transform(z)
 
             # Truncate to desired number of features
-            projection = z[..., :self.num_features]
+            projection = z[..., : self.num_features]
         else:
             projection = torch.matmul(x, self.projection)
 
@@ -629,7 +629,7 @@ class RFFAttentionKernel(RandomFeatureMap):
             projection = torch.randn(self.input_dim, self.num_features)
 
         projection = projection / math.sqrt(self.input_dim)
-        self.register_buffer('projection', projection)
+        self.register_buffer("projection", projection)
         self.projection: Tensor  # Type hint for mypy
 
     def _sample_orthogonal_gaussian(self) -> Tensor:
@@ -642,7 +642,7 @@ class RFFAttentionKernel(RandomFeatureMap):
             Q, _ = torch.linalg.qr(G)
             blocks.append(Q)
 
-        W = torch.cat(blocks, dim=1)[:, :self.num_features]
+        W = torch.cat(blocks, dim=1)[:, : self.num_features]
         return W * math.sqrt(self.input_dim)
 
     def forward(self, x: Tensor) -> Tensor:
@@ -660,8 +660,11 @@ class RFFAttentionKernel(RandomFeatureMap):
         """
         if self.redraw:
             # Redraw random features (useful for training)
-            projection = self._sample_orthogonal_gaussian() if self.use_orthogonal \
-                        else torch.randn(self.input_dim, self.num_features, device=x.device)
+            projection = (
+                self._sample_orthogonal_gaussian()
+                if self.use_orthogonal
+                else torch.randn(self.input_dim, self.num_features, device=x.device)
+            )
             projection = projection / math.sqrt(self.input_dim)
         else:
             projection = self.projection
@@ -672,7 +675,7 @@ class RFFAttentionKernel(RandomFeatureMap):
         if self.kernel_type == "softmax":
             # Positive features for softmax kernel approximation
             # $\varphi(\mathbf{x}) = \exp(\mathbf{x}^T \omega - \|\mathbf{x}\|^2/2) / \sqrt{m}$
-            x_norm_sq = torch.sum(x ** 2, dim=-1, keepdim=True) / 2
+            x_norm_sq = torch.sum(x**2, dim=-1, keepdim=True) / 2
             features = torch.exp(z - x_norm_sq)
             scale = 1.0 / math.sqrt(self.num_features)
 

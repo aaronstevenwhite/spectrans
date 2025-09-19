@@ -143,7 +143,7 @@ class FourierMixing(UnitaryMixingLayer):
         self.keep_complex = keep_complex
         # Store transform as non-module attribute to avoid PyTorch module registration
         self.fft2d: FFT2D  # Type annotation for mypy
-        object.__setattr__(self, 'fft2d', FFT2D(norm=fft_norm))
+        object.__setattr__(self, "fft2d", FFT2D(norm=fft_norm))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Apply Fourier mixing to input tensor.
@@ -169,7 +169,6 @@ class FourierMixing(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of Fourier mixing.
 
@@ -179,12 +178,12 @@ class FourierMixing(UnitaryMixingLayer):
             Properties including energy preservation and domain information.
         """
         return {
-            'unitary': False,
-            'real_output': True,
-            'frequency_domain': True,
-            'energy_preserving': False,
-            'translation_equivariant': True,
-            'learnable_parameters': False,
+            "unitary": False,
+            "real_output": True,
+            "frequency_domain": True,
+            "energy_preserving": False,
+            "translation_equivariant": True,
+            "learnable_parameters": False,
         }
 
     @classmethod
@@ -255,7 +254,7 @@ class FourierMixing1D(UnitaryMixingLayer):
         self.keep_complex = keep_complex
         # Store transform as non-module attribute to avoid PyTorch module registration
         self.fft1d: FFT1D  # Type annotation for mypy
-        object.__setattr__(self, 'fft1d', FFT1D(norm=fft_norm))
+        object.__setattr__(self, "fft1d", FFT1D(norm=fft_norm))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Apply 1D Fourier mixing to input tensor.
@@ -282,7 +281,6 @@ class FourierMixing1D(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of 1D Fourier mixing.
 
@@ -292,13 +290,13 @@ class FourierMixing1D(UnitaryMixingLayer):
             Properties specific to 1D sequence mixing.
         """
         return {
-            'unitary': False,  # Real part extraction breaks unitarity
-            'real_output': True,
-            'frequency_domain': True,
-            'energy_preserving': False,
-            'sequence_mixing_only': True,
-            'feature_preserving': True,
-            'learnable_parameters': False,
+            "unitary": False,  # Real part extraction breaks unitarity
+            "real_output": True,
+            "frequency_domain": True,
+            "energy_preserving": False,
+            "sequence_mixing_only": True,
+            "feature_preserving": True,
+            "learnable_parameters": False,
         }
 
 
@@ -351,13 +349,13 @@ class RealFourierMixing(UnitaryMixingLayer):
             self.rfft: RFFT
             self.rfft2d: RFFT2D
             # Store transforms as non-module attributes
-            object.__setattr__(self, 'rfft', RFFT(norm=fft_norm))
-            object.__setattr__(self, 'rfft2d', RFFT2D(norm=fft_norm))
+            object.__setattr__(self, "rfft", RFFT(norm=fft_norm))
+            object.__setattr__(self, "rfft2d", RFFT2D(norm=fft_norm))
         else:
             # Type annotation for mypy
             self.fft2d: FFT2D
             # Fallback to complex FFT
-            object.__setattr__(self, 'fft2d', FFT2D(norm=fft_norm))
+            object.__setattr__(self, "fft2d", FFT2D(norm=fft_norm))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Apply real Fourier mixing to input tensor.
@@ -388,7 +386,6 @@ class RealFourierMixing(UnitaryMixingLayer):
 
         return x_mixed  # type: ignore[no-any-return]
 
-
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get spectral properties of real Fourier mixing.
 
@@ -398,13 +395,13 @@ class RealFourierMixing(UnitaryMixingLayer):
             Properties including efficiency characteristics.
         """
         return {
-            'unitary': self.use_real_fft,  # Real FFT preserves unitarity
-            'real_output': True,
-            'frequency_domain': True,
-            'energy_preserving': self.use_real_fft,
-            'memory_efficient': self.use_real_fft,
-            'hermitian_symmetry': self.use_real_fft,
-            'learnable_parameters': False,
+            "unitary": self.use_real_fft,  # Real FFT preserves unitarity
+            "real_output": True,
+            "frequency_domain": True,
+            "energy_preserving": self.use_real_fft,
+            "memory_efficient": self.use_real_fft,
+            "hermitian_symmetry": self.use_real_fft,
+            "learnable_parameters": False,
         }
 
 
@@ -458,7 +455,7 @@ class SeparableFourierMixing(UnitaryMixingLayer):
         self.mix_sequence = mix_sequence
         # Store transform as non-module attribute
         self.fft1d: FFT1D  # Type annotation for mypy
-        object.__setattr__(self, 'fft1d', FFT1D(norm=fft_norm))
+        object.__setattr__(self, "fft1d", FFT1D(norm=fft_norm))
 
         if not mix_features and not mix_sequence:
             raise ValueError("At least one of mix_features or mix_sequence must be True")
@@ -491,7 +488,6 @@ class SeparableFourierMixing(UnitaryMixingLayer):
 
         return x
 
-
     def get_spectral_properties(self) -> dict[str, str | bool]:
         """Get properties of separable mixing.
 
@@ -501,14 +497,14 @@ class SeparableFourierMixing(UnitaryMixingLayer):
             Properties reflecting the separable nature.
         """
         return {
-            'unitary': False,  # Real part extraction
-            'real_output': True,
-            'frequency_domain': True,
-            'energy_preserving': False,
-            'separable': True,
-            'sequence_mixing': self.mix_sequence,
-            'feature_mixing': self.mix_features,
-            'learnable_parameters': False,
+            "unitary": False,  # Real part extraction
+            "real_output": True,
+            "frequency_domain": True,
+            "energy_preserving": False,
+            "separable": True,
+            "sequence_mixing": self.mix_sequence,
+            "feature_mixing": self.mix_features,
+            "learnable_parameters": False,
         }
 
 

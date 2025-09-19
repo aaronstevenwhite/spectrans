@@ -90,7 +90,9 @@ class ModelConfig(BaseModel):
     num_classes: int | None = Field(default=None, ge=1, description="Number of output classes")
     ffn_hidden_dim: int | None = Field(default=None, ge=1, description="FFN hidden dimension")
     use_positional_encoding: bool = Field(default=True, description="Use positional encoding")
-    positional_encoding_type: PositionalEncodingType = Field(default="sinusoidal", description="Positional encoding type")
+    positional_encoding_type: PositionalEncodingType = Field(
+        default="sinusoidal", description="Positional encoding type"
+    )
     norm_eps: float = Field(default=1e-12, gt=0, description="Layer norm epsilon")
     output_type: OutputHeadType = Field(default="classification", description="Output head type")
     gradient_checkpointing: bool = Field(default=False, description="Use gradient checkpointing")
@@ -149,7 +151,9 @@ class AFNOModelConfig(ModelConfig):
     n_modes: int | None = Field(default=None, ge=1, description="Number of Fourier modes")
     modes_seq: int | None = Field(default=None, ge=1, description="Modes in sequence dimension")
     modes_hidden: int | None = Field(default=None, ge=1, description="Modes in hidden dimension")
-    compression_ratio: float = Field(default=0.5, gt=0.0, le=1.0, description="Mode compression ratio")
+    compression_ratio: float = Field(
+        default=0.5, gt=0.0, le=1.0, description="Mode compression ratio"
+    )
     mlp_ratio: float = Field(default=2.0, gt=0.0, description="MLP expansion ratio")
 
 
@@ -169,8 +173,7 @@ class LSTModelConfig(ModelConfig):
 
     model_type: str = Field(default="lst", description="Model type identifier")
     transform_type: TransformLSTType = Field(
-        default="dct",
-        description="Type of spectral transform"
+        default="dct", description="Type of spectral transform"
     )
     use_conv_bias: bool = Field(default=True, description="Use bias in spectral convolution")
 
@@ -196,8 +199,7 @@ class SpectralAttentionModelConfig(ModelConfig):
     model_type: str = Field(default="spectral_attention", description="Model type identifier")
     num_features: int | None = Field(default=None, ge=1, description="Number of RFF features")
     kernel_type: KernelType = Field(
-        default="gaussian",
-        description="Kernel type for RFF approximation"
+        default="gaussian", description="Kernel type for RFF approximation"
     )
     use_orthogonal: bool = Field(default=True, description="Use orthogonal random features")
     num_heads: int = Field(default=8, ge=1, description="Number of attention heads")
@@ -246,14 +248,13 @@ class WaveletTransformerConfig(ModelConfig):
 
     model_type: str = Field(default="wavelet_transformer", description="Model type identifier")
     wavelet: WaveletType = Field(
-        default="db4",
-        description="Wavelet type (e.g., 'db4', 'sym6', 'coif3')"
+        default="db4", description="Wavelet type (e.g., 'db4', 'sym6', 'coif3')"
     )
     levels: int = Field(default=3, ge=1, le=10, description="Number of decomposition levels")
     mixing_mode: str = Field(
         default="pointwise",
         pattern="^(pointwise|channel|level)$",
-        description="Wavelet coefficient mixing strategy"
+        description="Wavelet coefficient mixing strategy",
     )
 
 
@@ -283,17 +284,17 @@ class HybridModelConfig(ModelConfig):
     spectral_type: str = Field(
         default="fourier",
         pattern="^(fourier|wavelet|afno|gfnet)$",
-        description="Type of spectral mixing"
+        description="Type of spectral mixing",
     )
     spatial_type: str = Field(
         default="attention",
         pattern="^(attention|spectral_attention|lst)$",
-        description="Type of spatial mixing"
+        description="Type of spatial mixing",
     )
     alternation_pattern: str = Field(
         default="even_spectral",
         pattern="^(even_spectral|alternate|custom)$",
-        description="Layer alternation pattern"
+        description="Layer alternation pattern",
     )
     num_heads: int = Field(default=8, ge=1, description="Number of attention heads")
     spectral_config: dict | None = Field(default=None, description="Spectral layer config")

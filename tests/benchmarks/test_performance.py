@@ -17,14 +17,17 @@ class TestTransformPerformance:
     """Benchmark spectral transform performance."""
 
     @pytest.mark.benchmark(group="transforms")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),    # Small
-        (4, 512, 512),    # Medium
-        (8, 1024, 768),   # Large
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),  # Small
+            (4, 512, 512),  # Medium
+            (8, 1024, 768),  # Large
+        ],
+    )
     def test_fft1d_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark FFT1D forward and inverse transforms."""
-        transform = create_component('transform', 'fft1d', norm='ortho')
+        transform = create_component("transform", "fft1d", norm="ortho")
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         def run_transform():
@@ -36,13 +39,16 @@ class TestTransformPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="transforms")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 512, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 512, 512),
+        ],
+    )
     def test_dct_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark DCT forward and inverse transforms."""
-        transform = create_component('transform', 'dct')
+        transform = create_component("transform", "dct")
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         def run_transform():
@@ -54,13 +60,16 @@ class TestTransformPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="transforms")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 512, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 512, 512),
+        ],
+    )
     def test_dwt1d_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark DWT1D forward and inverse transforms."""
-        transform = create_component('transform', 'dwt1d', wavelet='db4', levels=3)
+        transform = create_component("transform", "dwt1d", wavelet="db4", levels=3)
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         def run_transform():
@@ -78,17 +87,20 @@ class TestTransformPerformance:
         assert result.shape[0] == x.shape[0]  # batch size preserved
 
     @pytest.mark.benchmark(group="transforms")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 256, 256),  # Square for Hadamard
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 256, 256),  # Square for Hadamard
+        ],
+    )
     def test_hadamard_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark Hadamard transform."""
         # Hadamard requires power of 2 dimensions
         seq_len = 256  # Force power of 2
         hidden_dim = 256
 
-        transform = create_component('transform', 'hadamard')
+        transform = create_component("transform", "hadamard")
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         def run_transform():
@@ -104,19 +116,23 @@ class TestModelPerformance:
     """Benchmark model forward pass performance."""
 
     @pytest.mark.benchmark(group="models")
-    @pytest.mark.parametrize("batch_size,seq_len", [
-        (1, 128),
-        (4, 256),
-        (8, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len",
+        [
+            (1, 128),
+            (4, 256),
+            (8, 512),
+        ],
+    )
     def test_fnet_performance(self, benchmark, batch_size, seq_len):
         """Benchmark FNet model forward pass."""
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=768,
             num_layers=12,
             max_sequence_length=512,
-            use_real_fft=True
+            use_real_fft=True,
         )
         model.eval()
 
@@ -128,15 +144,19 @@ class TestModelPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="models")
-    @pytest.mark.parametrize("batch_size,seq_len", [
-        (1, 128),
-        (4, 256),
-        (8, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len",
+        [
+            (1, 128),
+            (4, 256),
+            (8, 512),
+        ],
+    )
     def test_gfnet_performance(self, benchmark, batch_size, seq_len):
         """Benchmark GFNet model forward pass."""
         model = create_component(
-            'model', 'gfnet',
+            "model",
+            "gfnet",
             hidden_dim=768,
             num_layers=12,
             max_sequence_length=512,
@@ -151,20 +171,24 @@ class TestModelPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="models")
-    @pytest.mark.parametrize("batch_size,seq_len", [
-        (1, 128),
-        (4, 256),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len",
+        [
+            (1, 128),
+            (4, 256),
+        ],
+    )
     def test_afno_performance(self, benchmark, batch_size, seq_len):
         """Benchmark AFNO model forward pass."""
         model = create_component(
-            'model', 'afno',
+            "model",
+            "afno",
             hidden_dim=768,
             num_layers=12,
             max_sequence_length=512,
             modes_seq=32,
             modes_hidden=384,
-            mlp_ratio=2.0
+            mlp_ratio=2.0,
         )
         model.eval()
 
@@ -176,18 +200,22 @@ class TestModelPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="models")
-    @pytest.mark.parametrize("batch_size,seq_len", [
-        (1, 128),
-        (4, 256),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len",
+        [
+            (1, 128),
+            (4, 256),
+        ],
+    )
     def test_spectral_attention_performance(self, benchmark, batch_size, seq_len):
         """Benchmark Spectral Attention model forward pass."""
         model = create_component(
-            'model', 'spectral_attention',
+            "model",
+            "spectral_attention",
             hidden_dim=768,
             num_layers=12,
             max_sequence_length=512,
-            num_features=256
+            num_features=256,
         )
         model.eval()
 
@@ -203,11 +231,14 @@ class TestLayerPerformance:
     """Benchmark individual layer performance."""
 
     @pytest.mark.benchmark(group="layers")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 512, 512),
-        (8, 1024, 768),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 512, 512),
+            (8, 1024, 768),
+        ],
+    )
     def test_fourier_mixing_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark Fourier mixing layer."""
         from spectrans.layers.mixing.fourier import FourierMixing
@@ -223,18 +254,18 @@ class TestLayerPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="layers")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 512, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 512, 512),
+        ],
+    )
     def test_global_filter_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark Global Filter layer."""
         from spectrans.layers.mixing.global_filter import GlobalFilterMixing
 
-        layer = GlobalFilterMixing(
-            hidden_dim=hidden_dim,
-            sequence_length=seq_len
-        )
+        layer = GlobalFilterMixing(hidden_dim=hidden_dim, sequence_length=seq_len)
         layer.eval()
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
@@ -245,19 +276,18 @@ class TestLayerPerformance:
         assert result.shape == x.shape
 
     @pytest.mark.benchmark(group="layers")
-    @pytest.mark.parametrize("batch_size,seq_len,hidden_dim", [
-        (1, 128, 256),
-        (4, 256, 512),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len,hidden_dim",
+        [
+            (1, 128, 256),
+            (4, 256, 512),
+        ],
+    )
     def test_spectral_attention_layer_performance(self, benchmark, batch_size, seq_len, hidden_dim):
         """Benchmark Spectral Attention layer."""
         from spectrans.layers.attention.spectral import SpectralAttention
 
-        layer = SpectralAttention(
-            hidden_dim=hidden_dim,
-            num_heads=8,
-            num_features=256
-        )
+        layer = SpectralAttention(hidden_dim=hidden_dim, num_heads=8, num_features=256)
         layer.eval()
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
@@ -279,7 +309,8 @@ class TestComplexityComparison:
         hidden_dim = 512
 
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=hidden_dim,
             num_layers=4,
             max_sequence_length=2048,
@@ -311,7 +342,8 @@ class TestComplexityComparison:
         hidden_dim = 512
 
         model = create_component(
-            'model', model_type,
+            "model",
+            model_type,
             hidden_dim=hidden_dim,
             num_layers=6,
             max_sequence_length=1024,
@@ -337,7 +369,8 @@ class TestMemoryEfficiency:
         hidden_dim = 768
 
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=hidden_dim,
             num_layers=12,
             max_sequence_length=1024,
@@ -349,7 +382,7 @@ class TestMemoryEfficiency:
         # Measure memory during forward pass
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
-            device = torch.device('cuda')
+            device = torch.device("cuda")
             model = model.to(device)
             x = x.to(device)
 
@@ -371,11 +404,12 @@ class TestMemoryEfficiency:
 
         # Model without checkpointing
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=hidden_dim,
             num_layers=12,
             max_sequence_length=1024,
-            gradient_checkpointing=False
+            gradient_checkpointing=False,
         )
 
         x = torch.randn(batch_size, seq_len, hidden_dim, requires_grad=True)
@@ -397,7 +431,7 @@ class TestTransformComplexity:
     @pytest.mark.parametrize("n", [128, 256, 512, 1024, 2048])
     def test_fft_complexity(self, benchmark, n):
         """Test FFT O(n log n) complexity."""
-        transform = create_component('transform', 'fft1d')
+        transform = create_component("transform", "fft1d")
         x = torch.randn(1, n, 256)
 
         result = benchmark(transform.transform, x)
@@ -411,7 +445,7 @@ class TestTransformComplexity:
     @pytest.mark.parametrize("n", [128, 256, 512, 1024])
     def test_dct_complexity(self, benchmark, n):
         """Test DCT O(n log n) complexity."""
-        transform = create_component('transform', 'dct')
+        transform = create_component("transform", "dct")
         x = torch.randn(1, n, 256)
 
         result = benchmark(transform.transform, x)
@@ -424,7 +458,7 @@ class TestTransformComplexity:
     @pytest.mark.parametrize("n", [128, 256, 512, 1024])
     def test_hadamard_complexity(self, benchmark, n):
         """Test Hadamard O(n log n) complexity."""
-        transform = create_component('transform', 'hadamard')
+        transform = create_component("transform", "hadamard")
         x = torch.randn(1, n, n)  # Square matrix for Hadamard
 
         result = benchmark(transform.transform, x)
@@ -440,17 +474,21 @@ class TestGPUPerformance:
     """GPU-specific performance benchmarks."""
 
     @pytest.mark.benchmark(group="gpu")
-    @pytest.mark.parametrize("batch_size,seq_len", [
-        (8, 512),
-        (16, 1024),
-        (32, 2048),
-    ])
+    @pytest.mark.parametrize(
+        "batch_size,seq_len",
+        [
+            (8, 512),
+            (16, 1024),
+            (32, 2048),
+        ],
+    )
     def test_gpu_fnet_performance(self, benchmark, batch_size, seq_len):
         """Benchmark FNet on GPU with larger batches."""
-        device = torch.device('cuda')
+        device = torch.device("cuda")
 
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=768,
             num_layers=12,
             max_sequence_length=2048,
@@ -478,14 +516,18 @@ class TestGPUPerformance:
     @pytest.mark.benchmark(group="gpu")
     def test_gpu_memory_efficiency(self, benchmark):
         """Test GPU memory efficiency of different models."""
-        device = torch.device('cuda')
+        device = torch.device("cuda")
         batch_size = 8
         seq_len = 1024
         hidden_dim = 768
 
         models = {
-            'fnet': create_component('model', 'fnet', hidden_dim=hidden_dim, num_layers=6, max_sequence_length=2048),
-            'gfnet': create_component('model', 'gfnet', hidden_dim=hidden_dim, num_layers=6, max_sequence_length=2048),
+            "fnet": create_component(
+                "model", "fnet", hidden_dim=hidden_dim, num_layers=6, max_sequence_length=2048
+            ),
+            "gfnet": create_component(
+                "model", "gfnet", hidden_dim=hidden_dim, num_layers=6, max_sequence_length=2048
+            ),
         }
 
         for name, model in models.items():

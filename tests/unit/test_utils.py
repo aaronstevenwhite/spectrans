@@ -51,32 +51,38 @@ class TestComplexOperations:
 
     def test_complex_multiply_basic(self, device):
         """Test basic complex multiplication."""
-        a = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                         torch.tensor([1.0, 0.0], device=device))
-        b = torch.complex(torch.tensor([2.0, 1.0], device=device),
-                         torch.tensor([1.0, -1.0], device=device))
+        a = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([1.0, 0.0], device=device)
+        )
+        b = torch.complex(
+            torch.tensor([2.0, 1.0], device=device), torch.tensor([1.0, -1.0], device=device)
+        )
 
         result = complex_multiply(a, b)
 
         # (1+i)*(2+i) = 2 + i + 2i - 1 = 1 + 3i
         # (2+0i)*(1-i) = 2 - 2i
-        expected = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                                torch.tensor([3.0, -2.0], device=device))
+        expected = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([3.0, -2.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected)
 
     def test_complex_multiply_broadcasting(self, device):
         """Test complex multiplication with broadcasting."""
-        a = torch.complex(torch.tensor([[1.0]], device=device),
-                         torch.tensor([[1.0]], device=device))
-        b = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                         torch.tensor([0.0, 1.0], device=device))
+        a = torch.complex(
+            torch.tensor([[1.0]], device=device), torch.tensor([[1.0]], device=device)
+        )
+        b = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([0.0, 1.0], device=device)
+        )
 
         result = complex_multiply(a, b)
 
         # (1+i) * [1, 2+i] = [1+i, 1+3i]
-        expected = torch.complex(torch.tensor([[1.0, 1.0]], device=device),
-                                torch.tensor([[1.0, 3.0]], device=device))
+        expected = torch.complex(
+            torch.tensor([[1.0, 1.0]], device=device), torch.tensor([[1.0, 3.0]], device=device)
+        )
 
         torch.testing.assert_close(result, expected)
 
@@ -93,12 +99,14 @@ class TestComplexOperations:
 
     def test_complex_conjugate(self, device):
         """Test complex conjugate."""
-        x = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                         torch.tensor([3.0, -1.0], device=device))
+        x = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([3.0, -1.0], device=device)
+        )
 
         result = complex_conjugate(x)
-        expected = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                                torch.tensor([-3.0, 1.0], device=device))
+        expected = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([-3.0, 1.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected)
 
@@ -111,8 +119,9 @@ class TestComplexOperations:
 
     def test_complex_modulus(self, device):
         """Test complex modulus/magnitude."""
-        x = torch.complex(torch.tensor([3.0, 4.0], device=device),
-                         torch.tensor([4.0, 3.0], device=device))
+        x = torch.complex(
+            torch.tensor([3.0, 4.0], device=device), torch.tensor([4.0, 3.0], device=device)
+        )
 
         result = complex_modulus(x)
         expected = torch.tensor([5.0, 5.0], device=device)  # sqrt(3²+4²) = 5
@@ -121,25 +130,28 @@ class TestComplexOperations:
 
     def test_complex_phase(self, device):
         """Test complex phase angle."""
-        x = torch.complex(torch.tensor([1.0, 0.0, -1.0], device=device),
-                         torch.tensor([0.0, 1.0, 0.0], device=device))
+        x = torch.complex(
+            torch.tensor([1.0, 0.0, -1.0], device=device),
+            torch.tensor([0.0, 1.0, 0.0], device=device),
+        )
 
         result = complex_phase(x)
-        expected = torch.tensor([0.0, math.pi/2, math.pi], device=device)
+        expected = torch.tensor([0.0, math.pi / 2, math.pi], device=device)
 
         torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
 
     def test_complex_polar(self, device):
         """Test complex construction from polar coordinates."""
         magnitude = torch.tensor([1.0, 2.0], device=device)
-        phase = torch.tensor([0.0, math.pi/2], device=device)
+        phase = torch.tensor([0.0, math.pi / 2], device=device)
 
         result = complex_polar(magnitude, phase)
 
         # r=1, θ=0 → 1+0i
         # r=2, θ=π/2 → 0+2i
-        expected = torch.complex(torch.tensor([1.0, 0.0], device=device),
-                                torch.tensor([0.0, 2.0], device=device))
+        expected = torch.complex(
+            torch.tensor([1.0, 0.0], device=device), torch.tensor([0.0, 2.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
 
@@ -164,8 +176,9 @@ class TestComplexOperations:
 
     def test_complex_exp(self, device):
         """Test complex exponential."""
-        x = torch.complex(torch.tensor([0.0, 1.0], device=device),
-                         torch.tensor([math.pi, 0.0], device=device))
+        x = torch.complex(
+            torch.tensor([0.0, 1.0], device=device), torch.tensor([math.pi, 0.0], device=device)
+        )
 
         result = complex_exp(x)
 
@@ -178,45 +191,47 @@ class TestComplexOperations:
 
     def test_complex_log(self, device):
         """Test complex logarithm."""
-        x = torch.complex(torch.tensor([1.0, math.e], device=device),
-                         torch.tensor([0.0, 0.0], device=device))
+        x = torch.complex(
+            torch.tensor([1.0, math.e], device=device), torch.tensor([0.0, 0.0], device=device)
+        )
 
         result = complex_log(x)
-        expected = torch.complex(torch.tensor([0.0, 1.0], device=device),
-                                torch.tensor([0.0, 0.0], device=device))
+        expected = torch.complex(
+            torch.tensor([0.0, 1.0], device=device), torch.tensor([0.0, 0.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
 
     def test_complex_log_zero_error(self, device):
         """Test complex log with zero input."""
-        x = torch.complex(torch.tensor([0.0], device=device),
-                         torch.tensor([0.0], device=device))
+        x = torch.complex(torch.tensor([0.0], device=device), torch.tensor([0.0], device=device))
 
         with pytest.raises(ValueError, match="Logarithm undefined for zero"):
             complex_log(x)
 
     def test_complex_divide(self, device):
         """Test complex division."""
-        a = torch.complex(torch.tensor([4.0, 6.0], device=device),
-                         torch.tensor([2.0, 0.0], device=device))
-        b = torch.complex(torch.tensor([2.0, 3.0], device=device),
-                         torch.tensor([1.0, 0.0], device=device))
+        a = torch.complex(
+            torch.tensor([4.0, 6.0], device=device), torch.tensor([2.0, 0.0], device=device)
+        )
+        b = torch.complex(
+            torch.tensor([2.0, 3.0], device=device), torch.tensor([1.0, 0.0], device=device)
+        )
 
         result = complex_divide(a, b)
 
         # (4+2i)/(2+i) = (4+2i)(2-i)/(5) = (10+0i)/5 = 2
         # (6+0i)/(3+0i) = 2
-        expected = torch.complex(torch.tensor([2.0, 2.0], device=device),
-                                torch.tensor([0.0, 0.0], device=device))
+        expected = torch.complex(
+            torch.tensor([2.0, 2.0], device=device), torch.tensor([0.0, 0.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected)
 
     def test_complex_divide_zero_error(self, device):
         """Test complex division by zero."""
-        a = torch.complex(torch.tensor([1.0], device=device),
-                         torch.tensor([1.0], device=device))
-        b = torch.complex(torch.tensor([0.0], device=device),
-                         torch.tensor([0.0], device=device))
+        a = torch.complex(torch.tensor([1.0], device=device), torch.tensor([1.0], device=device))
+        b = torch.complex(torch.tensor([0.0], device=device), torch.tensor([0.0], device=device))
 
         with pytest.raises(ValueError, match="Division by zero"):
             complex_divide(a, b)
@@ -233,8 +248,9 @@ class TestComplexOperations:
 
     def test_split_complex(self, device):
         """Test splitting complex into parts."""
-        x = torch.complex(torch.tensor([1.0, 2.0], device=device),
-                         torch.tensor([3.0, 4.0], device=device))
+        x = torch.complex(
+            torch.tensor([1.0, 2.0], device=device), torch.tensor([3.0, 4.0], device=device)
+        )
 
         real_part, imag_part = split_complex(x)
 
@@ -243,31 +259,31 @@ class TestComplexOperations:
 
     def test_complex_relu(self, device):
         """Test complex ReLU activation."""
-        x = torch.complex(torch.tensor([1.0, -1.0], device=device),
-                         torch.tensor([-1.0, 2.0], device=device))
+        x = torch.complex(
+            torch.tensor([1.0, -1.0], device=device), torch.tensor([-1.0, 2.0], device=device)
+        )
 
         result = complex_relu(x)
-        expected = torch.complex(torch.tensor([1.0, 0.0], device=device),
-                                torch.tensor([0.0, 2.0], device=device))
+        expected = torch.complex(
+            torch.tensor([1.0, 0.0], device=device), torch.tensor([0.0, 2.0], device=device)
+        )
 
         torch.testing.assert_close(result, expected)
 
     def test_complex_dropout_training(self, device):
         """Test complex dropout in training mode."""
         torch.manual_seed(42)
-        x = torch.complex(torch.ones(100, device=device),
-                         torch.ones(100, device=device))
+        x = torch.complex(torch.ones(100, device=device), torch.ones(100, device=device))
 
         result = complex_dropout(x, p=0.5, training=True)
 
         # Should have some zeros and some scaled values
         assert torch.sum(torch.abs(result) == 0) > 0  # Some dropped
-        assert torch.sum(torch.abs(result) > 1) > 0   # Some scaled up
+        assert torch.sum(torch.abs(result) > 1) > 0  # Some scaled up
 
     def test_complex_dropout_inference(self, device):
         """Test complex dropout in inference mode."""
-        x = torch.complex(torch.ones(10, device=device),
-                         torch.ones(10, device=device))
+        x = torch.complex(torch.ones(10, device=device), torch.ones(10, device=device))
 
         result = complex_dropout(x, p=0.5, training=False)
 
@@ -276,8 +292,7 @@ class TestComplexOperations:
 
     def test_complex_dropout_invalid_p(self, device):
         """Test complex dropout with invalid probability."""
-        x = torch.complex(torch.ones(10, device=device),
-                         torch.ones(10, device=device))
+        x = torch.complex(torch.ones(10, device=device), torch.ones(10, device=device))
 
         with pytest.raises(ValueError, match="Dropout probability must be in"):
             complex_dropout(x, p=-0.1)
@@ -340,11 +355,7 @@ class TestPaddingOperations:
         seq3 = torch.tensor([[6]], device=device)
 
         result = pad_sequence([seq1, seq2, seq3], padding_value=-1)
-        expected = torch.tensor([
-            [[1, 2, -1]],
-            [[3, 4, 5]],
-            [[6, -1, -1]]
-        ], device=device)
+        expected = torch.tensor([[[1, 2, -1]], [[3, 4, 5]], [[6, -1, -1]]], device=device)
 
         torch.testing.assert_close(result, expected)
 
@@ -363,18 +374,14 @@ class TestPaddingOperations:
 
     def test_unpad_sequence(self, device):
         """Test unpadding sequence."""
-        padded = torch.tensor([
-            [[1, 2, 0]],
-            [[3, 4, 5]],
-            [[6, 0, 0]]
-        ], device=device)
+        padded = torch.tensor([[[1, 2, 0]], [[3, 4, 5]], [[6, 0, 0]]], device=device)
 
         result = unpad_sequence(padded, [2, 3, 1])
 
         expected = [
             torch.tensor([[1, 2]], device=device),
             torch.tensor([[3, 4, 5]], device=device),
-            torch.tensor([[6]], device=device)
+            torch.tensor([[6]], device=device),
         ]
 
         for r, e in zip(result, expected, strict=False):
@@ -626,7 +633,7 @@ class TestInitialization:
 
         # Total variance should be close to expected
         total_var = tensor.real.var() + tensor.imag.var()
-        expected_var = expected_std ** 2
+        expected_var = expected_std**2
 
         assert abs(total_var.item() - expected_var) < 0.02
 

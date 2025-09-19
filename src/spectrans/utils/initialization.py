@@ -250,9 +250,7 @@ def spectral_init(tensor: Tensor, mode: str = "normal", gain: float = 1.0) -> Te
 
 
 def xavier_spectral_init(
-    tensor: Tensor,
-    gain: float = 1.0,
-    distribution: Literal["normal", "uniform"] = "normal"
+    tensor: Tensor, gain: float = 1.0, distribution: Literal["normal", "uniform"] = "normal"
 ) -> Tensor:
     """Xavier/Glorot initialization adapted for spectral transforms.
 
@@ -311,7 +309,7 @@ def kaiming_spectral_init(
     tensor: Tensor,
     gain: float = 1.0,
     mode: Literal["fan_in", "fan_out"] = "fan_in",
-    nonlinearity: str = "relu"
+    nonlinearity: str = "relu",
 ) -> Tensor:
     """Kaiming/He initialization adapted for spectral transforms.
 
@@ -359,7 +357,7 @@ def kaiming_spectral_init(
         "linear": 1.0,
         "relu": math.sqrt(2.0),
         "leaky_relu": math.sqrt(2.0 / (1 + 0.01**2)),
-        "tanh": 5.0/3,
+        "tanh": 5.0 / 3,
         "sigmoid": 1.0,
         "gelu": 1.0,
     }
@@ -494,9 +492,7 @@ def complex_xavier_init(tensor: Tensor, gain: float = 1.0) -> Tensor:
 
 
 def complex_kaiming_init(
-    tensor: Tensor,
-    gain: float = 1.0,
-    mode: Literal["fan_in", "fan_out"] = "fan_in"
+    tensor: Tensor, gain: float = 1.0, mode: Literal["fan_in", "fan_out"] = "fan_in"
 ) -> Tensor:
     """Kaiming initialization for complex tensors.
 
@@ -672,7 +668,9 @@ def hadamard_init(tensor: Tensor) -> Tensor:
 
         while h.shape[0] < size:
             current_size = h.shape[0]
-            new_h = torch.zeros(2 * current_size, 2 * current_size, device=tensor.device, dtype=tensor.dtype)
+            new_h = torch.zeros(
+                2 * current_size, 2 * current_size, device=tensor.device, dtype=tensor.dtype
+            )
             new_h[:current_size, :current_size] = h
             new_h[:current_size, current_size:] = h
             new_h[current_size:, :current_size] = h
@@ -718,7 +716,9 @@ def dct_init(tensor: Tensor) -> Tensor:
                 if i == 0:
                     dct_matrix[i, j] = math.sqrt(1.0 / m)
                 else:
-                    dct_matrix[i, j] = math.sqrt(2.0 / m) * math.cos(math.pi * i * (2*j + 1) / (2*m))
+                    dct_matrix[i, j] = math.sqrt(2.0 / m) * math.cos(
+                        math.pi * i * (2 * j + 1) / (2 * m)
+                    )
 
         tensor.copy_(dct_matrix)
 
@@ -760,7 +760,9 @@ def init_linear_spectral(linear: nn.Linear, method: str = "xavier") -> nn.Linear
     return linear
 
 
-def init_conv_spectral(conv: nn.Conv1d | nn.Conv2d, method: str = "kaiming") -> nn.Conv1d | nn.Conv2d:
+def init_conv_spectral(
+    conv: nn.Conv1d | nn.Conv2d, method: str = "kaiming"
+) -> nn.Conv1d | nn.Conv2d:
     """Initialize convolution layer with spectral-aware method.
 
     Parameters

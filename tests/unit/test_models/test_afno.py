@@ -93,7 +93,6 @@ class TestAFNO:
         output = encoder(inputs_embeds=inputs)
         assert output.shape == (batch_size, seq_length, hidden_dim)
 
-
     def test_afno_gradient_flow(self):
         """Test gradient flow through AFNO."""
         batch_size, seq_length = 2, 64  # Small for testing

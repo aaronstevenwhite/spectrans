@@ -217,7 +217,11 @@ class BaseModel(SpectralComponent, ABC):
         elif output_type == "regression":
             self.output_head = RegressionHead(hidden_dim, dropout)
         elif output_type == "sequence":
-            vocab_size_out = num_classes if num_classes is not None else (vocab_size if vocab_size is not None else hidden_dim)
+            vocab_size_out = (
+                num_classes
+                if num_classes is not None
+                else (vocab_size if vocab_size is not None else hidden_dim)
+            )
             self.output_head = SequenceHead(hidden_dim, vocab_size_out, dropout)
         elif output_type == "lm":
             # Language modeling head outputs vocab_size
@@ -226,7 +230,9 @@ class BaseModel(SpectralComponent, ABC):
             elif vocab_size is not None:
                 vocab_size_out = vocab_size
             else:
-                raise ValueError("Either num_classes or vocab_size must be specified for language modeling output")
+                raise ValueError(
+                    "Either num_classes or vocab_size must be specified for language modeling output"
+                )
             self.output_head = SequenceHead(hidden_dim, vocab_size_out, dropout)
         else:
             self.output_head = None
@@ -307,9 +313,7 @@ class BaseModel(SpectralComponent, ABC):
         # Process through transformer blocks
         for block in self.blocks:
             if self.gradient_checkpointing and self.training:
-                hidden_states = checkpoint.checkpoint(
-                    block, hidden_states, use_reentrant=False
-                )
+                hidden_states = checkpoint.checkpoint(block, hidden_states, use_reentrant=False)
             else:
                 hidden_states = block(hidden_states)
 
@@ -323,7 +327,6 @@ class BaseModel(SpectralComponent, ABC):
             output = hidden_states
 
         return output
-
 
     @classmethod
     def from_config(cls, config: "ModelConfig") -> "BaseModel":
@@ -395,8 +398,7 @@ class PositionalEncoding(nn.Module):
 
         # Create div_term for the sinusoidal pattern
         div_term = torch.exp(
-            torch.arange(0, hidden_dim, 2).float()
-            * -(math.log(10000.0) / hidden_dim)
+            torch.arange(0, hidden_dim, 2).float() * -(math.log(10000.0) / hidden_dim)
         )
 
         # Apply sinusoidal functions
@@ -594,33 +596,37 @@ class RotaryPositionalEncoding(nn.Module):
             # For 3D tensor, apply rotation directly
             assert self.cos_cached is not None
             assert self.sin_cached is not None
-            cos = self.cos_cached[:, :, offset:offset + seq_len, :].squeeze(1)
-            sin = self.sin_cached[:, :, offset:offset + seq_len, :].squeeze(1)
+            cos = self.cos_cached[:, :, offset : offset + seq_len, :].squeeze(1)
+            sin = self.sin_cached[:, :, offset : offset + seq_len, :].squeeze(1)
 
             # Split x into two halves for rotation
             x1, x2 = x.chunk(2, dim=-1)
 
             # Apply rotation
             rotated = torch.cat(
-                [x1 * cos[:, :, :x1.shape[-1]] - x2 * sin[:, :, :x2.shape[-1]],
-                 x1 * sin[:, :, :x1.shape[-1]] + x2 * cos[:, :, :x2.shape[-1]]],
-                dim=-1
+                [
+                    x1 * cos[:, :, : x1.shape[-1]] - x2 * sin[:, :, : x2.shape[-1]],
+                    x1 * sin[:, :, : x1.shape[-1]] + x2 * cos[:, :, : x2.shape[-1]],
+                ],
+                dim=-1,
             )
         else:
             # For 4D tensor (batch, heads, seq, head_dim)
             assert self.cos_cached is not None
             assert self.sin_cached is not None
-            cos = self.cos_cached[:, :, offset:offset + seq_len, :]
-            sin = self.sin_cached[:, :, offset:offset + seq_len, :]
+            cos = self.cos_cached[:, :, offset : offset + seq_len, :]
+            sin = self.sin_cached[:, :, offset : offset + seq_len, :]
 
             # Split x into two halves for rotation
             x1, x2 = x.chunk(2, dim=-1)
 
             # Apply rotation
             rotated = torch.cat(
-                [x1 * cos[:, :, :, :x1.shape[-1]] - x2 * sin[:, :, :, :x2.shape[-1]],
-                 x1 * sin[:, :, :, :x1.shape[-1]] + x2 * cos[:, :, :, :x2.shape[-1]]],
-                dim=-1
+                [
+                    x1 * cos[:, :, :, : x1.shape[-1]] - x2 * sin[:, :, :, : x2.shape[-1]],
+                    x1 * sin[:, :, :, : x1.shape[-1]] + x2 * cos[:, :, :, : x2.shape[-1]],
+                ],
+                dim=-1,
             )
 
         return rotated
@@ -679,10 +685,11 @@ class ALiBiPositionalBias(nn.Module):
         Following the paper, slopes are geometric sequence of ratios
         starting from 2^(-8/num_heads) for better extrapolation.
         """
+
         def get_slopes_power_of_2(n: int) -> list[float]:
             start = 2 ** (-8 / n)
             ratio = start
-            return [start * (ratio ** i) for i in range(n)]
+            return [start * (ratio**i) for i in range(n)]
 
         if math.log2(num_heads).is_integer():
             slopes = torch.tensor(get_slopes_power_of_2(num_heads))
@@ -694,9 +701,7 @@ class ALiBiPositionalBias(nn.Module):
             # Interpolate to get the remaining slopes
             extra_slopes = []
             for i in range(num_heads - closest_power_of_2):
-                extra_slopes.append(
-                    slopes_power_of_2[i % closest_power_of_2] * 0.5
-                )
+                extra_slopes.append(slopes_power_of_2[i % closest_power_of_2] * 0.5)
 
             slopes = torch.tensor(slopes_power_of_2 + extra_slopes)
 

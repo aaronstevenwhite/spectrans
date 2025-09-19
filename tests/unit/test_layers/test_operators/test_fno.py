@@ -206,10 +206,7 @@ class TestFourierNeuralOperator:
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
         fno = FourierNeuralOperator(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            use_spectral_conv=True,
-            use_linear=False
+            hidden_dim=hidden_dim, modes=modes, use_spectral_conv=True, use_linear=False
         )
 
         assert fno.spectral_conv is not None
@@ -227,10 +224,7 @@ class TestFourierNeuralOperator:
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
         fno = FourierNeuralOperator(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            use_spectral_conv=False,
-            use_linear=True
+            hidden_dim=hidden_dim, modes=modes, use_spectral_conv=False, use_linear=True
         )
 
         assert fno.spectral_conv is None
@@ -248,10 +242,7 @@ class TestFourierNeuralOperator:
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
         fno = FourierNeuralOperator(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            use_spectral_conv=True,
-            use_linear=True
+            hidden_dim=hidden_dim, modes=modes, use_spectral_conv=True, use_linear=True
         )
 
         assert fno.spectral_conv is not None
@@ -264,10 +255,7 @@ class TestFourierNeuralOperator:
         """Test that invalid configuration raises error."""
         with pytest.raises(ValueError):
             FourierNeuralOperator(
-                hidden_dim=64,
-                modes=16,
-                use_spectral_conv=False,
-                use_linear=False
+                hidden_dim=64, modes=16, use_spectral_conv=False, use_linear=False
             )
 
     def test_fno_activations(self):
@@ -277,19 +265,14 @@ class TestFourierNeuralOperator:
         hidden_dim = 16
         modes = 8
 
-        activations = ['gelu', 'relu', 'tanh', 'silu']
+        activations = ["gelu", "relu", "tanh", "silu"]
 
         for activation in activations:
             x = torch.randn(batch_size, seq_len, hidden_dim)
-            fno = FourierNeuralOperator(
-                hidden_dim=hidden_dim,
-                modes=modes,
-                activation=activation
-            )
+            fno = FourierNeuralOperator(hidden_dim=hidden_dim, modes=modes, activation=activation)
 
             output = fno(x)
             assert output.shape == x.shape
-
 
 
 class TestFNOBlock:
@@ -319,11 +302,7 @@ class TestFNOBlock:
         mlp_ratio = 2.0
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        block = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            mlp_ratio=mlp_ratio
-        )
+        block = FNOBlock(hidden_dim=hidden_dim, modes=modes, mlp_ratio=mlp_ratio)
 
         assert block.ffn is not None
         assert block.norm2 is not None
@@ -339,11 +318,7 @@ class TestFNOBlock:
         modes = 16
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        block = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            mlp_ratio=0.0  # No FFN
-        )
+        block = FNOBlock(hidden_dim=hidden_dim, modes=modes, mlp_ratio=0.0)  # No FFN
 
         assert block.ffn is None
         assert block.norm2 is None
@@ -360,11 +335,7 @@ class TestFNOBlock:
         dropout = 0.5
 
         x = torch.randn(batch_size, seq_len, hidden_dim)
-        block = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            dropout=dropout
-        )
+        block = FNOBlock(hidden_dim=hidden_dim, modes=modes, dropout=dropout)
 
         # Test training mode
         block.train()
@@ -392,21 +363,13 @@ class TestFNOBlock:
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         # Test layer norm
-        block_ln = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            norm_type='layernorm'
-        )
+        block_ln = FNOBlock(hidden_dim=hidden_dim, modes=modes, norm_type="layernorm")
         assert isinstance(block_ln.norm1, nn.LayerNorm)
         output_ln = block_ln(x)
         assert output_ln.shape == x.shape
 
         # Test batch norm
-        block_bn = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            norm_type='batchnorm'
-        )
+        block_bn = FNOBlock(hidden_dim=hidden_dim, modes=modes, norm_type="batchnorm")
         assert isinstance(block_bn.norm1, nn.BatchNorm1d)
         output_bn = block_bn(x)
         assert output_bn.shape == x.shape
@@ -414,11 +377,7 @@ class TestFNOBlock:
     def test_fno_block_invalid_norm(self):
         """Test invalid normalization type."""
         with pytest.raises(ValueError):
-            FNOBlock(
-                hidden_dim=64,
-                modes=16,
-                norm_type='invalid'
-            )
+            FNOBlock(hidden_dim=64, modes=16, norm_type="invalid")
 
 
 class TestFNOGradients:
@@ -456,11 +415,7 @@ class TestFNOGradients:
         modes = 8
 
         x = torch.randn(batch_size, seq_len, hidden_dim, requires_grad=True)
-        block = FNOBlock(
-            hidden_dim=hidden_dim,
-            modes=modes,
-            mlp_ratio=2.0
-        )
+        block = FNOBlock(hidden_dim=hidden_dim, modes=modes, mlp_ratio=2.0)
 
         output = block(x)
         loss = output.mean()

@@ -435,12 +435,14 @@ class TestBlockComposition:
         x = torch.randn(batch_size, seq_len, hidden_dim)
 
         # Alternate between frequency and attention-based blocks
-        blocks = nn.ModuleList([
-            FNetBlock(hidden_dim=hidden_dim),
-            SpectralAttentionBlock(hidden_dim=hidden_dim, num_heads=8),
-            WaveletBlock(hidden_dim=hidden_dim, levels=2),
-            LSTBlock(hidden_dim=hidden_dim, num_heads=8),
-        ])
+        blocks = nn.ModuleList(
+            [
+                FNetBlock(hidden_dim=hidden_dim),
+                SpectralAttentionBlock(hidden_dim=hidden_dim, num_heads=8),
+                WaveletBlock(hidden_dim=hidden_dim, levels=2),
+                LSTBlock(hidden_dim=hidden_dim, num_heads=8),
+            ]
+        )
 
         h = x
         for block in blocks:

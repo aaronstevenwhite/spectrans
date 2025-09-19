@@ -81,7 +81,6 @@ class TestFeedForwardNetwork:
         assert torch.allclose(output_eval1, output_eval2)
 
 
-
 class TestTransformerBlock:
     """Test TransformerBlock base class."""
 

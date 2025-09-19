@@ -25,10 +25,7 @@ class TestHadamardTransforms:
         reconstructed = transform.inverse_transform(h_coeffs)
 
         # Check reconstruction
-        torch.testing.assert_close(
-            reconstructed, x,
-            rtol=1e-4, atol=1e-6
-        )
+        torch.testing.assert_close(reconstructed, x, rtol=1e-4, atol=1e-6)
 
     def test_hadamard_non_power_of_2_raises(self, device):
         """Test that non-power-of-2 sizes raise error."""
@@ -74,17 +71,19 @@ class TestHadamardTransforms:
         x = torch.randn(64, device=device)
 
         # Compute energy in original domain
-        energy_original = torch.sum(x ** 2)
+        energy_original = torch.sum(x**2)
 
         # Transform and compute energy
         h_coeffs = transform.transform(x)
-        energy_transformed = torch.sum(h_coeffs ** 2)
+        energy_transformed = torch.sum(h_coeffs**2)
 
         # Energy should be conserved for orthogonal transform
         torch.testing.assert_close(
-            energy_original, energy_transformed,
-            rtol=1e-5, atol=1e-7,
-            msg="Hadamard transform should conserve energy"
+            energy_original,
+            energy_transformed,
+            rtol=1e-5,
+            atol=1e-7,
+            msg="Hadamard transform should conserve energy",
         )
 
     @pytest.mark.parametrize("normalized", [True, False])
@@ -109,7 +108,7 @@ class TestHadamardTransforms:
 
         # Forward pass
         h_coeffs = transform.transform(x)
-        loss = torch.sum(h_coeffs ** 2)
+        loss = torch.sum(h_coeffs**2)
 
         # Backward pass
         loss.backward()
@@ -121,10 +120,10 @@ class TestHadamardTransforms:
     def test_hadamard_batch_dimensions(self, device):
         """Test Hadamard transform with various batch dimensions."""
         shapes = [
-            (32,),           # 1D
-            (4, 32),         # 2D with batch
-            (4, 8, 32),      # 3D with batch
-            (2, 4, 8, 32),   # 4D with batch
+            (32,),  # 1D
+            (4, 32),  # 2D with batch
+            (4, 8, 32),  # 3D with batch
+            (2, 4, 8, 32),  # 4D with batch
         ]
 
         transform = HadamardTransform(normalized=True)

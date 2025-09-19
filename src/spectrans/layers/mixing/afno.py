@@ -132,8 +132,8 @@ class AFNOMixing(MixingLayer):
         modes_seq: int | None = None,
         modes_hidden: int | None = None,
         mlp_ratio: float = 2.0,
-        activation: ActivationType = 'gelu',
-        dropout: float = 0.0
+        activation: ActivationType = "gelu",
+        dropout: float = 0.0,
     ):
         super().__init__(hidden_dim=hidden_dim, dropout=dropout)
 
@@ -162,17 +162,17 @@ class AFNOMixing(MixingLayer):
 
         # Activation function
         activation_fn: nn.Module
-        if activation == 'gelu':
+        if activation == "gelu":
             activation_fn = nn.GELU()
-        elif activation == 'relu':
+        elif activation == "relu":
             activation_fn = nn.ReLU()
-        elif activation == 'silu':
+        elif activation == "silu":
             activation_fn = nn.SiLU()
-        elif activation == 'tanh':
+        elif activation == "tanh":
             activation_fn = nn.Tanh()
-        elif activation == 'sigmoid':
+        elif activation == "sigmoid":
             activation_fn = nn.Sigmoid()
-        elif activation == 'identity':
+        elif activation == "identity":
             activation_fn = nn.Identity()
         else:
             raise ValueError(f"Unsupported activation: {activation}")
@@ -183,7 +183,7 @@ class AFNOMixing(MixingLayer):
             activation_fn,
             nn.Dropout(dropout),
             nn.Linear(mlp_hidden_dim, self.modes_seq * self.modes_hidden * 2),
-            nn.Dropout(dropout)
+            nn.Dropout(dropout),
         )
 
         # Layer normalization
@@ -232,10 +232,10 @@ class AFNOMixing(MixingLayer):
 
         # Step 1: Transform to Fourier space using 2D FFT
         # Treat (sequence, hidden) as 2D spatial dimensions
-        x_ft = torch.fft.rfft2(x, dim=(1, 2), norm='ortho')
+        x_ft = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
 
         # Step 2: Mode truncation - keep only low-frequency modes
-        x_ft_truncated = x_ft[:, :self.modes_seq, :self.modes_hidden]
+        x_ft_truncated = x_ft[:, : self.modes_seq, : self.modes_hidden]
 
         # Step 3: Apply learnable transformation in Fourier domain
         # First apply pointwise multiplication with learnable weights
@@ -250,25 +250,20 @@ class AFNOMixing(MixingLayer):
         x_ft_flat = self.mlp(x_ft_flat)
 
         # Reshape back to complex truncated form
-        x_ft_truncated = x_ft_flat.reshape(
-            batch_size_ft, self.modes_seq, self.modes_hidden, 2
-        )
+        x_ft_truncated = x_ft_flat.reshape(batch_size_ft, self.modes_seq, self.modes_hidden, 2)
         x_ft_truncated = torch.view_as_complex(x_ft_truncated)
 
         # Step 4: Zero-pad back to original size
         x_ft_padded = torch.zeros(
             (batch_size, self.max_sequence_length, hidden_dim // 2 + 1),
             dtype=x_ft.dtype,
-            device=x_ft.device
+            device=x_ft.device,
         )
-        x_ft_padded[:, :self.modes_seq, :self.modes_hidden] = x_ft_truncated
+        x_ft_padded[:, : self.modes_seq, : self.modes_hidden] = x_ft_truncated
 
         # Step 5: Inverse FFT to get back to spatial domain
         x_spatial = torch.fft.irfft2(
-            x_ft_padded,
-            s=(self.max_sequence_length, hidden_dim),
-            dim=(1, 2),
-            norm='ortho'
+            x_ft_padded, s=(self.max_sequence_length, hidden_dim), dim=(1, 2), norm="ortho"
         )
 
         # Remove padding if it was added
@@ -284,7 +279,6 @@ class AFNOMixing(MixingLayer):
 
         return output  # type: ignore[no-any-return]
 
-
     def get_spectral_properties(self) -> dict[str, bool]:
         """Get mathematical properties of AFNO operation.
 
@@ -294,14 +288,14 @@ class AFNOMixing(MixingLayer):
             Mathematical properties of the transform.
         """
         return {
-            'unitary': False,  # Not unitary due to mode truncation and MLP
-            'real_output': True,  # Output is real-valued
-            'frequency_domain': True,  # Operations in Fourier domain
-            'energy_preserving': False,  # Energy not preserved due to truncation
-            'learnable_parameters': True,  # Has learnable weights and MLP
-            'translation_equivariant': False,  # Not equivariant due to MLP
-            'mode_truncation': True,  # Uses Fourier mode truncation
-            'adaptive': True  # Adaptive filtering based on learned parameters
+            "unitary": False,  # Not unitary due to mode truncation and MLP
+            "real_output": True,  # Output is real-valued
+            "frequency_domain": True,  # Operations in Fourier domain
+            "energy_preserving": False,  # Energy not preserved due to truncation
+            "learnable_parameters": True,  # Has learnable weights and MLP
+            "translation_equivariant": False,  # Not equivariant due to MLP
+            "mode_truncation": True,  # Uses Fourier mode truncation
+            "adaptive": True,  # Adaptive filtering based on learned parameters
         }
 
     @classmethod

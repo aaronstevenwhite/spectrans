@@ -27,7 +27,7 @@ class TestTransformGradients:
     @pytest.mark.parametrize("dtype", [torch.float32, torch.float64])
     def test_fft_gradient_flow(self, dtype):
         """Test gradient flow through FFT operations."""
-        transform = create_component('transform', 'fft1d', norm='ortho')
+        transform = create_component("transform", "fft1d", norm="ortho")
 
         # Create input that requires grad
         x = torch.randn(2, 8, 16, dtype=dtype, requires_grad=True)
@@ -48,7 +48,7 @@ class TestTransformGradients:
     @pytest.mark.parametrize("wavelet", ["db4", "sym4"])
     def test_dwt_gradient_flow(self, wavelet):
         """Test gradient flow through DWT operations."""
-        transform = create_component('transform', 'dwt1d', wavelet=wavelet, levels=2)
+        transform = create_component("transform", "dwt1d", wavelet=wavelet, levels=2)
 
         # DWT1D expects 2D input (batch, sequence)
         x = torch.randn(2, 64, requires_grad=True)
@@ -68,7 +68,7 @@ class TestTransformGradients:
 
     def test_dct_gradient_flow(self):
         """Test gradient flow through DCT operations."""
-        transform = create_component('transform', 'dct')
+        transform = create_component("transform", "dct")
 
         x = torch.randn(2, 16, 32, requires_grad=True)
 
@@ -83,7 +83,7 @@ class TestTransformGradients:
 
     def test_hadamard_gradient_flow(self):
         """Test gradient flow through Hadamard transform."""
-        transform = create_component('transform', 'hadamard')
+        transform = create_component("transform", "hadamard")
 
         # Hadamard requires power of 2 dimensions
         x = torch.randn(2, 16, 16, requires_grad=True)
@@ -134,18 +134,14 @@ class TestLayerGradients:
 
         # Check filter parameters have gradients
         for name, param in layer.named_parameters():
-            if 'filter' in name and param.requires_grad:
+            if "filter" in name and param.requires_grad:
                 assert param.grad is not None
                 assert torch.isfinite(param.grad).all()
 
     def test_afno_mixing_gradients(self):
         """Test gradients through AFNO mixing layer."""
         layer = AFNOMixing(
-            hidden_dim=64,
-            max_sequence_length=32,
-            modes_seq=16,
-            modes_hidden=32,
-            mlp_ratio=2.0
+            hidden_dim=64, max_sequence_length=32, modes_seq=16, modes_hidden=32, mlp_ratio=2.0
         )
 
         x = torch.randn(2, 32, 64, requires_grad=True)
@@ -158,11 +154,7 @@ class TestLayerGradients:
 
     def test_wavelet_mixing_gradients(self):
         """Test gradients through Wavelet mixing layer."""
-        layer = WaveletMixing(
-            hidden_dim=64,
-            wavelet='db4',
-            levels=2
-        )
+        layer = WaveletMixing(hidden_dim=64, wavelet="db4", levels=2)
 
         x = torch.randn(2, 32, 64, requires_grad=True)
         y = layer(x)
@@ -174,11 +166,7 @@ class TestLayerGradients:
 
     def test_spectral_attention_gradients(self):
         """Test gradients through Spectral Attention layer."""
-        layer = SpectralAttention(
-            hidden_dim=64,
-            num_heads=4,
-            num_features=128
-        )
+        layer = SpectralAttention(hidden_dim=64, num_heads=4, num_features=128)
 
         x = torch.randn(2, 16, 64, requires_grad=True)
         y = layer(x)
@@ -195,7 +183,7 @@ class TestNumericalGradients:
     @pytest.mark.slow
     def test_fft_numerical_gradients(self):
         """Verify FFT gradients using torch.autograd.gradcheck."""
-        transform = create_component('transform', 'fft1d', norm='ortho')
+        transform = create_component("transform", "fft1d", norm="ortho")
 
         # Use smaller input for gradcheck (expensive operation)
         x = torch.randn(1, 4, 8, dtype=torch.float64, requires_grad=True)
@@ -211,7 +199,7 @@ class TestNumericalGradients:
     @pytest.mark.slow
     def test_dct_numerical_gradients(self):
         """Verify DCT gradients using torch.autograd.gradcheck."""
-        transform = create_component('transform', 'dct')
+        transform = create_component("transform", "dct")
 
         x = torch.randn(1, 4, 8, dtype=torch.float64, requires_grad=True)
 
@@ -240,10 +228,7 @@ class TestGradientAccumulation:
     def test_gradient_accumulation(self):
         """Test that gradients accumulate correctly across batches."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=64,
-            num_layers=2,
-            max_sequence_length=128
+            "model", "fnet", hidden_dim=64, num_layers=2, max_sequence_length=128
         )
 
         # Zero gradients
@@ -256,8 +241,10 @@ class TestGradientAccumulation:
         loss1.backward()
 
         # Save gradients
-        grad1 = {name: param.grad.clone() if param.grad is not None else None
-                 for name, param in model.named_parameters()}
+        grad1 = {
+            name: param.grad.clone() if param.grad is not None else None
+            for name, param in model.named_parameters()
+        }
 
         # Second batch (accumulate gradients)
         x2 = torch.randn(2, 16, 64, requires_grad=True)
@@ -278,20 +265,22 @@ class TestGradientAccumulation:
 
         # Model without checkpointing
         model1 = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=64,
             num_layers=4,
             max_sequence_length=128,
-            gradient_checkpointing=False
+            gradient_checkpointing=False,
         )
 
         # Model with checkpointing
         model2 = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=64,
             num_layers=4,
             max_sequence_length=128,
-            gradient_checkpointing=True
+            gradient_checkpointing=True,
         )
 
         # Copy weights to ensure same initialization
@@ -323,11 +312,12 @@ class TestGradientStability:
     def test_gradient_explosion(self):
         """Test that gradients don't explode with deep models."""
         model = create_component(
-            'model', 'fnet',
+            "model",
+            "fnet",
             hidden_dim=128,
             num_layers=12,  # Deep model
             max_sequence_length=256,
-            dropout=0.1
+            dropout=0.1,
         )
 
         x = torch.randn(2, 64, 128)
@@ -346,10 +336,7 @@ class TestGradientStability:
     def test_gradient_vanishing(self):
         """Test that gradients don't vanish in deep models."""
         model = create_component(
-            'model', 'gfnet',
-            hidden_dim=128,
-            num_layers=12,
-            max_sequence_length=256
+            "model", "gfnet", hidden_dim=128, num_layers=12, max_sequence_length=256
         )
 
         x = torch.randn(2, 64, 128)
@@ -371,7 +358,7 @@ class TestGradientStability:
     def test_complex_gradient_stability(self):
         """Test gradient stability through complex operations."""
         # FFT produces complex numbers
-        transform = create_component('transform', 'fft1d')
+        transform = create_component("transform", "fft1d")
 
         x = torch.randn(2, 32, 64, requires_grad=True)
 
@@ -396,6 +383,7 @@ class TestSecondOrderGradients:
     @pytest.mark.slow
     def test_second_order_gradients(self):
         """Test that second-order gradients can be computed."""
+
         # Use a simple nonlinear layer that supports second-order gradients
         class NonlinearLayer(torch.nn.Module):
             def __init__(self):
@@ -412,14 +400,10 @@ class TestSecondOrderGradients:
 
         # First order gradient
         y = layer(x)
-        grad_y = torch.autograd.grad(
-            y.sum(), x, create_graph=True, retain_graph=True
-        )[0]
+        grad_y = torch.autograd.grad(y.sum(), x, create_graph=True, retain_graph=True)[0]
 
         # Second order gradient
-        grad2_y = torch.autograd.grad(
-            grad_y.sum(), x, retain_graph=True
-        )[0]
+        grad2_y = torch.autograd.grad(grad_y.sum(), x, retain_graph=True)[0]
 
         assert grad2_y is not None
         assert torch.isfinite(grad2_y).all()
@@ -430,7 +414,7 @@ class TestSecondOrderGradients:
     @pytest.mark.slow
     def test_gradgradcheck(self):
         """Test second-order gradient correctness."""
-        transform = create_component('transform', 'dct')
+        transform = create_component("transform", "dct")
 
         x = torch.randn(1, 4, 8, dtype=torch.float64, requires_grad=True)
 
@@ -447,13 +431,10 @@ class TestMixedPrecisionGradients:
     @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required for AMP")
     def test_amp_gradient_flow(self):
         """Test gradient flow with automatic mixed precision."""
-        device = torch.device('cuda')
+        device = torch.device("cuda")
 
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=128,
-            num_layers=4,
-            max_sequence_length=256
+            "model", "fnet", hidden_dim=128, num_layers=4, max_sequence_length=256
         ).to(device)
 
         x = torch.randn(2, 64, 128, device=device)
@@ -475,10 +456,7 @@ class TestMixedPrecisionGradients:
     def test_gradient_clipping(self):
         """Test gradient clipping for stability."""
         model = create_component(
-            'model', 'fnet',
-            hidden_dim=64,
-            num_layers=2,
-            max_sequence_length=128
+            "model", "fnet", hidden_dim=64, num_layers=2, max_sequence_length=128
         )
 
         x = torch.randn(2, 32, 64)
@@ -495,7 +473,7 @@ class TestMixedPrecisionGradients:
         for param in model.parameters():
             if param.grad is not None:
                 param_norm = param.grad.data.norm(2).item()
-                total_norm += param_norm ** 2
-        total_norm = total_norm ** 0.5
+                total_norm += param_norm**2
+        total_norm = total_norm**0.5
 
         assert total_norm <= max_norm * 1.01  # Small tolerance for numerical errors

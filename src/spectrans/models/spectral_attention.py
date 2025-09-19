@@ -254,7 +254,6 @@ class SpectralAttentionTransformer(BaseModel):
 
         return nn.ModuleList(blocks)
 
-
     @classmethod
     def from_config(cls, config: "SpectralAttentionModelConfig") -> "SpectralAttentionTransformer":  # type: ignore[override]
         """Create model from configuration.
@@ -393,7 +392,6 @@ class SpectralAttentionEncoder(BaseModel):
         return nn.ModuleList(blocks)
 
 
-
 @register_component("model", "performer")
 class PerformerTransformer(BaseModel):
     """Performer transformer with positive orthogonal random features.
@@ -502,4 +500,3 @@ class PerformerTransformer(BaseModel):
             blocks.append(block)
 
         return nn.ModuleList(blocks)
-

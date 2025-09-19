@@ -111,8 +111,6 @@ class SpectralComponent(nn.Module, ABC):
         pass
 
 
-
-
 class AttentionLayer(SpectralComponent):
     """Base class for attention layers.
 

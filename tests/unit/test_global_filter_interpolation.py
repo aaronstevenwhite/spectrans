@@ -108,7 +108,7 @@ class TestGlobalFilterInterpolation:
             hidden_dim=128,
             sequence_length=256,
             adaptive_initialization=True,
-            filter_regularization=0.01
+            filter_regularization=0.01,
         )
 
         # Test with different sequence lengths
@@ -147,8 +147,8 @@ class TestGlobalFilterInterpolation:
             y = layer(x)
 
             # Compute energy ratio
-            input_energy = (x ** 2).mean()
-            output_energy = (y ** 2).mean()
+            input_energy = (x**2).mean()
+            output_energy = (y**2).mean()
             ratio = output_energy / input_energy
             energy_ratios.append(ratio.item())
 
@@ -160,11 +160,7 @@ class TestGlobalFilterInterpolation:
     @pytest.mark.parametrize("activation", ["sigmoid", "tanh", "identity"])
     def test_activations_with_interpolation(self, activation):
         """Test different activation functions with interpolation."""
-        layer = GlobalFilterMixing(
-            hidden_dim=64,
-            sequence_length=128,
-            activation=activation
-        )
+        layer = GlobalFilterMixing(hidden_dim=64, sequence_length=128, activation=activation)
 
         # Test with non-matching sequence length
         x = torch.randn(2, 200, 64)

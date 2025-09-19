@@ -12,9 +12,15 @@ from spectrans.transforms.wavelet import DWT1D, DWT2D, get_wavelet_filters
 
 # Test wavelets from different families
 TEST_WAVELETS = [
-    'db1', 'db2', 'db4', 'db8',  # Daubechies
-    'sym2', 'sym4', 'sym8',       # Symlets
-    'coif1', 'coif2',             # Coiflets
+    "db1",
+    "db2",
+    "db4",
+    "db8",  # Daubechies
+    "sym2",
+    "sym4",
+    "sym8",  # Symlets
+    "coif1",
+    "coif2",  # Coiflets
 ]
 
 
@@ -40,12 +46,8 @@ class TestWaveletFilters:
         assert len(rec_hi) == len(pywt_wavelet.rec_hi)
 
         # Check values match (relaxed tolerance due to float64 -> float32 in transform)
-        np.testing.assert_array_almost_equal(
-            dec_lo.numpy(), pywt_wavelet.dec_lo, decimal=7
-        )
-        np.testing.assert_array_almost_equal(
-            dec_hi.numpy(), pywt_wavelet.dec_hi, decimal=7
-        )
+        np.testing.assert_array_almost_equal(dec_lo.numpy(), pywt_wavelet.dec_lo, decimal=7)
+        np.testing.assert_array_almost_equal(dec_hi.numpy(), pywt_wavelet.dec_hi, decimal=7)
 
 
 class TestDWT1D:
@@ -64,7 +66,7 @@ class TestDWT1D:
         cD = cD_list[0].squeeze(0)
 
         # PyWavelets reference
-        cA_ref, cD_ref = pywt.dwt(x.numpy(), wavelet, mode='symmetric')
+        cA_ref, cD_ref = pywt.dwt(x.numpy(), wavelet, mode="symmetric")
         cA_ref = torch.from_numpy(cA_ref).float()
         cD_ref = torch.from_numpy(cD_ref).float()
 
@@ -96,7 +98,7 @@ class TestDWT1D:
         rms_error = torch.sqrt(torch.mean((x - x_rec) ** 2))
         assert rms_error < 1e-7, f"RMS reconstruction error too large: {rms_error}"
 
-    @pytest.mark.parametrize("wavelet", ['db2', 'db4', 'sym2'])
+    @pytest.mark.parametrize("wavelet", ["db2", "db4", "sym2"])
     @pytest.mark.parametrize("levels", [1, 2, 3])
     def test_multi_level_dwt(self, wavelet, levels):
         """Test multi-level DWT decomposition."""
@@ -128,7 +130,7 @@ class TestDWT1D:
         torch.manual_seed(42)
         x = torch.randn(64, requires_grad=True)
 
-        dwt = DWT1D(wavelet='db4', levels=2)
+        dwt = DWT1D(wavelet="db4", levels=2)
 
         # Forward pass
         cA, cD_list = dwt.decompose(x.unsqueeze(0))
@@ -151,7 +153,7 @@ class TestDWT1D:
 
         x = torch.randn(batch_size, signal_len)
 
-        dwt = DWT1D(wavelet='db2', levels=2)
+        dwt = DWT1D(wavelet="db2", levels=2)
         cA, cD_list = dwt.decompose(x)
 
         # Check batch dimension preserved
@@ -171,7 +173,7 @@ class TestDWT1D:
 class TestDWT2D:
     """Test 2D Discrete Wavelet Transform."""
 
-    @pytest.mark.parametrize("wavelet", ['db1', 'db2', 'sym2'])
+    @pytest.mark.parametrize("wavelet", ["db1", "db2", "sym2"])
     def test_single_level_dwt2d(self, wavelet):
         """Test single-level 2D DWT against PyWavelets."""
         torch.manual_seed(42)
@@ -188,7 +190,7 @@ class TestDWT2D:
         hh = hh.squeeze(0)
 
         # PyWavelets reference
-        coeffs_ref = pywt.dwt2(x.numpy(), wavelet, mode='symmetric')
+        coeffs_ref = pywt.dwt2(x.numpy(), wavelet, mode="symmetric")
         # PyWavelets returns (cA, (cH, cV, cD)) where:
         # cH = horizontal detail (HL), cV = vertical detail (LH), cD = diagonal (HH)
         ll_ref, (hl_ref, lh_ref, hh_ref) = coeffs_ref
@@ -230,7 +232,7 @@ class TestDWT2D:
         torch.manual_seed(42)
         x = torch.randn(128, 128)
 
-        dwt2d = DWT2D(wavelet='db2', levels=3)
+        dwt2d = DWT2D(wavelet="db2", levels=3)
         ll, bands = dwt2d.decompose(x.unsqueeze(0))
 
         # Check we have 3 levels of detail bands
@@ -251,7 +253,7 @@ class TestDWT2D:
 
         x = torch.randn(batch_size, height, width)
 
-        dwt2d = DWT2D(wavelet='sym2', levels=2)
+        dwt2d = DWT2D(wavelet="sym2", levels=2)
         ll, bands = dwt2d.decompose(x)
 
         # Check batch dimension
@@ -270,7 +272,7 @@ class TestDWT2D:
         torch.manual_seed(42)
         x = torch.randn(2, 64, 64, requires_grad=True)
 
-        dwt2d = DWT2D(wavelet='db2', levels=2)
+        dwt2d = DWT2D(wavelet="db2", levels=2)
 
         # Forward pass through decomposition
         ll, bands = dwt2d.decompose(x)
@@ -307,7 +309,7 @@ class TestEdgeCases:
         """Test with power-of-2 length signals."""
         for length in [32, 64, 128, 256, 512]:
             x = torch.randn(length)
-            dwt = DWT1D(wavelet='db2', levels=2)
+            dwt = DWT1D(wavelet="db2", levels=2)
             coeffs = dwt.decompose(x.unsqueeze(0))
             x_rec = dwt.reconstruct(coeffs).squeeze(0)
 
@@ -318,7 +320,7 @@ class TestEdgeCases:
         """Test with arbitrary length signals."""
         for length in [100, 150, 200, 333]:
             x = torch.randn(length)
-            dwt = DWT1D(wavelet='db4', levels=1)
+            dwt = DWT1D(wavelet="db4", levels=1)
             coeffs = dwt.decompose(x.unsqueeze(0))
             # Pass original length to handle edge cases with odd-length signals
             x_rec = dwt.reconstruct(coeffs, output_len=length).squeeze(0)
@@ -330,7 +332,7 @@ class TestEdgeCases:
         """Test with very small signals."""
         # Minimum signal length depends on wavelet filter length
         x = torch.randn(16)  # Small but valid for most wavelets
-        dwt = DWT1D(wavelet='db1', levels=1)  # db1 has shortest filter
+        dwt = DWT1D(wavelet="db1", levels=1)  # db1 has shortest filter
         coeffs = dwt.decompose(x.unsqueeze(0))
         x_rec = dwt.reconstruct(coeffs).squeeze(0)
 
@@ -340,7 +342,7 @@ class TestEdgeCases:
     def test_invalid_wavelet(self):
         """Test error handling for invalid wavelet names."""
         with pytest.raises(ValueError, match="Unsupported wavelet"):
-            DWT1D(wavelet='invalid_wavelet')
+            DWT1D(wavelet="invalid_wavelet")
 
     @pytest.mark.parametrize("device_name", ["cpu", "cuda"])
     def test_device_compatibility(self, device_name):
@@ -351,7 +353,7 @@ class TestEdgeCases:
         device = torch.device(device_name)
         x = torch.randn(128, device=device)
 
-        dwt = DWT1D(wavelet='db4', levels=2)
+        dwt = DWT1D(wavelet="db4", levels=2)
         cA, cD_list = dwt.decompose(x.unsqueeze(0))
 
         # Check all outputs are on correct device
@@ -368,7 +370,7 @@ class TestEdgeCases:
         for dtype in [torch.float32, torch.float64]:
             x = torch.randn(128, dtype=dtype)
 
-            dwt = DWT1D(wavelet='db2', levels=1)
+            dwt = DWT1D(wavelet="db2", levels=1)
             cA, cD_list = dwt.decompose(x.unsqueeze(0))
 
             # Check dtype preserved

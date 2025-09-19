@@ -135,7 +135,6 @@ class TestFNOTransformer:
         assert decoder.output_type == "lm"
         assert hasattr(decoder, "lm_head")
 
-
     def test_fno_gradient_flow(self):
         """Test gradient flow through FNO transformer."""
         model = FNOTransformer(
@@ -273,7 +272,6 @@ class TestFNOTransformer:
 class TestFNOEncoder:
     """Test suite for FNOEncoder model."""
 
-
     def test_encoder_gradient_flow(self):
         """Test gradient flow through FNO encoder."""
         encoder = FNOEncoder(
@@ -296,7 +294,6 @@ class TestFNOEncoder:
 
 class TestFNODecoder:
     """Test suite for FNODecoder model."""
-
 
     def test_decoder_gradient_flow(self):
         """Test gradient flow through FNO decoder."""
