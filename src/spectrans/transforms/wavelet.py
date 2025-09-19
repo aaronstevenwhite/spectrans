@@ -60,21 +60,21 @@ Mathematical Foundations:
 The Discrete Wavelet Transform (DWT) decomposes a signal into approximation
 and detail coefficients through iterative filtering and downsampling.
 
-For a signal $x[n]$ of length $N$, the single-level DWT produces:
+For a signal $\mathbf{x}[n]$ of length $N$, the single-level DWT produces:
 
 $$
-c_A[k] = \sum_{n} h[n-2k] \cdot x[n]
+c_A[k] = \sum_{n} h[n-2k] \cdot \mathbf{x}[n]
 $$
 
 $$
-c_D[k] = \sum_{n} g[n-2k] \cdot x[n]
+c_D[k] = \sum_{n} g[n-2k] \cdot \mathbf{x}[n]
 $$
 
 Where $h[n]$ and $g[n]$ are the low-pass and high-pass analysis
 filters. The reconstruction is achieved through:
 
 $$
-x[n] = \sum_{k} h'[n-2k] \cdot c_A[k] + \sum_{k} g'[n-2k] \cdot c_D[k]
+\mathbf{x}[n] = \sum_{k} h'[n-2k] \cdot c_A[k] + \sum_{k} g'[n-2k] \cdot c_D[k]
 $$
 
 Multi-Resolution Analysis:
@@ -84,7 +84,7 @@ length $N/2^j$ and frequency band $[0, \pi/2^j]$ for approximations.
 
 Perfect Reconstruction:
 For orthogonal wavelets: $h'[n] = h[-n]$ and $g'[n] = g[-n]$.
-The transform preserves energy: $\|x\|^2 = \|c_A\|^2 + \sum_{j} \|c_{D_j}\|^2$
+The transform preserves energy: $\|\mathbf{x}\|^2 = \|\mathbf{c}_A\|^2 + \sum_{j} \|\mathbf{c}_{D_j}\|^2$
 
 Implementation Details:
 - Convolution starts at index $(\text{step} - 1) = 1$ for stride 2

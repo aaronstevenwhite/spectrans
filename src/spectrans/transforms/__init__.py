@@ -103,13 +103,13 @@ Mathematical Properties:
 The transforms maintain important mathematical properties:
 
 1. **Orthogonal Transforms** (DCT, DST, Hadamard):
-   - Preserve inner products: $\langle x, y \rangle = \langle T(x), T(y) \rangle$
-   - Perfect reconstruction: $T^{-1}(T(x)) = x$
+   - Preserve inner products: $\langle \mathbf{x}, \mathbf{y} \rangle = \langle \mathcal{T}(\mathbf{x}), \mathcal{T}(\mathbf{y}) \rangle$
+   - Perfect reconstruction: $\mathcal{T}^{-1}(\mathcal{T}(\mathbf{x})) = \mathbf{x}$
    - Energy conservation (Parseval's theorem)
 
 2. **Unitary Transforms** (FFT):
    - Complex inner product preservation
-   - Norm conservation: $||T(x)||_2 = ||x||_2$
+   - Norm conservation: $||\mathcal{T}(\mathbf{x})||_2 = ||\mathbf{x}||_2$
    - Hermitian symmetry for real inputs
 
 3. **Multi-Resolution Transforms** (DWT):

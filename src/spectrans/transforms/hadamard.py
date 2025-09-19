@@ -58,21 +58,21 @@ Mathematical Properties:
 
 **Walsh-Hadamard Transform**:
 
-The Hadamard matrix $H_n$ for size $n=2^k$ is defined recursively:
+The Hadamard matrix $\mathbf{H}_n$ for size $n=2^k$ is defined recursively:
 
 $$
-H_1 = [1], \quad H_2 = \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
+\mathbf{H}_1 = [1], \quad \mathbf{H}_2 = \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix}
 $$
 
 $$
-H_{2n} = \begin{bmatrix} H_n & H_n \\ H_n & -H_n \end{bmatrix}
+\mathbf{H}_{2n} = \begin{bmatrix} \mathbf{H}_n & \mathbf{H}_n \\ \mathbf{H}_n & -\mathbf{H}_n \end{bmatrix}
 $$
 
 **Orthogonality**:
 
-- $H_n \cdot H_n^T = n \cdot I$ (unnormalized)
-- $H_n \cdot H_n^T = I$ (normalized by $\frac{1}{\sqrt{n}}$)
-- Perfect reconstruction: $H^{-1} = H^T / n$
+- $\mathbf{H}_n \cdot \mathbf{H}_n^T = n \cdot \mathbf{I}$ (unnormalized)
+- $\mathbf{H}_n \cdot \mathbf{H}_n^T = \mathbf{I}$ (normalized by $\frac{1}{\sqrt{n}}$)
+- Perfect reconstruction: $\mathbf{H}^{-1} = \mathbf{H}^T / n$
 
 **Computational Advantages**:
 

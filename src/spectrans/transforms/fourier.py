@@ -59,9 +59,9 @@ Mathematical Properties:
 
 All Fourier transforms maintain unitarity:
 
-- Energy conservation: $\|F(x)\|^2 = \|x\|^2$
-- Parseval's theorem: $\langle x, y \rangle = \langle F(x), F(y) \rangle$
-- Perfect reconstruction: $F^{-1}(F(x)) = x$
+- Energy conservation: $\|\mathcal{F}(\mathbf{x})\|^2 = \|\mathbf{x}\|^2$
+- Parseval's theorem: $\langle \mathbf{x}, \mathbf{y} \rangle = \langle \mathcal{F}(\mathbf{x}), \mathcal{F}(\mathbf{y}) \rangle$
+- Perfect reconstruction: $\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})) = \mathbf{x}$
 
 Normalization Modes:
 

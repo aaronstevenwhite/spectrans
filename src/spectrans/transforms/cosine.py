@@ -55,7 +55,7 @@ Mathematical Formulations:
 **DCT Type-II** (most common):
 
 $$
-\text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} x[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)
+\text{DCT}[k] = \alpha_k \sum_{n=0}^{N-1} \mathbf{x}[n] \cos\left(\frac{\pi(2n+1)k}{2N}\right)
 $$
 
 Where $\alpha_k = \sqrt{\frac{1}{N}}$ if $k=0$, $\alpha_k = \sqrt{\frac{2}{N}}$ if $k>0$ (for orthonormal normalization)
@@ -63,14 +63,14 @@ Where $\alpha_k = \sqrt{\frac{1}{N}}$ if $k=0$, $\alpha_k = \sqrt{\frac{2}{N}}$ 
 **DST Type-I**:
 
 $$
-\text{DST}[k] = \sum_{n=1}^{N-1} x[n] \sin\left(\frac{\pi n k}{N}\right)
+\text{DST}[k] = \sum_{n=1}^{N-1} \mathbf{x}[n] \sin\left(\frac{\pi n k}{N}\right)
 $$
 
 **Orthogonality Properties**:
 
 - DCT and DST matrices are orthogonal: $\mathbf{T}^T \mathbf{T} = \mathbf{I}$
-- Perfect reconstruction: $x = \text{DCT}^{-1}(\text{DCT}(x))$
-- Energy conservation: $\|\text{DCT}(x)\|^2 = \|x\|^2$ (with proper normalization)
+- Perfect reconstruction: $\mathbf{x} = \text{DCT}^{-1}(\text{DCT}(\mathbf{x}))$
+- Energy conservation: $\|\text{DCT}(\mathbf{x})\|^2 = \|\mathbf{x}\|^2$ (with proper normalization)
 
 **Computational Complexity**:
 
