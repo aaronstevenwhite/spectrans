@@ -91,11 +91,11 @@ spectrans/
 
 Throughout the documentation, we use standard mathematical notation:
 
-- Vectors are denoted by lowercase bold letters: **x**, **y**
-- Matrices are denoted by uppercase bold letters: **W**, **K**
-- Scalars are denoted by lowercase letters: *n*, *d*, *k*
-- Functions and operators use calligraphic letters: 𝒢, ℱ
-- Complex numbers use ℂ, real numbers use ℝ
+- Vectors are denoted by lowercase bold letters: $\mathbf{x}$, $\mathbf{y}$
+- Matrices are denoted by uppercase bold letters: $\mathbf{W}$, $\mathbf{K}$
+- Scalars are denoted by lowercase letters: $n$, $d$, $k$
+- Functions and operators use calligraphic letters: $\mathcal{G}$, $\mathcal{F}$
+- Complex numbers use $\mathbb{C}$, real numbers use $\mathbb{R}$
 
 ## API Stability
 
