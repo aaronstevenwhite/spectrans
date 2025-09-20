@@ -83,7 +83,7 @@ import torch.nn as nn
 
 from spectrans.core.base import SpectralComponent
 from spectrans.core.types import ActivationType, NormType
-from spectrans.utils.fft_utils import safe_irfft, safe_irfft2, safe_rfft, safe_rfft2
+from spectrans.utils.fft import safe_irfft, safe_irfft2, safe_rfft, safe_rfft2
 
 
 class SpectralConv1d(nn.Module):

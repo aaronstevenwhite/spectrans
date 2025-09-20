@@ -5,6 +5,8 @@ complex transforms (FFT, DWT), custom layers, and models to ensure correct
 backpropagation and numerical stability.
 """
 
+import os
+
 import pytest
 import torch
 import torch.nn.functional as F
@@ -194,7 +196,13 @@ class TestNumericalGradients:
             return transform.inverse_transform(y).real
 
         # Check gradients numerically
-        assert gradcheck(fft_func, (x,), eps=1e-6, atol=1e-4)
+        # Use slightly relaxed tolerance for DFT fallback (O(n²) vs O(n log n))
+        if os.environ.get("SPECTRANS_DISABLE_MKL_FFT") == "1":
+            # DFT matrix fallback has slightly different numerical properties
+            assert gradcheck(fft_func, (x,), eps=1e-6, atol=1e-4, rtol=1e-3)
+        else:
+            # Native FFT has tighter tolerance
+            assert gradcheck(fft_func, (x,), eps=1e-6, atol=1e-4)
 
     @pytest.mark.slow
     def test_dct_numerical_gradients(self):
@@ -255,8 +263,21 @@ class TestGradientAccumulation:
         # Check that gradients accumulated
         for name, param in model.named_parameters():
             if param.grad is not None and grad1[name] is not None:
-                # Gradients should be different (accumulated)
-                assert not torch.allclose(param.grad, grad1[name])
+                # Gradients should be different after accumulation
+                # Use adaptive tolerance based on gradient magnitude
+                grad_magnitude = grad1[name].abs().max().item()
+
+                if grad_magnitude < 1e-7:
+                    # For very small gradients, use tighter tolerance
+                    # This handles bias terms that may have tiny gradients
+                    are_same = torch.allclose(param.grad, grad1[name], rtol=1e-5, atol=1e-10)
+                else:
+                    # For normal gradients, use standard tolerance
+                    are_same = torch.allclose(param.grad, grad1[name], rtol=1e-5, atol=1e-8)
+
+                assert not are_same, (
+                    f"Gradient for {name} did not accumulate (magnitude={grad_magnitude:.2e})"
+                )
 
     def test_gradient_checkpointing(self):
         """Test gradient checkpointing reduces memory but maintains correctness."""

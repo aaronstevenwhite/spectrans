@@ -101,10 +101,20 @@ spectrans.utils.complex : Complex tensor utility functions
 spectrans.layers.mixing.fourier : Neural layers using these transforms
 """
 
-import torch
-
 from ..core.registry import register_component
 from ..core.types import ComplexTensor, FFTNorm, Tensor
+from ..utils.fft import (
+    safe_fft,
+    safe_fft2,
+    safe_ifft,
+    safe_ifft2,
+    safe_irfft,
+    safe_irfft2,
+    safe_irfftn,
+    safe_rfft,
+    safe_rfft2,
+    safe_rfftn,
+)
 from .base import SpectralTransform2D, UnitaryTransform
 
 
@@ -138,7 +148,7 @@ class FFT1D(UnitaryTransform):
         ComplexTensor
             Complex-valued FFT result.
         """
-        return torch.fft.fft(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_fft(x, dim=dim, norm=self.norm)
 
     def inverse_transform(self, x: ComplexTensor, dim: int = -1) -> Tensor:
         """Apply inverse 1D FFT.
@@ -155,7 +165,7 @@ class FFT1D(UnitaryTransform):
         Tensor
             Inverse FFT result (may be complex if input was complex).
         """
-        return torch.fft.ifft(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_ifft(x, dim=dim, norm=self.norm)
 
 
 @register_component("transform", "fft2d")
@@ -188,7 +198,7 @@ class FFT2D(SpectralTransform2D):
         ComplexTensor
             Complex-valued 2D FFT result.
         """
-        return torch.fft.fft2(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_fft2(x, dim=dim, norm=self.norm)
 
     def inverse_transform(self, x: ComplexTensor, dim: tuple[int, int] = (-2, -1)) -> Tensor:
         """Apply inverse 2D FFT.
@@ -205,7 +215,7 @@ class FFT2D(SpectralTransform2D):
         Tensor
             Inverse FFT result.
         """
-        return torch.fft.ifft2(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_ifft2(x, dim=dim, norm=self.norm)
 
 
 @register_component("transform", "rfft")
@@ -239,7 +249,7 @@ class RFFT(UnitaryTransform):
         ComplexTensor
             Complex-valued RFFT result (positive frequencies only).
         """
-        return torch.fft.rfft(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_rfft(x, dim=dim, norm=self.norm)
 
     def inverse_transform(self, x: ComplexTensor, dim: int = -1, n: int | None = None) -> Tensor:
         """Apply inverse real FFT.
@@ -258,7 +268,7 @@ class RFFT(UnitaryTransform):
         Tensor
             Real-valued inverse RFFT result.
         """
-        return torch.fft.irfft(x, n=n, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_irfft(x, n=n, dim=dim, norm=self.norm)
 
 
 @register_component("transform", "rfft2d")
@@ -291,7 +301,7 @@ class RFFT2D(SpectralTransform2D):
         ComplexTensor
             Complex-valued 2D RFFT result.
         """
-        return torch.fft.rfft2(x, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_rfft2(x, dim=dim, norm=self.norm)
 
     def inverse_transform(
         self, x: ComplexTensor, dim: tuple[int, int] = (-2, -1), s: tuple[int, int] | None = None
@@ -312,7 +322,7 @@ class RFFT2D(SpectralTransform2D):
         Tensor
             Real-valued inverse RFFT result.
         """
-        return torch.fft.irfft2(x, s=s, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+        return safe_irfft2(x, s=s, dim=dim, norm=self.norm)
 
 
 @register_component("transform", "spectral_pool")
@@ -351,9 +361,9 @@ class SpectralPooling(UnitaryTransform):
         """
         # Convert to frequency domain
         if isinstance(dim, int):
-            x_freq = torch.fft.rfft(x, dim=dim, norm=self.norm)
+            x_freq = safe_rfft(x, dim=dim, norm=self.norm)
         else:
-            x_freq = torch.fft.rfftn(x, dim=dim, norm=self.norm)
+            x_freq = safe_rfftn(x, dim=dim, norm=self.norm)
 
         # Truncate frequencies
         if isinstance(dim, int):
@@ -368,9 +378,9 @@ class SpectralPooling(UnitaryTransform):
 
         # Convert back to spatial domain
         if isinstance(dim, int):
-            return torch.fft.irfft(truncated, n=self.output_size[0], dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+            return safe_irfft(truncated, n=self.output_size[0], dim=dim, norm=self.norm)
         else:
-            return torch.fft.irfftn(truncated, s=self.output_size, dim=dim, norm=self.norm)  # type: ignore[no-any-return]
+            return safe_irfftn(truncated, s=self.output_size, dim=dim, norm=self.norm)
 
     def inverse_transform(self, x: Tensor, dim: int | tuple[int, ...] = -1) -> Tensor:
         """Inverse is not well-defined for pooling operations."""

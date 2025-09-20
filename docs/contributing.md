@@ -48,7 +48,7 @@ The project uses several tools to maintain code quality:
 
 ### Code Quality Checks
 
-For individual checks:
+Run all checks before committing:
 
 ```bash
 # Format code and fix imports
@@ -62,12 +62,6 @@ ruff format --check src tests
 # Type checking (main source only)
 mypy src
 
-# Run tests
-pytest tests/unit tests/integration -v
-
-# Run with coverage
-pytest tests/unit tests/integration --cov=spectrans --cov-report=html
-
 # Pre-commit hooks
 pre-commit run --all-files
 ```
@@ -76,17 +70,53 @@ pre-commit run --all-files
 
 ```bash
 # Run all tests
-pytest
+pytest tests/
+
+# Run specific test categories
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/benchmarks/
 
 # Run specific test module
 pytest tests/unit/test_models/test_fnet.py -v
 
-# Run with coverage
-pytest --cov=spectrans
+# Run tests with verbose output
+pytest tests/unit tests/integration -v
 
-# Run benchmarks if performance-related
-pytest tests/benchmarks/ -v
+# Run with coverage
+pytest tests/unit tests/integration --cov=spectrans --cov-report=html
+
+# Run benchmarks for performance-critical changes
+pytest tests/benchmarks/ -v --benchmark-only
 ```
+
+### Debugging CI Failures
+
+If tests pass locally but fail in CI, you can simulate the GitHub Actions environment using `act`:
+
+```bash
+# Install act (macOS/Linux via Homebrew)
+brew install act
+
+# Run the full CI workflow
+act -W .github/workflows/ci.yml
+
+# Run a specific job (e.g., test job)
+act -j test
+
+# Run with specific matrix configuration
+act -j test --matrix os:ubuntu-latest --matrix python-version:3.13
+
+# Run with CI environment variables (e.g., for MKL FFT issues)
+act --env SPECTRANS_DISABLE_MKL_FFT=1
+
+# Run with verbose output for debugging
+act -v -j test
+```
+
+This is particularly useful for macOS developers to test Linux-specific issues before pushing.
+
+For detailed MKL FFT troubleshooting, see the [Troubleshooting Guide](troubleshooting.md).
 
 ## Project Structure
 

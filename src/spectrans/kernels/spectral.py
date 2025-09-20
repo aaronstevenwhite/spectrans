@@ -72,6 +72,7 @@ import torch.nn.functional as F
 
 from ..core.registry import register_component
 from ..core.types import Tensor
+from ..utils.fft import safe_rfft
 from .base import KernelFunction
 
 
@@ -594,8 +595,8 @@ class FourierKernel(nn.Module, SpectralKernel):
             Kernel matrix of shape (..., n, m).
         """
         # Compute FFT of inputs
-        x_freq = torch.fft.rfft(x, dim=-1)
-        y_freq = torch.fft.rfft(y, dim=-1)
+        x_freq = safe_rfft(x, dim=-1)
+        y_freq = safe_rfft(y, dim=-1)
 
         # Truncate to rank modes
         x_freq = x_freq[..., : self.rank]

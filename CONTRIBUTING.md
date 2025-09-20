@@ -88,6 +88,14 @@ ruff format --check src tests
 mypy src
 
 # Run all tests
+pytest tests/
+
+# Run specific test categories
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/benchmarks/
+
+# Run tests with verbose output
 pytest tests/unit tests/integration -v
 
 # Test coverage
@@ -96,6 +104,69 @@ pytest tests/unit tests/integration --cov=spectrans --cov-report=html
 # Pre-commit hooks
 pre-commit run --all-files
 ```
+
+### Debugging CI Failures
+
+If tests pass locally but fail in CI, you can simulate the GitHub Actions environment using `act`:
+
+#### Installing act
+
+[act](https://github.com/nektos/act) allows you to run GitHub Actions workflows locally in Docker containers that closely match GitHub's hosted runners.
+
+```bash
+# macOS/Linux via Homebrew
+brew install act
+
+# Other installation methods available at https://github.com/nektos/act
+```
+
+#### Basic Usage
+
+```bash
+# Run default push event workflows
+act
+
+# Run the full CI workflow
+act -W .github/workflows/ci.yml
+
+# Run a specific job (e.g., test job)
+act -j test
+
+# Run with specific event
+act pull_request
+
+# List all workflows and jobs
+act -l
+
+# Run with specific matrix configuration
+act -j test --matrix os:ubuntu-latest --matrix python-version:3.13
+
+# Run with CI environment variables (e.g., for MKL FFT issues)
+act --env SPECTRANS_DISABLE_MKL_FFT=1
+```
+
+#### Advanced Debugging
+
+When CI tests fail but pass locally (especially MKL FFT errors on Ubuntu):
+
+```bash
+# Run the exact test job that's failing
+act -j test --matrix os:ubuntu-latest
+
+# Run with verbose output for debugging
+act -v -j test
+
+# Run with secrets from .env file (create .env.local, don't commit!)
+act --secret-file .env.local
+
+# Run specific workflow with specific Python version
+act -W .github/workflows/ci.yml -j test --matrix python-version:3.13
+
+# Combine environment variables and matrix selection
+act -j test --matrix os:ubuntu-latest --env SPECTRANS_DISABLE_MKL_FFT=1
+```
+
+**Note for macOS users**: `act` is particularly useful as it simulates the Linux environment used in GitHub Actions, helping catch platform-specific issues (like MKL FFT compatibility) before pushing.
 
 ## Contribution Process
 

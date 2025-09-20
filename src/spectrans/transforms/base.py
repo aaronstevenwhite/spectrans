@@ -47,11 +47,12 @@ Implementing a custom 1D spectral transform:
 Using the invertibility checker:
 
 >>> from spectrans.transforms.base import InvertibleTransform
+>>> from spectrans.utils.fft import safe_fft, safe_ifft
 >>> class MyTransform(InvertibleTransform):
 ...     def transform(self, x, dim=-1):
-...         return torch.fft.fft(x, dim=dim)
+...         return safe_fft(x, dim=dim)
 ...     def inverse_transform(self, x, dim=-1):
-...         return torch.fft.ifft(x, dim=dim)
+...         return safe_ifft(x, dim=dim)
 >>> transform = MyTransform()
 >>> test_input = torch.randn(10, 256, dtype=torch.complex64)
 >>> is_invertible = transform.check_invertibility(test_input)

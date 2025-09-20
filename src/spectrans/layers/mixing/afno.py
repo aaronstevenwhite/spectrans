@@ -70,7 +70,7 @@ if TYPE_CHECKING:
 
 from spectrans.core.types import ActivationType
 from spectrans.layers.mixing.base import MixingLayer
-from spectrans.utils.fft_utils import safe_irfft2, safe_rfft2
+from spectrans.utils.fft import safe_irfft2, safe_rfft2
 
 
 class AFNOMixing(MixingLayer):
