@@ -2,6 +2,10 @@
 
 This guide covers how to install Spectrans for both usage and development.
 
+## Platform Requirements
+
+**Important**: Spectrans currently supports Linux and macOS only. Windows is not supported at this time.
+
 ## Requirements
 
 Spectrans requires Python 3.13 or later and has the following dependencies:

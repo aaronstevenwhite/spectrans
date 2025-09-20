@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ['3.13']
 
     steps:
@@ -74,11 +74,15 @@ jobs:
 
       - name: Run unit tests
         env:
+          OMP_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
         run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term
 
       - name: Run integration tests
         env:
+          OMP_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
         run: pytest tests/integration -v
 
@@ -118,20 +122,14 @@ jobs:
 
       - name: Run benchmarks
         env:
+          OMP_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
         run: |
           pytest tests/benchmarks/test_performance.py --benchmark-only --benchmark-json=benchmark.json
 
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        with:
-          tool: 'pytest'
-          output-file-path: benchmark.json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: false
-          comment-on-alert: false
-          save-data-file: false
+      # Benchmark results are displayed in the console output
+      # To store benchmarks, create a gh-pages branch first
 
   memory-profile:
     name: Memory Profiling
@@ -159,6 +157,8 @@ jobs:
 
       - name: Run memory profiling tests
         env:
+          OMP_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
         run: pytest tests/benchmarks/test_memory_profile.py -v
 

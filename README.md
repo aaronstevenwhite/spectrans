@@ -30,6 +30,8 @@ A modular library for spectral transformer implementations in PyTorch. Replaces 
 
 ## Installation
 
+**Note**: Windows is not currently supported. Please use Linux or macOS.
+
 ```bash
 pip install spectrans
 ```

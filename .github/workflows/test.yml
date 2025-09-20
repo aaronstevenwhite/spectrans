@@ -38,6 +38,8 @@ jobs:
 
       - name: Run tests with coverage
         env:
+          OMP_NUM_THREADS: 1
+          MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
         run: |
           pytest tests/unit tests/integration \
