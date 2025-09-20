@@ -83,6 +83,7 @@ import torch.nn as nn
 
 from spectrans.core.base import SpectralComponent
 from spectrans.core.types import ActivationType, NormType
+from spectrans.utils.fft_utils import safe_irfft, safe_irfft2, safe_rfft, safe_rfft2
 
 
 class SpectralConv1d(nn.Module):
@@ -146,8 +147,8 @@ class SpectralConv1d(nn.Module):
         """
         batch_size, _, seq_len = x.shape
 
-        # Compute FFT
-        x_ft = torch.fft.rfft(x, dim=-1)
+        # Compute FFT using safe wrapper
+        x_ft = safe_rfft(x, dim=-1)
 
         # Truncate to retained modes
         x_ft_truncated = x_ft[..., : self.modes]
@@ -166,10 +167,10 @@ class SpectralConv1d(nn.Module):
         # -> (batch, out_channels, modes)
         out_ft[:, :, : self.modes] = torch.einsum("bim,iom->bom", x_ft_truncated, weights_complex)
 
-        # Inverse FFT to get back to spatial domain
-        out = torch.fft.irfft(out_ft, n=seq_len, dim=-1)
+        # Inverse FFT to get back to spatial domain using safe wrapper
+        out = safe_irfft(out_ft, n=seq_len, dim=-1)
 
-        return out  # type: ignore[no-any-return]
+        return out
 
 
 class SpectralConv2d(nn.Module):
@@ -236,8 +237,8 @@ class SpectralConv2d(nn.Module):
         """
         batch_size, _, h, w = x.shape
 
-        # Compute 2D FFT
-        x_ft = torch.fft.rfft2(x, dim=(-2, -1))
+        # Compute 2D FFT using safe wrapper
+        x_ft = safe_rfft2(x, dim=(-2, -1))
 
         # Prepare output
         out_ft = torch.zeros(
@@ -252,10 +253,10 @@ class SpectralConv2d(nn.Module):
             "bihw,iohw->bohw", x_ft[:, :, : self.modes1, : self.modes2], weights_complex
         )
 
-        # Inverse FFT
-        out = torch.fft.irfft2(out_ft, s=(h, w), dim=(-2, -1))
+        # Inverse FFT using safe wrapper
+        out = safe_irfft2(out_ft, s=(h, w), dim=(-2, -1))
 
-        return out  # type: ignore[no-any-return]
+        return out
 
 
 class FourierNeuralOperator(SpectralComponent):

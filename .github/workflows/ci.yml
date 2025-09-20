@@ -77,6 +77,7 @@ jobs:
           OMP_NUM_THREADS: 1
           MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
+          SPECTRANS_DISABLE_MKL_FFT: ${{ matrix.os == 'ubuntu-latest' && '1' || '0' }}
         run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term
 
       - name: Run integration tests
@@ -84,6 +85,7 @@ jobs:
           OMP_NUM_THREADS: 1
           MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
+          SPECTRANS_DISABLE_MKL_FFT: ${{ matrix.os == 'ubuntu-latest' && '1' || '0' }}
         run: pytest tests/integration -v
 
       - name: Upload coverage to Codecov
@@ -160,6 +162,7 @@ jobs:
           OMP_NUM_THREADS: 1
           MKL_NUM_THREADS: 1
           MKL_SERVICE_FORCE_INTEL: 1
+          SPECTRANS_DISABLE_MKL_FFT: 1
         run: pytest tests/benchmarks/test_memory_profile.py -v
 
   docs:

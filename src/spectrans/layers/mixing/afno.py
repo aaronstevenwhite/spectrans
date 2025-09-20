@@ -70,6 +70,7 @@ if TYPE_CHECKING:
 
 from spectrans.core.types import ActivationType
 from spectrans.layers.mixing.base import MixingLayer
+from spectrans.utils.fft_utils import safe_irfft2, safe_rfft2
 
 
 class AFNOMixing(MixingLayer):
@@ -232,7 +233,8 @@ class AFNOMixing(MixingLayer):
 
         # Step 1: Transform to Fourier space using 2D FFT
         # Treat (sequence, hidden) as 2D spatial dimensions
-        x_ft = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
+        # Use safe wrapper to handle MKL issues
+        x_ft = safe_rfft2(x, dim=(1, 2), norm="ortho")
 
         # Step 2: Mode truncation - keep only low-frequency modes
         x_ft_truncated = x_ft[:, : self.modes_seq, : self.modes_hidden]
@@ -262,7 +264,8 @@ class AFNOMixing(MixingLayer):
         x_ft_padded[:, : self.modes_seq, : self.modes_hidden] = x_ft_truncated
 
         # Step 5: Inverse FFT to get back to spatial domain
-        x_spatial = torch.fft.irfft2(
+        # Use safe wrapper to handle MKL issues
+        x_spatial = safe_irfft2(
             x_ft_padded, s=(self.max_sequence_length, hidden_dim), dim=(1, 2), norm="ortho"
         )
 
@@ -277,7 +280,7 @@ class AFNOMixing(MixingLayer):
         if output.dtype != input_dtype:
             output = output.to(input_dtype)
 
-        return output  # type: ignore[no-any-return]
+        return output
 
     def get_spectral_properties(self) -> dict[str, bool]:
         """Get mathematical properties of AFNO operation.

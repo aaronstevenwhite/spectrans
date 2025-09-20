@@ -1,6 +1,7 @@
 """Unit tests for utility functions."""
 
 import math
+import os
 
 import pytest
 import torch
@@ -44,6 +45,7 @@ from spectrans.utils import (
     xavier_spectral_init,
     zero_pad,
 )
+from spectrans.utils.fft_utils import safe_irfft, safe_irfft2, safe_rfft, safe_rfft2
 
 
 class TestComplexOperations:
@@ -778,6 +780,225 @@ class TestInitialization:
 
         with pytest.raises(ValueError, match="Unsupported method"):
             init_conv_spectral(conv, method="invalid")
+
+
+class TestFFTUtilities:
+    """Test FFT utility functions with MKL error handling."""
+
+    def test_safe_rfft2_correctness(self, device):
+        """Test that safe_rfft2 produces correct results."""
+        x = torch.randn(2, 32, 64, device=device)
+
+        # Compare with standard PyTorch implementation
+        expected = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
+        result = safe_rfft2(x, dim=(1, 2), norm="ortho")
+
+        torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
+
+    def test_safe_irfft2_correctness(self, device):
+        """Test that safe_irfft2 produces correct results."""
+        # Create a real signal and transform it
+        x_real = torch.randn(2, 32, 64, device=device)
+        x_freq = torch.fft.rfft2(x_real, dim=(1, 2), norm="ortho")
+
+        # Compare inverse transforms
+        expected = torch.fft.irfft2(x_freq, s=(32, 64), dim=(1, 2), norm="ortho")
+        result = safe_irfft2(x_freq, s=(32, 64), dim=(1, 2), norm="ortho")
+
+        torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
+
+    def test_rfft2_irfft2_roundtrip(self, device):
+        """Test that rfft2 -> irfft2 gives back the original signal."""
+        x = torch.randn(2, 32, 64, device=device)
+
+        # Forward and inverse using safe wrappers
+        x_freq = safe_rfft2(x, dim=(1, 2), norm="ortho")
+        x_recon = safe_irfft2(x_freq, s=(32, 64), dim=(1, 2), norm="ortho")
+
+        torch.testing.assert_close(x_recon, x, rtol=1e-5, atol=1e-6)
+
+    def test_safe_rfft_correctness(self, device):
+        """Test that safe_rfft produces correct results."""
+        x = torch.randn(2, 32, 64, device=device)
+
+        # Compare with standard PyTorch
+        expected = torch.fft.rfft(x, dim=-1, norm="ortho")
+        result = safe_rfft(x, dim=-1, norm="ortho")
+
+        torch.testing.assert_close(result, expected, rtol=1e-10, atol=1e-10)
+
+    def test_safe_irfft_correctness(self, device):
+        """Test that safe_irfft produces correct results."""
+        # Create half spectrum
+        x_real = torch.randn(2, 32, 64, device=device)
+        x_freq = torch.fft.rfft(x_real, dim=-1, norm="ortho")
+
+        # Compare inverse transforms
+        expected = torch.fft.irfft(x_freq, n=64, dim=-1, norm="ortho")
+        result = safe_irfft(x_freq, n=64, dim=-1, norm="ortho")
+
+        torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
+
+    def test_rfft_irfft_roundtrip(self, device):
+        """Test 1D roundtrip: rfft -> irfft."""
+        x = torch.randn(2, 32, 64, device=device)
+
+        # Forward and inverse using safe wrappers
+        x_freq = safe_rfft(x, dim=-1, norm="ortho")
+        x_recon = safe_irfft(x_freq, n=64, dim=-1, norm="ortho")
+
+        torch.testing.assert_close(x_recon, x, rtol=1e-5, atol=1e-6)
+
+    def test_different_dimensions(self, device):
+        """Test FFT operations on different dimensions."""
+        x = torch.randn(4, 8, 16, 32, device=device)
+
+        # Test on middle dimensions
+        result1 = safe_rfft2(x, dim=(1, 2), norm="ortho")
+        expected1 = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
+        torch.testing.assert_close(result1, expected1, rtol=1e-5, atol=1e-6)
+
+        # Test on last dimensions (default)
+        result2 = safe_rfft2(x, dim=(-2, -1), norm="ortho")
+        expected2 = torch.fft.rfft2(x, dim=(-2, -1), norm="ortho")
+        torch.testing.assert_close(result2, expected2, rtol=1e-5, atol=1e-6)
+
+    def test_with_size_parameter(self, device):
+        """Test FFT operations with explicit size parameter."""
+        x = torch.randn(2, 30, 60, device=device)
+
+        # Pad to power of 2 for efficiency
+        result = safe_rfft2(x, s=(32, 64), dim=(1, 2), norm="ortho")
+        expected = torch.fft.rfft2(x, s=(32, 64), dim=(1, 2), norm="ortho")
+
+        torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
+
+    def test_fallback_with_env_var(self, device):
+        """Test that fallback is used when environment variable is set."""
+        # Save original value
+        original_env = os.environ.get("SPECTRANS_DISABLE_MKL_FFT")
+
+        try:
+            # Force use of fallback
+            os.environ["SPECTRANS_DISABLE_MKL_FFT"] = "1"
+
+            x = torch.randn(2, 32, 64, device=device)
+
+            # These should still produce correct results
+            result = safe_rfft2(x, dim=(1, 2), norm="ortho")
+            expected = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
+
+            torch.testing.assert_close(result, expected, rtol=1e-5, atol=1e-6)
+
+            # Test inverse as well
+            x_freq = torch.fft.rfft2(x, dim=(1, 2), norm="ortho")
+            result_inv = safe_irfft2(x_freq, s=(32, 64), dim=(1, 2), norm="ortho")
+            expected_inv = torch.fft.irfft2(x_freq, s=(32, 64), dim=(1, 2), norm="ortho")
+
+            torch.testing.assert_close(result_inv, expected_inv, rtol=1e-5, atol=1e-6)
+
+        finally:
+            # Restore original value
+            if original_env is None:
+                os.environ.pop("SPECTRANS_DISABLE_MKL_FFT", None)
+            else:
+                os.environ["SPECTRANS_DISABLE_MKL_FFT"] = original_env
+
+    def test_complex_input_shapes(self, device):
+        """Test FFT operations with various input shapes."""
+        shapes = [
+            (1, 16, 32),  # Small batch
+            (8, 64, 128),  # Medium size
+            (4, 100, 200),  # Non-power-of-2
+            (2, 1, 512),  # Edge case: very small height
+            (2, 512, 1),  # Edge case: very small width (but rfft needs at least 2)
+        ]
+
+        for shape in shapes[:-1]:  # Skip last one as it's too small for rfft
+            x = torch.randn(*shape, device=device)
+
+            # Test 2D FFT
+            freq = safe_rfft2(x, dim=(-2, -1), norm="ortho")
+            recon = safe_irfft2(freq, s=shape[-2:], dim=(-2, -1), norm="ortho")
+            torch.testing.assert_close(recon, x, rtol=1e-5, atol=1e-6)
+
+            # Test 1D FFT
+            freq_1d = safe_rfft(x, dim=-1, norm="ortho")
+            recon_1d = safe_irfft(freq_1d, n=shape[-1], dim=-1, norm="ortho")
+            torch.testing.assert_close(recon_1d, x, rtol=1e-5, atol=1e-6)
+
+    def test_normalization_modes(self, device):
+        """Test different normalization modes."""
+        x = torch.randn(2, 32, 64, device=device)
+
+        for norm in ["ortho", "forward", "backward", None]:
+            # 2D transforms
+            freq_2d = safe_rfft2(x, dim=(1, 2), norm=norm)
+            recon_2d = safe_irfft2(freq_2d, s=(32, 64), dim=(1, 2), norm=norm)
+
+            expected_freq_2d = torch.fft.rfft2(x, dim=(1, 2), norm=norm)
+            expected_recon_2d = torch.fft.irfft2(
+                expected_freq_2d, s=(32, 64), dim=(1, 2), norm=norm
+            )
+
+            torch.testing.assert_close(freq_2d, expected_freq_2d, rtol=1e-5, atol=1e-6)
+            torch.testing.assert_close(recon_2d, expected_recon_2d, rtol=1e-5, atol=1e-6)
+
+            # 1D transforms
+            freq_1d = safe_rfft(x, dim=-1, norm=norm)
+            recon_1d = safe_irfft(freq_1d, n=64, dim=-1, norm=norm)
+
+            expected_freq_1d = torch.fft.rfft(x, dim=-1, norm=norm)
+            expected_recon_1d = torch.fft.irfft(expected_freq_1d, n=64, dim=-1, norm=norm)
+
+            torch.testing.assert_close(freq_1d, expected_freq_1d, rtol=1e-5, atol=1e-6)
+            torch.testing.assert_close(recon_1d, expected_recon_1d, rtol=1e-5, atol=1e-6)
+
+    def test_gradient_flow(self, device):
+        """Test that gradients flow correctly through FFT operations."""
+        x = torch.randn(2, 32, 64, device=device, requires_grad=True)
+
+        # 2D FFT gradient flow
+        freq_2d = safe_rfft2(x, dim=(1, 2), norm="ortho")
+        recon_2d = safe_irfft2(freq_2d, s=(32, 64), dim=(1, 2), norm="ortho")
+        loss_2d = recon_2d.sum()
+        loss_2d.backward()
+
+        assert x.grad is not None
+        assert torch.isfinite(x.grad).all()
+
+        # Reset gradient
+        x.grad = None
+
+        # 1D FFT gradient flow
+        freq_1d = safe_rfft(x, dim=-1, norm="ortho")
+        recon_1d = safe_irfft(freq_1d, n=64, dim=-1, norm="ortho")
+        loss_1d = recon_1d.sum()
+        loss_1d.backward()
+
+        assert x.grad is not None
+        assert torch.isfinite(x.grad).all()
+
+    def test_empty_tensor_handling(self, device):
+        """Test FFT operations with empty tensors."""
+        # Empty batch dimension
+        x_empty = torch.randn(0, 32, 64, device=device)
+
+        freq = safe_rfft2(x_empty, dim=(1, 2), norm="ortho")
+        assert freq.shape == (0, 32, 33)
+
+        recon = safe_irfft2(freq, s=(32, 64), dim=(1, 2), norm="ortho")
+        assert recon.shape == (0, 32, 64)
+
+    def test_single_element_dimensions(self, device):
+        """Test FFT operations with single-element dimensions."""
+        # Single batch element
+        x_single = torch.randn(1, 32, 64, device=device)
+
+        freq = safe_rfft2(x_single, dim=(1, 2), norm="ortho")
+        recon = safe_irfft2(freq, s=(32, 64), dim=(1, 2), norm="ortho")
+
+        torch.testing.assert_close(recon, x_single, rtol=1e-5, atol=1e-6)
 
 
 class TestEdgeCases:

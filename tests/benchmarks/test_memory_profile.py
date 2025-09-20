@@ -390,13 +390,16 @@ class TestMemoryProfiling:
 
         print("\nLayer memory usage (forward + backward):")
         for name, layer in layers:
+            # Clone input for each layer to avoid gradient accumulation
+            x_layer = x.clone().detach().requires_grad_(True)
+
             tracemalloc.start()
 
             # Forward pass
-            y = layer(x)
+            y = layer(x_layer)
             # Backward pass
             loss = y.sum()
-            loss.backward(retain_graph=True)
+            loss.backward()
 
             _, peak = tracemalloc.get_traced_memory()
             tracemalloc.stop()
@@ -404,9 +407,10 @@ class TestMemoryProfiling:
             print(f"  {name}: {peak / 1024 / 1024:.2f} MB peak")
 
             # Clean up
-            del y, loss
+            del y, loss, x_layer
             if hasattr(layer, "zero_grad"):
                 layer.zero_grad()
+            torch.cuda.empty_cache() if torch.cuda.is_available() else None
             gc.collect()
 
     def test_training_loop_memory_profile(self):
