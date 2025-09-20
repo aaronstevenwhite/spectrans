@@ -116,8 +116,12 @@ def safe_rfft2(
     except RuntimeError as e:
         if "MKL FFT error" in str(e) and "Inconsistent configuration" in str(e):
             warnings.warn(
-                "MKL FFT error detected. Falling back to alternative implementation. "
-                "Set SPECTRANS_DISABLE_MKL_FFT=1 to always use fallback.",
+                f"MKL FFT error detected in safe_rfft2 (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Falling back to sequential 1D FFT implementation. "
+                "To avoid this warning, set environment variable SPECTRANS_DISABLE_MKL_FFT=1 "
+                "before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -191,8 +195,12 @@ def safe_irfft2(
     except RuntimeError as e:
         if "MKL FFT error" in str(e) and "Inconsistent configuration" in str(e):
             warnings.warn(
-                "MKL FFT error detected. Falling back to alternative implementation. "
-                "Set SPECTRANS_DISABLE_MKL_FFT=1 to always use fallback.",
+                f"MKL FFT error detected in safe_irfft2 (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Falling back to sequential 1D FFT implementation. "
+                "To avoid this warning, set environment variable SPECTRANS_DISABLE_MKL_FFT=1 "
+                "before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -264,7 +272,11 @@ def safe_rfft(
         if "MKL FFT error" in str(e):
             # For 1D, we can try using the full complex FFT
             warnings.warn(
-                "MKL FFT error in rfft. Using complex FFT fallback.",
+                f"MKL FFT error detected in safe_rfft (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using complex FFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -359,7 +371,11 @@ def safe_irfft(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in irfft. Using complex IFFT fallback.",
+                f"MKL FFT error detected in safe_irfft (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using complex IFFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -450,7 +466,11 @@ def safe_fft(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in fft. Using DFT matrix fallback.",
+                f"MKL FFT error detected in safe_fft (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using DFT matrix fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -510,7 +530,11 @@ def safe_ifft(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in ifft. Using DFT matrix fallback.",
+                f"MKL FFT error detected in safe_ifft (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using DFT matrix fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -675,7 +699,11 @@ def safe_fft2(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in fft2. Using sequential 1D FFT fallback.",
+                f"MKL FFT error detected in safe_fft2 (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using sequential 1D FFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -726,7 +754,11 @@ def safe_ifft2(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in ifft2. Using sequential 1D IFFT fallback.",
+                f"MKL FFT error detected in safe_ifft2 (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using sequential 1D IFFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -794,7 +826,11 @@ def safe_rfftn(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in rfftn. Using sequential FFT fallback.",
+                f"MKL FFT error detected in safe_rfftn (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using sequential FFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -865,7 +901,11 @@ def safe_irfftn(
     except RuntimeError as e:
         if "MKL FFT error" in str(e):
             warnings.warn(
-                "MKL FFT error in irfftn. Using sequential IFFT fallback.",
+                f"MKL FFT error detected in safe_irfftn (input shape: {input.shape}, "
+                f"dtype: {input.dtype}, device: {input.device}). "
+                "This typically occurs during gradient computation on Linux systems. "
+                "Using sequential IFFT fallback. To avoid this warning, set environment variable "
+                "SPECTRANS_DISABLE_MKL_FFT=1 before importing PyTorch or spectrans.",
                 RuntimeWarning,
                 stacklevel=2,
             )

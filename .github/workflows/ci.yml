@@ -45,6 +45,12 @@ jobs:
   test:
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      # Set FFT fallback at job level for Ubuntu to avoid MKL issues
+      SPECTRANS_DISABLE_MKL_FFT: ${{ matrix.os == 'ubuntu-latest' && '1' || '0' }}
+      OMP_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      MKL_SERVICE_FORCE_INTEL: 1
     strategy:
       fail-fast: false
       matrix:
@@ -73,19 +79,9 @@ jobs:
           pip install --no-cache-dir -e ".[dev]"
 
       - name: Run unit tests
-        env:
-          OMP_NUM_THREADS: 1
-          MKL_NUM_THREADS: 1
-          MKL_SERVICE_FORCE_INTEL: 1
-          SPECTRANS_DISABLE_MKL_FFT: 1
         run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term
 
       - name: Run integration tests
-        env:
-          OMP_NUM_THREADS: 1
-          MKL_NUM_THREADS: 1
-          MKL_SERVICE_FORCE_INTEL: 1
-          SPECTRANS_DISABLE_MKL_FFT: 1
         run: pytest tests/integration -v
 
       - name: Upload coverage to Codecov
@@ -101,6 +97,12 @@ jobs:
   benchmark:
     name: Performance Benchmarks
     runs-on: ubuntu-latest
+    env:
+      # Force FFT fallback for Ubuntu to avoid MKL issues
+      SPECTRANS_DISABLE_MKL_FFT: 1
+      OMP_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      MKL_SERVICE_FORCE_INTEL: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -123,11 +125,6 @@ jobs:
           pip install --no-cache-dir -e ".[dev]"
 
       - name: Run benchmarks
-        env:
-          OMP_NUM_THREADS: 1
-          MKL_NUM_THREADS: 1
-          MKL_SERVICE_FORCE_INTEL: 1
-          SPECTRANS_DISABLE_MKL_FFT: 1
         run: |
           pytest tests/benchmarks/test_performance.py --benchmark-only --benchmark-json=benchmark.json
 
@@ -137,6 +134,12 @@ jobs:
   memory-profile:
     name: Memory Profiling
     runs-on: ubuntu-latest
+    env:
+      # Force FFT fallback for Ubuntu to avoid MKL issues
+      SPECTRANS_DISABLE_MKL_FFT: 1
+      OMP_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      MKL_SERVICE_FORCE_INTEL: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -159,11 +162,6 @@ jobs:
           pip install --no-cache-dir -e ".[dev]"
 
       - name: Run memory profiling tests
-        env:
-          OMP_NUM_THREADS: 1
-          MKL_NUM_THREADS: 1
-          MKL_SERVICE_FORCE_INTEL: 1
-          SPECTRANS_DISABLE_MKL_FFT: 1
         run: pytest tests/benchmarks/test_memory_profile.py -v
 
   docs:
