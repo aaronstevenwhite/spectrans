@@ -2,13 +2,30 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
   schedule:
     - cron: '0 0 * * 0'  # Weekly on Sunday
 
 jobs:
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -46,8 +63,9 @@ jobs:
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     env:
-      # Set FFT fallback at job level for Ubuntu to avoid MKL issues
-      SPECTRANS_DISABLE_MKL_FFT: ${{ matrix.os == 'ubuntu-latest' && '1' || '0' }}
+      # Force FFT fallback for Ubuntu to avoid MKL issues
+      # Must be set to literal 1, not conditional expression
+      SPECTRANS_DISABLE_MKL_FFT: 1
       OMP_NUM_THREADS: 1
       MKL_NUM_THREADS: 1
       MKL_SERVICE_FORCE_INTEL: 1
@@ -79,10 +97,17 @@ jobs:
           pip install --no-cache-dir -e ".[dev]"
 
       - name: Run unit tests
-        run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term
+        run: pytest tests/unit -v --cov=spectrans --cov-report=xml --cov-report=term --cov-report=html
 
       - name: Run integration tests
         run: pytest tests/integration -v
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always() && matrix.os == 'ubuntu-latest'
+        with:
+          name: coverage-report
+          path: htmlcov/
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest'
