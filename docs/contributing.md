@@ -251,8 +251,35 @@ Follow the project structure and coding standards outlined above.
 - Update docstrings for any modified functions/classes
 - Update README.md if adding new features
 - Add examples if introducing new functionality
+- Update CHANGELOG.md under "Unreleased" section (see below)
 
-### 5. Pre-submission Checklist
+### 5. Changelog Updates
+
+When making changes, update the CHANGELOG.md file:
+
+1. After the first release, add an "Unreleased" section at the top if not already present
+2. Add your changes under the appropriate category:
+   - **Added** for new features
+   - **Changed** for changes in existing functionality
+   - **Deprecated** for soon-to-be removed features
+   - **Removed** for now removed features
+   - **Fixed** for any bug fixes
+   - **Security** in case of vulnerabilities
+
+Example entry:
+```markdown
+## [Unreleased]
+
+### Added
+- New WaveletAttention layer for multi-resolution attention mechanisms
+
+### Fixed
+- Memory leak in FFT2D transform when using CUDA
+```
+
+The changelog follows [Keep a Changelog](https://keepachangelog.com/) format.
+
+### 6. Pre-submission Checklist
 
 - [ ] Code follows project style guidelines
 - [ ] All tests pass (`pytest`)
@@ -261,9 +288,10 @@ Follow the project structure and coding standards outlined above.
 - [ ] Imports are sorted (`isort src tests`)
 - [ ] No linting errors (`ruff check src tests`)
 - [ ] Documentation is updated
+- [ ] CHANGELOG.md is updated with your changes
 - [ ] Commit messages are clear and descriptive
 
-### 6. Submit Pull Request
+### 7. Submit Pull Request
 
 1. **Update your branch** with latest upstream changes:
    ```bash

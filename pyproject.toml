@@ -12,6 +12,16 @@ license = {text = "MIT"}
 authors = [
     {name = "Aaron Steven White", email = "aaronstevenwhite@gmail.com"},
 ]
+keywords = [
+    "deep-learning",
+    "transformers",
+    "pytorch",
+    "neural-networks",
+    "fft",
+    "wavelets",
+    "spectral-methods",
+    "sequence-modeling",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -54,7 +64,7 @@ docs = [
 ]
 
 [project.urls]
-Repository = "https://github.com/yourusername/spectrans"
+Repository = "https://github.com/aaronstevenwhite/spectrans"
 Documentation = "https://spectrans.readthedocs.io"
 
 [tool.setuptools.packages.find]
