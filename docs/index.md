@@ -15,7 +15,7 @@ Spectrans provides efficient implementations of spectral methods for deep learni
 
 ### 🚀 Performance
 - GPU-accelerated spectral operations
-- Linear complexity $O(n \log n)$ for sequence mixing
+- Linearithmic complexity $O(n \log n)$ for sequence mixing
 - Memory-efficient real-valued FFT variants
 
 ### 🧮 Mathematical Rigor
