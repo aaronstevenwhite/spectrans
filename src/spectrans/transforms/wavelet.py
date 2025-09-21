@@ -2,15 +2,6 @@ r"""PyWavelets-compatible Discrete Wavelet Transform implementations.
 
 This module provides DWT implementations that exactly match PyWavelets behavior
 while maintaining full gradient support for PyTorch.
-The implementation is based on exhaustive analysis of PyWavelets C source code
-to ensure perfect reconstruction and compatibility with all wavelet families.
-
-The key insights from PyWavelets C code analysis:
-
-1. Convolution starts at index (step-1) = 1 for stride 2
-2. Symmetric mode uses reflection WITHOUT edge repeat
-3. Filters from PyWavelets are already in correct form
-4. IDWT uses transpose convolution with proper alignment
 
 Classes
 -------
@@ -88,6 +79,7 @@ For orthogonal wavelets: $h'[n] = h[-n]$ and $g'[n] = g[-n]$.
 The transform preserves energy: $\|\mathbf{x}\|^2 = \|\mathbf{c}_A\|^2 + \sum_{j} \|\mathbf{c}_{D_j}\|^2$
 
 Implementation Details:
+
 - Convolution starts at index $(\text{step} - 1) = 1$ for stride 2
 - Symmetric mode reflects without edge repeat: ``[d,c,b,a | a,b,c,d | d,c,b,a]``
 - Uses ``conv1d`` with flipped filters for correlation
@@ -95,6 +87,7 @@ Implementation Details:
 - Output lengths follow PyWavelets formulas
 
 Algorithm Complexity:
+
 - Forward/Inverse DWT: $O(N)$ for $N$-length signal
 - Memory: $O(N)$ for coefficients
 
@@ -102,6 +95,7 @@ Gradient Support:
 All operations use native PyTorch operations ensuring full autograd support.
 
 Numerical Precision:
+
 - Filters use ``float64`` for extraction, ``float32`` for computation
 - Perfect reconstruction to $\sim 10^{-7}$ for ``float32``
 
