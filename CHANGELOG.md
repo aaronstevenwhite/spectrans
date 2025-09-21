@@ -35,4 +35,4 @@ Initial release of `spectrans`.
 - CI/CD pipeline with GitHub Actions
 - Pre-commit hooks for code quality
 
-[0.1.0]: https://github.com/yourusername/spectrans/releases/tag/v0.1.0
+[0.1.0]: https://github.com/aaronstevenwhite/spectrans/releases/tag/v0.1.0
