@@ -14,21 +14,25 @@ Spectrans provides efficient implementations of spectral methods for deep learni
 ## Key Features
 
 ### 🚀 Performance
+
 - GPU-accelerated spectral operations
 - Linearithmic complexity $O(n \log n)$ for sequence mixing
 - Memory-efficient real-valued FFT variants
 
 ### 🧮 Mathematical Rigor
+
 - Energy-preserving unitary transforms
 - Parseval's theorem compliance
 - Comprehensive mathematical documentation
 
 ### 🔧 Flexibility
+
 - Modular design with composable components
 - Support for 1D, 2D, and 3D operations
 - Easy integration with existing PyTorch models
 
 ### 📊 Applications
+
 - Computer vision (image classification, segmentation)
 - Natural language processing (long-context modeling)
 - Scientific computing (PDE solving, weather prediction)
