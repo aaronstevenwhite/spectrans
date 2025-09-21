@@ -110,7 +110,7 @@ Implementation Details:
 
 Performance Characteristics:
 - Time Complexity: $O(n \log n)$ for fast algorithm
-- Space Complexity: $O(1)$ additional memory (in-place computation)
+- Space Complexity: $O(1)$ additional memory (algorithm supports in-place computation)
 - Operations: Only additions and subtractions (no multiplications)
 - Memory Bandwidth: Regular access patterns
 

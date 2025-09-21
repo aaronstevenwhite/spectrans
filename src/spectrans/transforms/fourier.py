@@ -57,10 +57,10 @@ Notes
 -----
 Mathematical Properties:
 
-All Fourier transforms maintain unitarity:
+Fourier transforms with 'ortho' normalization maintain unitarity:
 
-- Energy conservation: $\|\mathcal{F}(\mathbf{x})\|^2 = \|\mathbf{x}\|^2$
-- Parseval's theorem: $\langle \mathbf{x}, \mathbf{y} \rangle = \langle \mathcal{F}(\mathbf{x}), \mathcal{F}(\mathbf{y}) \rangle$
+- Energy conservation (ortho mode): $\|\mathcal{F}(\mathbf{x})\|^2 = \|\mathbf{x}\|^2$
+- Parseval's theorem: $\langle \mathbf{x}, \mathbf{y} \rangle = \langle \mathcal{F}(\mathbf{x}), \overline{\mathcal{F}(\mathbf{y})} \rangle$
 - Perfect reconstruction: $\mathcal{F}^{-1}(\mathcal{F}(\mathbf{x})) = \mathbf{x}$
 
 Normalization Modes:
