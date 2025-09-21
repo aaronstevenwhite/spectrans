@@ -166,22 +166,34 @@ model = build_model_from_config({"model": config.model_dump()})
 ## Custom Components
 
 ```python
+import torch
 from spectrans.layers.mixing.base import MixingLayer
 from spectrans import register_component
 
 @register_component("mixing", "my_custom_mixing")
 class MyCustomMixing(MixingLayer):
     def __init__(self, hidden_dim: int):
-        super().__init__()
-        self.hidden_dim = hidden_dim
+        super().__init__(hidden_dim=hidden_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Your implementation here
         return x
 
+    def get_spectral_properties(self) -> dict[str, str | bool]:
+        """Return spectral properties of this layer."""
+        return {
+            "transform_type": "identity",
+            "preserves_energy": True,
+        }
+
     @property
     def complexity(self) -> dict[str, str]:
         return {"time": "O(n)", "space": "O(1)"}
+
+# Use the custom component
+custom_layer = MyCustomMixing(hidden_dim=768)
+x = torch.randn(2, 128, 768)
+output = custom_layer(x)
 ```
 
 ## Documentation
