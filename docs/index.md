@@ -108,6 +108,22 @@ Traditional attention mechanisms have $O(n^2)$ complexity, limiting their scalab
 - [GitHub Repository](https://github.com/aaronstevenwhite/spectrans)
 - [Issue Tracker](https://github.com/aaronstevenwhite/spectrans/issues)
 
+## Citation
+
+If you use Spectrans in your research, please cite:
+
+```bibtex
+@software{spectrans,
+  title = {spectrans: Modular Spectral Transformers in PyTorch},
+  author = {Aaron Steven White},
+  year = {2025},
+  url = {https://github.com/aaronstevenwhite/spectrans},
+  doi = {10.5281/zenodo.17171169}
+}
+```
+
+For more citation formats, see the [Citation Guide](citation.md).
+
 ## License
 
 Spectrans is released under the MIT License. See [LICENSE](https://github.com/aaronstevenwhite/spectrans/blob/main/LICENSE) for details.

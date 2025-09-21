@@ -4,6 +4,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/spectrans.svg)](https://pypi.org/project/spectrans/)
 [![CI](https://github.com/aaronstevenwhite/spectrans/actions/workflows/ci.yml/badge.svg)](https://github.com/aaronstevenwhite/spectrans/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/spectrans/badge/?version=latest)](https://spectrans.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17171169.svg)](https://doi.org/10.5281/zenodo.17171169)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A modular library for spectral transformer implementations in PyTorch. Replaces traditional attention mechanisms with Fourier transforms, wavelets, and other spectral methods.
@@ -215,7 +216,8 @@ If you use Spectrans in your research, please cite:
   title = {spectrans: Modular Spectral Transformers in PyTorch},
   author = {Aaron Steven White},
   year = {2025},
-  url = {https://github.com/aaronstevenwhite/spectrans}
+  url = {https://github.com/aaronstevenwhite/spectrans},
+  doi = {10.5281/zenodo.17171169}
 }
 ```
 
