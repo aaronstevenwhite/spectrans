@@ -6,6 +6,7 @@ The implementation is based on exhaustive analysis of PyWavelets C source code
 to ensure perfect reconstruction and compatibility with all wavelet families.
 
 The key insights from PyWavelets C code analysis:
+
 1. Convolution starts at index (step-1) = 1 for stride 2
 2. Symmetric mode uses reflection WITHOUT edge repeat
 3. Filters from PyWavelets are already in correct form

@@ -96,18 +96,21 @@ Initialization Theory for Spectral Networks:
 
 **Complex Parameter Scaling**:
 Complex parameters require careful scaling to maintain proper variance:
+
 - Real and imaginary parts should be scaled by 1/√2 relative to real-valued case
 - This maintains the same total variance while distributing it across both components
 - Critical for stable training of complex neural networks
 
 **Frequency-Domain Considerations**:
 Parameters operating in frequency domain have different scaling requirements:
+
 - Low frequencies often have higher magnitude than high frequencies
 - Initialization should reflect expected frequency content
 - Different spectral transforms have different frequency characteristics
 
 **Orthogonal Transform Properties**:
 Many spectral transforms are orthogonal/unitary and require special treatment:
+
 - Parameters should preserve orthogonality during training
 - Initial values should respect the mathematical structure
 - Gradients may need special handling to maintain constraints
@@ -129,21 +132,25 @@ Essential for transforms requiring orthogonality constraints
 Transform-Specific Considerations:
 
 **FFT Parameters**:
+
 - Complex-valued requiring careful magnitude/phase initialization
 - Often benefit from frequency-aware initialization
 - Should maintain Parseval's theorem properties
 
 **DCT/DST Parameters**:
+
 - Real-valued but with cosine/sine basis constraints
 - Energy compaction properties should be preserved
 - Orthogonality is crucial for proper reconstruction
 
 **Hadamard Parameters**:
+
 - Binary {-1, +1} structure should be respected
 - Fast transform structure affects parameter scaling
 - Power-of-2 constraints affect initialization patterns
 
 **Wavelet Parameters**:
+
 - Multi-resolution structure requires level-aware initialization
 - Different wavelets have different scaling properties
 - Perfect reconstruction constraints must be maintained
@@ -165,6 +172,7 @@ Common Patterns:
 5. **Residual Connections**: Use xavier_spectral_init with proper gain scheduling
 
 Performance Considerations:
+
 - All initialization functions are vectorized and GPU-compatible
 - Large parameter tensors are handled efficiently
 - Memory usage is optimized for typical spectral network sizes

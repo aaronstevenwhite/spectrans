@@ -324,6 +324,7 @@ Fixes #123
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only

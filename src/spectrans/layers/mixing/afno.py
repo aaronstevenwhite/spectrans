@@ -38,6 +38,7 @@ With custom mode truncation:
 Notes
 -----
 The AFNO mixing operation follows the mathematical formulation:
+
 1. Apply 2D FFT to input tensor (treating sequence and hidden dims as spatial dims)
 2. Truncate to keep only low-frequency modes
 3. Apply learnable MLP to truncated modes

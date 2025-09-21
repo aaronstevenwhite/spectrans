@@ -49,6 +49,7 @@ Using positional encoding:
 Notes
 -----
 The base model architecture follows the standard transformer pattern:
+
 1. Input embedding (optional)
 2. Positional encoding (optional)
 3. Stack of transformer blocks

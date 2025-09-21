@@ -50,6 +50,7 @@ Creating components directly:
 Notes
 -----
 The ConfigBuilder ensures type safety by:
+
 1. Validating all parameters using Pydantic models
 2. Checking component compatibility before construction
 3. Providing detailed error messages for invalid configurations

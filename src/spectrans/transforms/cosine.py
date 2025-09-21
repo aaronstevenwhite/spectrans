@@ -78,12 +78,14 @@ $$
 - Direct computation: $O(N^2)$
 
 Implementation Details:
+
 - Uses FFT-based algorithms for $O(N \log N)$ complexity
 - Supports both normalized and unnormalized variants
 - Proper handling of boundary conditions for different transform types
 - Gradient-compatible for neural network training
 
 Performance Characteristics:
+
 - In-place computation where possible
 - GPU accelerated through CUDA kernels
 - Proper scaling and normalization

@@ -109,12 +109,14 @@ Implementation Details:
 - **Gradient Support**: Full autodiff compatibility for neural networks
 
 Performance Characteristics:
+
 - Time Complexity: $O(n \log n)$ for fast algorithm
 - Space Complexity: $O(1)$ additional memory (algorithm supports in-place computation)
 - Operations: Only additions and subtractions (no multiplications)
 - Memory Bandwidth: Regular access patterns
 
 Limitations:
+
 - Input size must be power of 2 for fast algorithm
 - Less frequency selectivity compared to Fourier transforms
 - Binary nature may not suit all signal types

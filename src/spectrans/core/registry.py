@@ -56,12 +56,14 @@ Notes
 Registry Architecture:
 
 The registry implements several design patterns:
+
 1. **Singleton Pattern**: Global registry instance for system-wide access
 2. **Factory Pattern**: Component creation through factory methods
 3. **Registry Pattern**: Dynamic component discovery and instantiation
 4. **Decorator Pattern**: Clean component registration via decorators
 
 Component Categories:
+
 - 'transform': Spectral transforms (FFT, DCT, DWT, Hadamard)
 - 'mixing': Token mixing layers (FourierMixing, GlobalFilter, AFNO)
 - 'attention': Spectral attention mechanisms (SpectralAttention, LST)

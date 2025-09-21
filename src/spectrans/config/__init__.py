@@ -125,6 +125,7 @@ The configuration system uses Pydantic for:
 - JSON/YAML serialization
 
 Configuration hierarchy:
+
 1. Base classes (BaseLayerConfig, ModelConfig)
 2. Specialized layer configs (mixing, attention, etc.)
 3. Model configurations

@@ -59,6 +59,7 @@ pip install -e ".[dev]"
 ```
 
 This installs:
+
 - The main package in editable mode
 - Development dependencies (pytest, mypy, ruff, etc.)
 - Documentation dependencies (mkdocs, etc.)

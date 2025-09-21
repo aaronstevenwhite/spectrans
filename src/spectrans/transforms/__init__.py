@@ -126,6 +126,7 @@ Implementation Details:
 - In-place operations used where possible
 
 Performance Characteristics:
+
 - FFT: $O(n \log n)$ time complexity
 - DCT/DST: $O(n \log n)$ via FFT-based algorithms
 - Hadamard: $O(n \log n)$ fast transform algorithms
